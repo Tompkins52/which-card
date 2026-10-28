@@ -1,0 +1,6 @@
+__pycache__/
+preview.html
+tests/shots/
+report.md
+flags.json
+.DS_Store

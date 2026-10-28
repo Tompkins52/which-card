@@ -1,0 +1,24 @@
+{
+  "name": "Which Card",
+  "short_name": "Which Card",
+  "description": "Tells you which of your credit cards to use at the store you are standing in.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F5F7",
+  "theme_color": "#F3F5F7",
+  "lang": "en-US",
+  "categories": ["finance", "shopping", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Gas", "short_name": "Gas", "url": "./?cat=gas", "icons": [{ "src": "icons/shortcut-gas.png", "sizes": "96x96" }] },
+    { "name": "Groceries", "short_name": "Groceries", "url": "./?cat=groceries", "icons": [{ "src": "icons/shortcut-groceries.png", "sizes": "96x96" }] },
+    { "name": "Dining", "short_name": "Dining", "url": "./?cat=dining", "icons": [{ "src": "icons/shortcut-dining.png", "sizes": "96x96" }] },
+    { "name": "Amazon", "short_name": "Amazon", "url": "./?m=amazon", "icons": [{ "src": "icons/shortcut-online.png", "sizes": "96x96" }] }
+  ]
+}

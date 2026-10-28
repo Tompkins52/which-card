@@ -1,0 +1,63 @@
+name: Card data check
+
+on:
+  schedule:
+    - cron: "17 11 * * *"   # every day at 11:17 UTC (6:17 am Central)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate the data files
+        run: python3 tools/validate_data.py
+
+      - name: Compare issuer pages with the last check
+        run: python3 tools/check_sources.py --report report.md --flags flags.json --update-hashes
+
+      - name: Count flags
+        id: flags
+        run: echo "count=$(python3 -c "import json;print(json.load(open('flags.json'))['count'])")" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the review issue
+        if: steps.flags.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          existing=$(gh issue list --label data-review --state open --json number --jq '.[0].number')
+          if [ -z "$existing" ]; then
+            gh label create data-review --description "Card data needs a look" --color D4A84B --force
+            gh issue create --title "Card data review" --label data-review --body-file report.md
+          else
+            gh issue comment "$existing" --body-file report.md
+          fi
+
+      - name: Commit the updated page hashes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- data/source-hashes.json; then
+            git add data/source-hashes.json
+            git commit -m "Record issuer page hashes from the daily check"
+            git push
+          fi
+
+      - name: Keep the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: card-data-report
+          path: |
+            report.md
+            flags.json
+          retention-days: 30

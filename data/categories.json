@@ -1,0 +1,307 @@
+{
+ "version": "2026-10-28",
+ "categories": [
+  {
+   "id": "gas",
+   "name": "Gas",
+   "short": "Gas",
+   "icon": "pump",
+   "quick": true,
+   "desc": "Gas stations. Pay at the pump or inside.",
+   "examples": [
+    "Shell",
+    "BP",
+    "Speedway",
+    "Casey's"
+   ]
+  },
+  {
+   "id": "groceries",
+   "name": "Groceries",
+   "short": "Groceries",
+   "icon": "cart",
+   "quick": true,
+   "desc": "Supermarkets and grocery stores. Walmart, Target and warehouse clubs usually do not count.",
+   "examples": [
+    "Jewel-Osco",
+    "Kroger",
+    "Aldi",
+    "Trader Joe's"
+   ]
+  },
+  {
+   "id": "dining",
+   "name": "Dining",
+   "short": "Dining",
+   "icon": "fork",
+   "quick": true,
+   "desc": "Restaurants, fast food, coffee shops, takeout and delivery.",
+   "examples": [
+    "Chipotle",
+    "Starbucks",
+    "DoorDash"
+   ]
+  },
+  {
+   "id": "online",
+   "name": "Online shopping",
+   "short": "Online",
+   "icon": "box",
+   "quick": true,
+   "desc": "Buying from a website or app, not in a store.",
+   "examples": [
+    "Amazon",
+    "eBay",
+    "Etsy",
+    "Walmart.com"
+   ]
+  },
+  {
+   "id": "warehouse",
+   "name": "Warehouse club",
+   "short": "Warehouse",
+   "icon": "pallet",
+   "quick": true,
+   "desc": "Costco, Sam's Club, BJ's. Costco warehouses in the US take Visa only.",
+   "examples": [
+    "Costco",
+    "Sam's Club"
+   ]
+  },
+  {
+   "id": "superstore",
+   "name": "Walmart or Target",
+   "short": "Superstore",
+   "icon": "store",
+   "quick": true,
+   "desc": "General merchandise stores. Most cards do not count these as grocery stores.",
+   "examples": [
+    "Walmart",
+    "Target",
+    "Meijer"
+   ]
+  },
+  {
+   "id": "drugstore",
+   "name": "Drugstore",
+   "short": "Drugstore",
+   "icon": "pill",
+   "quick": true,
+   "desc": "Pharmacies and drugstores.",
+   "examples": [
+    "Walgreens",
+    "CVS"
+   ]
+  },
+  {
+   "id": "travel",
+   "name": "Travel",
+   "short": "Travel",
+   "icon": "plane",
+   "quick": true,
+   "desc": "Airfare, hotels, cruises and travel agencies booked directly.",
+   "examples": [
+    "United",
+    "Marriott",
+    "Airbnb"
+   ]
+  },
+  {
+   "id": "flights",
+   "name": "Flights",
+   "short": "Flights",
+   "icon": "plane",
+   "quick": false,
+   "desc": "Airline tickets bought from the airline.",
+   "examples": [
+    "United",
+    "Delta",
+    "Southwest"
+   ]
+  },
+  {
+   "id": "hotels",
+   "name": "Hotels",
+   "short": "Hotels",
+   "icon": "bed",
+   "quick": false,
+   "desc": "Hotel stays booked with the hotel.",
+   "examples": [
+    "Hilton",
+    "Hyatt"
+   ]
+  },
+  {
+   "id": "portal-travel",
+   "name": "Issuer travel portal",
+   "short": "Portal",
+   "icon": "plane",
+   "quick": false,
+   "desc": "Booked through the card issuer's own travel site (Chase Travel, Amex Travel, Capital One Travel, Citi Travel).",
+   "examples": []
+  },
+  {
+   "id": "transit",
+   "name": "Transit and rideshare",
+   "short": "Transit",
+   "icon": "bus",
+   "quick": true,
+   "desc": "Trains, buses, rideshare, taxis, parking, tolls.",
+   "examples": [
+    "Metra",
+    "Uber",
+    "Lyft",
+    "parking"
+   ]
+  },
+  {
+   "id": "rental-car",
+   "name": "Rental car",
+   "short": "Rental car",
+   "icon": "car",
+   "quick": false,
+   "desc": "Car rentals.",
+   "examples": [
+    "Hertz",
+    "Enterprise"
+   ]
+  },
+  {
+   "id": "streaming",
+   "name": "Streaming",
+   "short": "Streaming",
+   "icon": "play",
+   "quick": false,
+   "desc": "Streaming subscriptions.",
+   "examples": [
+    "Netflix",
+    "Spotify",
+    "Disney+"
+   ]
+  },
+  {
+   "id": "utilities",
+   "name": "Utilities",
+   "short": "Utilities",
+   "icon": "bolt",
+   "quick": false,
+   "desc": "Electric, gas, water, internet.",
+   "examples": [
+    "ComEd",
+    "Xfinity"
+   ]
+  },
+  {
+   "id": "phone",
+   "name": "Cell phone bill",
+   "short": "Phone bill",
+   "icon": "phone",
+   "quick": false,
+   "desc": "Your wireless bill. Paying it with the right card can also add phone protection.",
+   "examples": [
+    "Verizon",
+    "AT&T",
+    "T-Mobile"
+   ]
+  },
+  {
+   "id": "home-improvement",
+   "name": "Home improvement",
+   "short": "Hardware",
+   "icon": "wrench",
+   "quick": true,
+   "desc": "Hardware and home improvement stores.",
+   "examples": [
+    "Home Depot",
+    "Lowe's",
+    "Menards"
+   ]
+  },
+  {
+   "id": "entertainment",
+   "name": "Entertainment",
+   "short": "Tickets",
+   "icon": "ticket",
+   "quick": true,
+   "desc": "Movies, concerts, tickets, theme parks.",
+   "examples": [
+    "AMC",
+    "Ticketmaster",
+    "Six Flags"
+   ]
+  },
+  {
+   "id": "department-store",
+   "name": "Department store",
+   "short": "Department",
+   "icon": "bag",
+   "quick": false,
+   "desc": "Department stores.",
+   "examples": [
+    "Macy's",
+    "Kohl's",
+    "Nordstrom"
+   ]
+  },
+  {
+   "id": "fitness",
+   "name": "Gym and fitness",
+   "short": "Fitness",
+   "icon": "dumbbell",
+   "quick": false,
+   "desc": "Gyms and fitness clubs.",
+   "examples": [
+    "Planet Fitness",
+    "LA Fitness"
+   ]
+  },
+  {
+   "id": "ev-charging",
+   "name": "EV charging",
+   "short": "EV charging",
+   "icon": "bolt",
+   "quick": false,
+   "desc": "Electric vehicle charging.",
+   "examples": [
+    "ChargePoint",
+    "Electrify America"
+   ]
+  },
+  {
+   "id": "rent",
+   "name": "Rent",
+   "short": "Rent",
+   "icon": "house",
+   "quick": false,
+   "desc": "Rent payments.",
+   "examples": []
+  },
+  {
+   "id": "select-merchants",
+   "name": "Card's own merchant list",
+   "short": "Select merchants",
+   "icon": "star",
+   "quick": false,
+   "desc": "A list of merchants specific to one card.",
+   "examples": []
+  },
+  {
+   "id": "wallet-pay",
+   "name": "Paid with phone wallet",
+   "short": "Phone wallet",
+   "icon": "tap",
+   "quick": false,
+   "desc": "Purchases made with Apple Pay or Google Pay.",
+   "examples": []
+  },
+  {
+   "id": "other",
+   "name": "Everything else",
+   "short": "Other",
+   "icon": "dots",
+   "quick": true,
+   "desc": "Anything that does not fit a bonus category.",
+   "examples": []
+  }
+ ]
+}

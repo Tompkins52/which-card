@@ -1,0 +1,1737 @@
+{
+ "version": "2026-10-28",
+ "merchants": [
+  {
+   "id": "amazon",
+   "name": "Amazon",
+   "aliases": [
+    "amazon.com",
+    "amzn"
+   ],
+   "category": "online",
+   "online": true,
+   "popular": true,
+   "note": "Counts as online shopping for most cards. Amazon Fresh in-store counts as groceries on some cards."
+  },
+  {
+   "id": "whole-foods",
+   "name": "Whole Foods",
+   "aliases": [
+    "whole foods market"
+   ],
+   "category": "groceries",
+   "popular": true
+  },
+  {
+   "id": "amazon-fresh",
+   "name": "Amazon Fresh",
+   "aliases": [],
+   "category": "groceries"
+  },
+  {
+   "id": "costco",
+   "name": "Costco",
+   "aliases": [
+    "costco wholesale"
+   ],
+   "category": "warehouse",
+   "networks": [
+    "Visa"
+   ],
+   "popular": true,
+   "note": "US Costco warehouses accept Visa only. Costco.com accepts Visa, Mastercard and Discover."
+  },
+  {
+   "id": "costco-gas",
+   "name": "Costco Gas",
+   "aliases": [
+    "costco gasoline",
+    "costco fuel"
+   ],
+   "category": "gas",
+   "also": [
+    "warehouse"
+   ],
+   "networks": [
+    "Visa"
+   ],
+   "popular": true,
+   "note": "Visa only. Some cards exclude gas bought at warehouse clubs from their gas bonus."
+  },
+  {
+   "id": "costco-online",
+   "name": "Costco.com",
+   "aliases": [
+    "costco online"
+   ],
+   "category": "online",
+   "also": [
+    "warehouse"
+   ],
+   "online": true
+  },
+  {
+   "id": "sams-club",
+   "name": "Sam's Club",
+   "aliases": [
+    "sams club",
+    "sam's"
+   ],
+   "category": "warehouse",
+   "popular": true
+  },
+  {
+   "id": "sams-club-gas",
+   "name": "Sam's Club Gas",
+   "aliases": [
+    "sams club gas",
+    "sam's club fuel"
+   ],
+   "category": "gas",
+   "also": [
+    "warehouse"
+   ],
+   "note": "Some cards exclude gas bought at warehouse clubs from their gas bonus."
+  },
+  {
+   "id": "bjs",
+   "name": "BJ's Wholesale",
+   "aliases": [
+    "bj's",
+    "bjs"
+   ],
+   "category": "warehouse"
+  },
+  {
+   "id": "walmart",
+   "name": "Walmart",
+   "aliases": [
+    "walmart supercenter",
+    "wal-mart",
+    "walmart neighborhood market"
+   ],
+   "category": "superstore",
+   "popular": true,
+   "note": "Codes as a discount store, not a grocery store, so grocery bonuses usually do not apply."
+  },
+  {
+   "id": "walmart-online",
+   "name": "Walmart.com",
+   "aliases": [
+    "walmart online",
+    "walmart app"
+   ],
+   "category": "online",
+   "also": [
+    "superstore"
+   ],
+   "online": true
+  },
+  {
+   "id": "target",
+   "name": "Target",
+   "aliases": [],
+   "category": "superstore",
+   "popular": true,
+   "note": "Codes as a discount store, not a grocery store, so grocery bonuses usually do not apply."
+  },
+  {
+   "id": "target-online",
+   "name": "Target.com",
+   "aliases": [
+    "target online",
+    "target app"
+   ],
+   "category": "online",
+   "also": [
+    "superstore"
+   ],
+   "online": true
+  },
+  {
+   "id": "meijer",
+   "name": "Meijer",
+   "aliases": [],
+   "category": "groceries",
+   "also": [
+    "superstore"
+   ],
+   "note": "Usually codes as a grocery store, but not always. Check your statement once."
+  },
+  {
+   "id": "meijer-gas",
+   "name": "Meijer Gas",
+   "aliases": [
+    "meijer express"
+   ],
+   "category": "gas",
+   "also": [
+    "superstore"
+   ]
+  },
+  {
+   "id": "dollar-general",
+   "name": "Dollar General",
+   "aliases": [],
+   "category": "superstore",
+   "note": "Discount store, not a grocery store."
+  },
+  {
+   "id": "dollar-tree",
+   "name": "Dollar Tree",
+   "aliases": [
+    "family dollar"
+   ],
+   "category": "superstore"
+  },
+  {
+   "id": "jewel-osco",
+   "name": "Jewel-Osco",
+   "aliases": [
+    "jewel",
+    "jewel osco"
+   ],
+   "category": "groceries",
+   "popular": true
+  },
+  {
+   "id": "kroger",
+   "name": "Kroger",
+   "aliases": [],
+   "category": "groceries",
+   "popular": true
+  },
+  {
+   "id": "marianos",
+   "name": "Mariano's",
+   "aliases": [
+    "marianos"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "aldi",
+   "name": "Aldi",
+   "aliases": [],
+   "category": "groceries",
+   "popular": true
+  },
+  {
+   "id": "trader-joes",
+   "name": "Trader Joe's",
+   "aliases": [
+    "trader joes"
+   ],
+   "category": "groceries",
+   "popular": true
+  },
+  {
+   "id": "woodmans",
+   "name": "Woodman's",
+   "aliases": [
+    "woodmans",
+    "woodman's market"
+   ],
+   "category": "groceries",
+   "note": "Woodman's accepts Discover and debit cards only, no Visa, Mastercard or Amex credit cards."
+  },
+  {
+   "id": "petes-fresh-market",
+   "name": "Pete's Fresh Market",
+   "aliases": [
+    "petes fresh market"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "fresh-thyme",
+   "name": "Fresh Thyme",
+   "aliases": [
+    "fresh thyme market"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "publix",
+   "name": "Publix",
+   "aliases": [],
+   "category": "groceries"
+  },
+  {
+   "id": "safeway",
+   "name": "Safeway",
+   "aliases": [],
+   "category": "groceries"
+  },
+  {
+   "id": "albertsons",
+   "name": "Albertsons",
+   "aliases": [],
+   "category": "groceries"
+  },
+  {
+   "id": "heb",
+   "name": "H-E-B",
+   "aliases": [
+    "heb",
+    "h e b"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "wegmans",
+   "name": "Wegmans",
+   "aliases": [],
+   "category": "groceries"
+  },
+  {
+   "id": "sprouts",
+   "name": "Sprouts",
+   "aliases": [
+    "sprouts farmers market"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "hy-vee",
+   "name": "Hy-Vee",
+   "aliases": [
+    "hyvee"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "giant",
+   "name": "Giant",
+   "aliases": [
+    "giant food",
+    "giant eagle"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "stop-and-shop",
+   "name": "Stop & Shop",
+   "aliases": [
+    "stop and shop"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "shoprite",
+   "name": "ShopRite",
+   "aliases": [
+    "shop rite"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "food-lion",
+   "name": "Food Lion",
+   "aliases": [],
+   "category": "groceries"
+  },
+  {
+   "id": "winco",
+   "name": "WinCo",
+   "aliases": [
+    "winco foods"
+   ],
+   "category": "groceries"
+  },
+  {
+   "id": "instacart",
+   "name": "Instacart",
+   "aliases": [],
+   "category": "groceries",
+   "online": true,
+   "note": "Usually codes as a grocery store, but some cards treat it as online shopping."
+  },
+  {
+   "id": "shell",
+   "name": "Shell",
+   "aliases": [],
+   "category": "gas",
+   "popular": true,
+   "fuel": true
+  },
+  {
+   "id": "bp",
+   "name": "BP",
+   "aliases": [
+    "bp gas",
+    "amoco"
+   ],
+   "category": "gas",
+   "popular": true,
+   "fuel": true
+  },
+  {
+   "id": "mobil",
+   "name": "Mobil",
+   "aliases": [
+    "exxon",
+    "exxonmobil",
+    "exxon mobil"
+   ],
+   "category": "gas",
+   "popular": true,
+   "fuel": true
+  },
+  {
+   "id": "speedway",
+   "name": "Speedway",
+   "aliases": [],
+   "category": "gas",
+   "popular": true,
+   "fuel": true
+  },
+  {
+   "id": "marathon",
+   "name": "Marathon",
+   "aliases": [],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "thorntons",
+   "name": "Thorntons",
+   "aliases": [],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "caseys",
+   "name": "Casey's",
+   "aliases": [
+    "caseys",
+    "casey's general store"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "circle-k",
+   "name": "Circle K",
+   "aliases": [
+    "circle k"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "7-eleven",
+   "name": "7-Eleven",
+   "aliases": [
+    "7 eleven",
+    "seven eleven",
+    "7-11",
+    "mobil 7-eleven"
+   ],
+   "category": "gas",
+   "fuel": true,
+   "note": "Fuel codes as gas. Items inside the store may code as a convenience store instead."
+  },
+  {
+   "id": "wawa",
+   "name": "Wawa",
+   "aliases": [],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "sheetz",
+   "name": "Sheetz",
+   "aliases": [],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "chevron",
+   "name": "Chevron",
+   "aliases": [
+    "texaco"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "citgo",
+   "name": "Citgo",
+   "aliases": [],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "sunoco",
+   "name": "Sunoco",
+   "aliases": [],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "phillips-66",
+   "name": "Phillips 66",
+   "aliases": [
+    "phillips66",
+    "conoco",
+    "76"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "loves",
+   "name": "Love's",
+   "aliases": [
+    "loves travel stop",
+    "love's travel stop"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "pilot",
+   "name": "Pilot",
+   "aliases": [
+    "pilot flying j",
+    "flying j"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "kwik-trip",
+   "name": "Kwik Trip",
+   "aliases": [
+    "kwik star"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "quiktrip",
+   "name": "QuikTrip",
+   "aliases": [
+    "qt",
+    "quik trip"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "racetrac",
+   "name": "RaceTrac",
+   "aliases": [
+    "racetrac"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "murphy-usa",
+   "name": "Murphy USA",
+   "aliases": [
+    "murphy express"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "gas-n-wash",
+   "name": "Gas N Wash",
+   "aliases": [
+    "gas and wash"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "chargepoint",
+   "name": "ChargePoint",
+   "aliases": [],
+   "category": "ev-charging"
+  },
+  {
+   "id": "electrify-america",
+   "name": "Electrify America",
+   "aliases": [],
+   "category": "ev-charging"
+  },
+  {
+   "id": "tesla-supercharger",
+   "name": "Tesla Supercharger",
+   "aliases": [
+    "supercharger"
+   ],
+   "category": "ev-charging"
+  },
+  {
+   "id": "mcdonalds",
+   "name": "McDonald's",
+   "aliases": [
+    "mcdonalds",
+    "mcd"
+   ],
+   "category": "dining",
+   "popular": true
+  },
+  {
+   "id": "chipotle",
+   "name": "Chipotle",
+   "aliases": [],
+   "category": "dining",
+   "popular": true
+  },
+  {
+   "id": "starbucks",
+   "name": "Starbucks",
+   "aliases": [],
+   "category": "dining",
+   "popular": true
+  },
+  {
+   "id": "chick-fil-a",
+   "name": "Chick-fil-A",
+   "aliases": [
+    "chick fil a",
+    "chickfila"
+   ],
+   "category": "dining",
+   "popular": true
+  },
+  {
+   "id": "panera",
+   "name": "Panera Bread",
+   "aliases": [
+    "panera"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "portillos",
+   "name": "Portillo's",
+   "aliases": [
+    "portillos"
+   ],
+   "category": "dining",
+   "popular": true
+  },
+  {
+   "id": "culvers",
+   "name": "Culver's",
+   "aliases": [
+    "culvers"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "dunkin",
+   "name": "Dunkin'",
+   "aliases": [
+    "dunkin",
+    "dunkin donuts"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "taco-bell",
+   "name": "Taco Bell",
+   "aliases": [],
+   "category": "dining"
+  },
+  {
+   "id": "wendys",
+   "name": "Wendy's",
+   "aliases": [
+    "wendys"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "subway",
+   "name": "Subway",
+   "aliases": [],
+   "category": "dining"
+  },
+  {
+   "id": "dominos",
+   "name": "Domino's",
+   "aliases": [
+    "dominos"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "pizza-hut",
+   "name": "Pizza Hut",
+   "aliases": [],
+   "category": "dining"
+  },
+  {
+   "id": "olive-garden",
+   "name": "Olive Garden",
+   "aliases": [],
+   "category": "dining"
+  },
+  {
+   "id": "texas-roadhouse",
+   "name": "Texas Roadhouse",
+   "aliases": [],
+   "category": "dining"
+  },
+  {
+   "id": "buffalo-wild-wings",
+   "name": "Buffalo Wild Wings",
+   "aliases": [
+    "bdubs",
+    "bww"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "lou-malnatis",
+   "name": "Lou Malnati's",
+   "aliases": [
+    "lou malnatis"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "giordanos",
+   "name": "Giordano's",
+   "aliases": [
+    "giordanos"
+   ],
+   "category": "dining"
+  },
+  {
+   "id": "doordash",
+   "name": "DoorDash",
+   "aliases": [
+    "door dash"
+   ],
+   "category": "dining",
+   "online": true,
+   "popular": true,
+   "note": "Most cards count delivery apps as dining."
+  },
+  {
+   "id": "uber-eats",
+   "name": "Uber Eats",
+   "aliases": [
+    "ubereats"
+   ],
+   "category": "dining",
+   "online": true,
+   "note": "Most cards count delivery apps as dining."
+  },
+  {
+   "id": "grubhub",
+   "name": "Grubhub",
+   "aliases": [
+    "grub hub"
+   ],
+   "category": "dining",
+   "online": true
+  },
+  {
+   "id": "walgreens",
+   "name": "Walgreens",
+   "aliases": [],
+   "category": "drugstore",
+   "popular": true
+  },
+  {
+   "id": "cvs",
+   "name": "CVS",
+   "aliases": [
+    "cvs pharmacy"
+   ],
+   "category": "drugstore",
+   "popular": true
+  },
+  {
+   "id": "rite-aid",
+   "name": "Rite Aid",
+   "aliases": [],
+   "category": "drugstore"
+  },
+  {
+   "id": "home-depot",
+   "name": "Home Depot",
+   "aliases": [
+    "the home depot"
+   ],
+   "category": "home-improvement",
+   "popular": true
+  },
+  {
+   "id": "lowes",
+   "name": "Lowe's",
+   "aliases": [
+    "lowes"
+   ],
+   "category": "home-improvement",
+   "popular": true
+  },
+  {
+   "id": "menards",
+   "name": "Menards",
+   "aliases": [],
+   "category": "home-improvement",
+   "popular": true
+  },
+  {
+   "id": "ace-hardware",
+   "name": "Ace Hardware",
+   "aliases": [
+    "ace"
+   ],
+   "category": "home-improvement"
+  },
+  {
+   "id": "harbor-freight",
+   "name": "Harbor Freight",
+   "aliases": [
+    "harbor freight tools"
+   ],
+   "category": "home-improvement"
+  },
+  {
+   "id": "best-buy",
+   "name": "Best Buy",
+   "aliases": [
+    "bestbuy"
+   ],
+   "category": "other",
+   "popular": true,
+   "note": "Electronics stores are not a bonus category on most cards. Best Buy online counts as online shopping on cards with an online category."
+  },
+  {
+   "id": "best-buy-online",
+   "name": "BestBuy.com",
+   "aliases": [
+    "best buy online"
+   ],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "apple",
+   "name": "Apple",
+   "aliases": [
+    "apple store",
+    "apple.com"
+   ],
+   "category": "other",
+   "popular": true,
+   "note": "Apple Store purchases are not a bonus category on most cards. The Apple Card earns 3% here."
+  },
+  {
+   "id": "micro-center",
+   "name": "Micro Center",
+   "aliases": [
+    "microcenter"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "ebay",
+   "name": "eBay",
+   "aliases": [],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "etsy",
+   "name": "Etsy",
+   "aliases": [],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "temu",
+   "name": "Temu",
+   "aliases": [],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "wayfair",
+   "name": "Wayfair",
+   "aliases": [],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "chewy",
+   "name": "Chewy",
+   "aliases": [],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "paypal",
+   "name": "PayPal",
+   "aliases": [
+    "paypal checkout"
+   ],
+   "category": "online",
+   "online": true,
+   "popular": true,
+   "note": "Rewards follow the merchant you are paying, except on cards with a PayPal bonus."
+  },
+  {
+   "id": "macys",
+   "name": "Macy's",
+   "aliases": [
+    "macys"
+   ],
+   "category": "department-store"
+  },
+  {
+   "id": "kohls",
+   "name": "Kohl's",
+   "aliases": [
+    "kohls"
+   ],
+   "category": "department-store",
+   "popular": true
+  },
+  {
+   "id": "nordstrom",
+   "name": "Nordstrom",
+   "aliases": [
+    "nordstrom rack"
+   ],
+   "category": "department-store"
+  },
+  {
+   "id": "jcpenney",
+   "name": "JCPenney",
+   "aliases": [
+    "jc penney",
+    "jcp"
+   ],
+   "category": "department-store"
+  },
+  {
+   "id": "tj-maxx",
+   "name": "T.J. Maxx",
+   "aliases": [
+    "tj maxx",
+    "tjmaxx",
+    "marshalls",
+    "homegoods"
+   ],
+   "category": "department-store"
+  },
+  {
+   "id": "old-navy",
+   "name": "Old Navy",
+   "aliases": [
+    "gap",
+    "banana republic"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "ikea",
+   "name": "IKEA",
+   "aliases": [],
+   "category": "other"
+  },
+  {
+   "id": "ulta",
+   "name": "Ulta Beauty",
+   "aliases": [
+    "ulta"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "dicks",
+   "name": "Dick's Sporting Goods",
+   "aliases": [
+    "dicks sporting goods",
+    "dick's"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "petsmart",
+   "name": "PetSmart",
+   "aliases": [
+    "petco"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "autozone",
+   "name": "AutoZone",
+   "aliases": [
+    "o'reilly auto parts",
+    "oreilly",
+    "advance auto parts",
+    "napa"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "jiffy-lube",
+   "name": "Jiffy Lube",
+   "aliases": [
+    "oil change"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "discount-tire",
+   "name": "Discount Tire",
+   "aliases": [],
+   "category": "other"
+  },
+  {
+   "id": "netflix",
+   "name": "Netflix",
+   "aliases": [],
+   "category": "streaming",
+   "popular": true
+  },
+  {
+   "id": "spotify",
+   "name": "Spotify",
+   "aliases": [],
+   "category": "streaming",
+   "popular": true
+  },
+  {
+   "id": "hulu",
+   "name": "Hulu",
+   "aliases": [],
+   "category": "streaming"
+  },
+  {
+   "id": "disney-plus",
+   "name": "Disney+",
+   "aliases": [
+    "disney plus"
+   ],
+   "category": "streaming"
+  },
+  {
+   "id": "max",
+   "name": "Max",
+   "aliases": [
+    "hbo max"
+   ],
+   "category": "streaming"
+  },
+  {
+   "id": "youtube-premium",
+   "name": "YouTube Premium",
+   "aliases": [
+    "youtube tv",
+    "youtube"
+   ],
+   "category": "streaming"
+  },
+  {
+   "id": "paramount-plus",
+   "name": "Paramount+",
+   "aliases": [
+    "paramount plus"
+   ],
+   "category": "streaming"
+  },
+  {
+   "id": "peacock",
+   "name": "Peacock",
+   "aliases": [],
+   "category": "streaming"
+  },
+  {
+   "id": "apple-tv",
+   "name": "Apple TV+",
+   "aliases": [
+    "apple tv",
+    "apple music"
+   ],
+   "category": "streaming"
+  },
+  {
+   "id": "prime-video",
+   "name": "Prime Video",
+   "aliases": [
+    "amazon prime video",
+    "amazon prime membership"
+   ],
+   "category": "streaming",
+   "note": "Prime membership fees count as streaming on some cards and not on others."
+  },
+  {
+   "id": "comed",
+   "name": "ComEd",
+   "aliases": [
+    "commonwealth edison"
+   ],
+   "category": "utilities"
+  },
+  {
+   "id": "nicor",
+   "name": "Nicor Gas",
+   "aliases": [
+    "nicor"
+   ],
+   "category": "utilities"
+  },
+  {
+   "id": "xfinity",
+   "name": "Xfinity",
+   "aliases": [
+    "comcast"
+   ],
+   "category": "utilities"
+  },
+  {
+   "id": "verizon",
+   "name": "Verizon",
+   "aliases": [
+    "verizon wireless"
+   ],
+   "category": "phone",
+   "popular": true
+  },
+  {
+   "id": "att",
+   "name": "AT&T",
+   "aliases": [
+    "at&t",
+    "att",
+    "at and t"
+   ],
+   "category": "phone",
+   "popular": true
+  },
+  {
+   "id": "t-mobile",
+   "name": "T-Mobile",
+   "aliases": [
+    "tmobile",
+    "t mobile"
+   ],
+   "category": "phone",
+   "popular": true
+  },
+  {
+   "id": "united",
+   "name": "United Airlines",
+   "aliases": [
+    "united"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ],
+   "popular": true
+  },
+  {
+   "id": "american-airlines",
+   "name": "American Airlines",
+   "aliases": [
+    "american",
+    "aa"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "delta",
+   "name": "Delta",
+   "aliases": [
+    "delta air lines",
+    "delta airlines"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ],
+   "popular": true
+  },
+  {
+   "id": "southwest",
+   "name": "Southwest",
+   "aliases": [
+    "southwest airlines"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ],
+   "popular": true
+  },
+  {
+   "id": "jetblue",
+   "name": "JetBlue",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "alaska-airlines",
+   "name": "Alaska Airlines",
+   "aliases": [
+    "alaska"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "spirit",
+   "name": "Spirit Airlines",
+   "aliases": [
+    "spirit",
+    "frontier",
+    "frontier airlines"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "marriott",
+   "name": "Marriott",
+   "aliases": [
+    "courtyard",
+    "residence inn",
+    "westin",
+    "sheraton"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "hilton",
+   "name": "Hilton",
+   "aliases": [
+    "hampton inn",
+    "doubletree",
+    "embassy suites",
+    "homewood suites"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "hyatt",
+   "name": "Hyatt",
+   "aliases": [
+    "hyatt place",
+    "hyatt house"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "ihg",
+   "name": "IHG",
+   "aliases": [
+    "holiday inn",
+    "holiday inn express",
+    "kimpton",
+    "candlewood"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "best-western",
+   "name": "Best Western",
+   "aliases": [
+    "choice hotels",
+    "comfort inn",
+    "quality inn",
+    "la quinta",
+    "wyndham"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "airbnb",
+   "name": "Airbnb",
+   "aliases": [],
+   "category": "travel",
+   "online": true
+  },
+  {
+   "id": "expedia",
+   "name": "Expedia",
+   "aliases": [
+    "hotels.com",
+    "priceline",
+    "kayak"
+   ],
+   "category": "travel",
+   "online": true
+  },
+  {
+   "id": "chase-travel",
+   "name": "Chase Travel (hotels, cars)",
+   "aliases": [
+    "chase ultimate rewards travel"
+   ],
+   "category": "portal-travel",
+   "online": true,
+   "also": [
+    "travel",
+    "hotels"
+   ]
+  },
+  {
+   "id": "amex-travel",
+   "name": "Amex Travel (hotels)",
+   "aliases": [
+    "american express travel"
+   ],
+   "category": "portal-travel",
+   "online": true,
+   "also": [
+    "travel",
+    "hotels"
+   ]
+  },
+  {
+   "id": "capital-one-travel",
+   "name": "Capital One Travel (hotels, cars)",
+   "aliases": [],
+   "category": "portal-travel",
+   "online": true,
+   "also": [
+    "travel",
+    "hotels"
+   ]
+  },
+  {
+   "id": "citi-travel",
+   "name": "Citi Travel (hotels, cars)",
+   "aliases": [],
+   "category": "portal-travel",
+   "online": true,
+   "also": [
+    "travel",
+    "hotels"
+   ]
+  },
+  {
+   "id": "uber",
+   "name": "Uber",
+   "aliases": [],
+   "category": "transit",
+   "online": true,
+   "popular": true
+  },
+  {
+   "id": "lyft",
+   "name": "Lyft",
+   "aliases": [],
+   "category": "transit",
+   "online": true,
+   "popular": true
+  },
+  {
+   "id": "metra",
+   "name": "Metra",
+   "aliases": [],
+   "category": "transit"
+  },
+  {
+   "id": "cta",
+   "name": "CTA",
+   "aliases": [
+    "ventra",
+    "pace bus",
+    "chicago transit"
+   ],
+   "category": "transit"
+  },
+  {
+   "id": "amtrak",
+   "name": "Amtrak",
+   "aliases": [],
+   "category": "transit",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "illinois-tollway",
+   "name": "Illinois Tollway",
+   "aliases": [
+    "i-pass",
+    "ipass",
+    "tolls",
+    "toll"
+   ],
+   "category": "transit"
+  },
+  {
+   "id": "parking",
+   "name": "Parking",
+   "aliases": [
+    "spothero",
+    "parking garage",
+    "parking meter",
+    "parkmobile"
+   ],
+   "category": "transit"
+  },
+  {
+   "id": "hertz",
+   "name": "Hertz",
+   "aliases": [],
+   "category": "rental-car",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "enterprise",
+   "name": "Enterprise",
+   "aliases": [
+    "enterprise rent-a-car",
+    "national car rental",
+    "alamo"
+   ],
+   "category": "rental-car",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "avis",
+   "name": "Avis",
+   "aliases": [
+    "budget",
+    "budget rent a car"
+   ],
+   "category": "rental-car",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "amc",
+   "name": "AMC Theatres",
+   "aliases": [
+    "amc",
+    "regal",
+    "cinemark",
+    "movie theater"
+   ],
+   "category": "entertainment"
+  },
+  {
+   "id": "ticketmaster",
+   "name": "Ticketmaster",
+   "aliases": [
+    "live nation",
+    "stubhub",
+    "seatgeek"
+   ],
+   "category": "entertainment",
+   "online": true
+  },
+  {
+   "id": "six-flags",
+   "name": "Six Flags",
+   "aliases": [
+    "six flags great america"
+   ],
+   "category": "entertainment"
+  },
+  {
+   "id": "disney",
+   "name": "Disney Parks",
+   "aliases": [
+    "disneyland",
+    "disney world",
+    "walt disney world"
+   ],
+   "category": "entertainment",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "bowling",
+   "name": "Bowling",
+   "aliases": [
+    "bowling alley",
+    "topgolf",
+    "arcade",
+    "dave and busters",
+    "dave & buster's"
+   ],
+   "category": "entertainment"
+  },
+  {
+   "id": "planet-fitness",
+   "name": "Planet Fitness",
+   "aliases": [
+    "la fitness",
+    "xsport",
+    "anytime fitness",
+    "gym"
+   ],
+   "category": "fitness"
+  },
+  {
+   "id": "peloton",
+   "name": "Peloton",
+   "aliases": [],
+   "category": "fitness",
+   "online": true
+  },
+  {
+   "id": "rent",
+   "name": "Rent",
+   "aliases": [
+    "rent payment",
+    "landlord"
+   ],
+   "category": "rent"
+  },
+  {
+   "id": "venmo",
+   "name": "Venmo",
+   "aliases": [
+    "cash app",
+    "zelle"
+   ],
+   "category": "other",
+   "online": true,
+   "note": "Paying a person with a credit card usually adds a fee of about 3 percent and earns little or nothing."
+  },
+  {
+   "id": "chase-travel-flights",
+   "name": "Flights on Chase Travel",
+   "aliases": [
+    "chase travel flights"
+   ],
+   "category": "flights",
+   "also": [
+    "portal-travel",
+    "travel"
+   ],
+   "online": true
+  },
+  {
+   "id": "amex-travel-flights",
+   "name": "Flights on Amex Travel",
+   "aliases": [
+    "amextravel flights"
+   ],
+   "category": "flights",
+   "also": [
+    "portal-travel",
+    "travel"
+   ],
+   "online": true
+  },
+  {
+   "id": "capital-one-travel-flights",
+   "name": "Flights on Capital One Travel",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "portal-travel",
+    "travel"
+   ],
+   "online": true
+  },
+  {
+   "id": "citi-travel-flights",
+   "name": "Flights on Citi Travel",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "portal-travel",
+    "travel"
+   ],
+   "online": true
+  },
+  {
+   "id": "capital-one-entertainment",
+   "name": "Capital One Entertainment",
+   "aliases": [
+    "capital one entertainment tickets"
+   ],
+   "category": "entertainment",
+   "online": true
+  },
+  {
+   "id": "capital-one-dining",
+   "name": "Capital One Dining",
+   "aliases": [],
+   "category": "dining",
+   "online": true
+  },
+  {
+   "id": "amex-offers",
+   "name": "Amex Offers",
+   "aliases": [],
+   "category": "other",
+   "online": true
+  },
+  {
+   "id": "duane-reade",
+   "name": "Duane Reade",
+   "aliases": [],
+   "category": "drugstore"
+  },
+  {
+   "id": "nike",
+   "name": "Nike",
+   "aliases": [
+    "nike store",
+    "nike.com"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "anthropologie",
+   "name": "Anthropologie",
+   "aliases": [
+    "urban outfitters",
+    "free people"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "bed-bath-beyond",
+   "name": "Bed Bath & Beyond",
+   "aliases": [
+    "bed bath and beyond"
+   ],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "crate-and-barrel",
+   "name": "Crate & Barrel",
+   "aliases": [
+    "crate and barrel",
+    "cb2"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "lululemon",
+   "name": "Lululemon",
+   "aliases": [],
+   "category": "other"
+  },
+  {
+   "id": "pottery-barn",
+   "name": "Pottery Barn",
+   "aliases": [
+    "west elm"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "qvc",
+   "name": "QVC",
+   "aliases": [
+    "hsn"
+   ],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "restoration-hardware",
+   "name": "RH",
+   "aliases": [
+    "restoration hardware"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "williams-sonoma",
+   "name": "Williams Sonoma",
+   "aliases": [
+    "williams-sonoma"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "booking-com",
+   "name": "Booking.com",
+   "aliases": [
+    "booking"
+   ],
+   "category": "travel",
+   "online": true
+  },
+  {
+   "id": "american-red-cross",
+   "name": "American Red Cross",
+   "aliases": [
+    "red cross"
+   ],
+   "category": "other",
+   "online": true
+  },
+  {
+   "id": "audible",
+   "name": "Audible",
+   "aliases": [],
+   "category": "online",
+   "online": true
+  },
+  {
+   "id": "vrbo",
+   "name": "Vrbo",
+   "aliases": [],
+   "category": "travel",
+   "online": true
+  },
+  {
+   "id": "air-canada",
+   "name": "Air Canada",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "espn",
+   "name": "ESPN",
+   "aliases": [
+    "espn+",
+    "espn plus"
+   ],
+   "category": "streaming"
+  }
+ ]
+}

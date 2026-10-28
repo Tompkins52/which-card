@@ -1,0 +1,265 @@
+{
+ "verified": "2026-10-28",
+ "sourceUrl": "https://thepointsguy.com/news/monthly-valuations",
+ "programs": {
+  "chase-ur": {
+   "name": "Chase Ultimate Rewards",
+   "unit": "points",
+   "cash": 1.0,
+   "travel": 1.0,
+   "transfer": 2.05,
+   "source": "TPG October 2026 valuation 2.05; NerdWallet Oct 2026: 1.8 (Sapphire Reserve) or 1.4 (Sapphire Preferred)",
+   "note": "Transfer 1:1 to World of Hyatt for the best value; Chase Travel pays 1 cent base, with Points Boost up to 1.5 cents (Preferred, hotels), 1.75 cents (Preferred, select premium airfare) or 2 cents (Reserve) on select bookings only. Freedom and no-fee Ink points only transfer to partners if you also hold a Sapphire or Ink Preferred card.",
+   "transferRequires": [
+    "chase-sapphire-preferred",
+    "chase-sapphire-reserve",
+    "chase-ink-business-preferred"
+   ]
+  },
+  "amex-mr": {
+   "name": "American Express Membership Rewards",
+   "unit": "points",
+   "cash": 0.6,
+   "travel": 1.0,
+   "transfer": 2.0,
+   "source": "TPG October 2026 valuation 2.0; NerdWallet Oct 2026: 1.3",
+   "note": "Transfer to airline partners (ANA, Air Canada Aeroplan, Virgin Atlantic, Avianca LifeMiles) for premium cabins; statement credits pay only 0.6 cents, and Amex Travel flights pay 1 cent."
+  },
+  "capital-one-miles": {
+   "name": "Capital One miles",
+   "unit": "miles",
+   "cash": 1.0,
+   "travel": 1.0,
+   "transfer": 1.85,
+   "source": "TPG October 2026 valuation 1.85; NerdWallet Oct 2026: 1.3",
+   "note": "Worth 1 cent each as a statement credit against any travel purchase from the last 90 days (a plain check pays 0.5 cent), 1 cent through Capital One Travel, and more when transferred to airline and hotel partners."
+  },
+  "citi-ty": {
+   "name": "Citi ThankYou Rewards",
+   "unit": "points",
+   "cash": 1.0,
+   "travel": 1.0,
+   "transfer": 1.9,
+   "source": "TPG October 2026 valuation 1.9; NerdWallet Oct 2026: 1.7 (Strata Premier or Elite) or 1.2 (other Citi cards)",
+   "note": "Full 1:1 partner transfers (Avianca, Turkish, Wyndham, Flying Blue and others) need a Strata Premier or Strata Elite; Double Cash points alone reach only a few partners, so cash at 1 cent is the fallback. Double Cash, Custom Cash and Strata points transfer to the full partner list only alongside a Strata Premier or Strata Elite.",
+   "transferRequires": [
+    "citi-strata-premier",
+    "citi-strata-elite"
+   ]
+  },
+  "wells-fargo-points": {
+   "name": "Wells Fargo Rewards",
+   "unit": "points",
+   "cash": 1.0,
+   "travel": 1.0,
+   "transfer": 1.75,
+   "source": "TPG October 2026 valuation 1.75; NerdWallet Oct 2026: 1.4",
+   "note": "Autograph and Autograph Journey points transfer 1:1 to partners such as Air France-KLM Flying Blue, British Airways and Choice; otherwise redeem for cash or travel at 1 cent."
+  },
+  "us-bank-points": {
+   "name": "U.S. Bank rewards (Cash+ and Altitude)",
+   "unit": "points",
+   "cash": 1.0,
+   "travel": 1.0,
+   "transfer": 1.0,
+   "source": "Not valued by TPG or NerdWallet in October 2026; Upgraded Points U.S. Bank transfer partner guide, updated Sept 5, 2026 (1 cent deposit, 1 cent travel center)",
+   "note": "Cash+ earns cash back, so redeem to a U.S. Bank account or statement credit at 1 cent; the only U.S. Bank cards with airline transfer partners (Altitude Reserve and FlexPerks) are closed to new applicants, and the travel center dropped to 1 cent in December 2025."
+  },
+  "bilt-points": {
+   "name": "Bilt Rewards",
+   "unit": "points",
+   "cash": 0.55,
+   "travel": 1.25,
+   "transfer": 2.2,
+   "source": "TPG October 2026 valuation 2.2; NerdWallet Oct 2026: 1.8; cash and portal rates from Upgraded Points Bilt Rewards FAQ, updated Oct 20, 2026",
+   "note": "Transfer 1:1 to World of Hyatt (ratio drops to 4:3 on Jan 1, 2027), Air Canada Aeroplan or Alaska Atmos Rewards; the Bilt travel portal pays 1.25 cents, rent credits about 0.5 cents, and the American Airlines partnership has ended."
+  },
+  "delta-skymiles": {
+   "name": "Delta SkyMiles",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.2,
+   "transfer": 1.2,
+   "source": "TPG valuation panel, October 2026: 1.20; NerdWallet Oct 2026: 1.2",
+   "note": "No award chart; watch for SkyMiles flash sales and domestic main cabin awards, and avoid Pay with Miles on Delta Amex cards, which fixes the value at 1 cent."
+  },
+  "united-miles": {
+   "name": "United MileagePlus",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.2,
+   "transfer": 1.2,
+   "source": "TPG valuation panel, October 2026: 1.20; NerdWallet Oct 2026: 1.2",
+   "note": "Dynamic pricing with no fixed chart; United cardholders see expanded saver award availability, and Star Alliance partner awards booked on united.com are the best use."
+  },
+  "southwest-rr": {
+   "name": "Southwest Rapid Rewards",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.25,
+   "transfer": 1.25,
+   "source": "TPG valuation panel, October 2026: 1.25; NerdWallet Oct 2026: 1.4",
+   "note": "Points are tied to the cash fare, so the value is steady on any Southwest flight; the Companion Pass is the way to stretch them, and there are no transfer partners."
+  },
+  "american-aadvantage": {
+   "name": "American Airlines AAdvantage",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.45,
+   "transfer": 1.45,
+   "source": "TPG October 2026 valuation 1.45; NerdWallet Oct 2026: 1.7",
+   "note": "Best value on Web Special economy fares and oneworld partner business class (Qatar, Japan Airlines, Cathay Pacific); earn mainly through Citi and Barclays cobranded cards or Bilt."
+  },
+  "jetblue-trueblue": {
+   "name": "JetBlue TrueBlue",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.35,
+   "transfer": 1.35,
+   "source": "TPG valuation panel, October 2026: 1.35; NerdWallet Oct 2026: 1.4",
+   "note": "Revenue-based program, so points are worth about the same on any JetBlue fare; transfer from Chase, Amex, Citi or Wells Fargo only when you have a specific flight in mind."
+  },
+  "alaska-miles": {
+   "name": "Alaska Airlines Atmos Rewards (formerly Mileage Plan)",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.55,
+   "transfer": 1.55,
+   "source": "TPG October 2026 valuation 1.55; NerdWallet Oct 2026: 1.4",
+   "note": "Strong oneworld and partner awards (Japan Airlines, Cathay Pacific, Qatar) and distance-based pricing; transfer from Bilt, or earn through the Alaska Visa cards."
+  },
+  "hyatt-points": {
+   "name": "World of Hyatt",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.65,
+   "transfer": 1.65,
+   "source": "TPG October 2026 valuation 1.65; NerdWallet Oct 2026: 1.8",
+   "note": "The most valuable hotel currency thanks to a fixed award chart; transfer from Chase Ultimate Rewards at 1:1 (and from Bilt at 1:1 until Jan 1, 2027, then 4:3) for standard-room awards at category 1 to 4 hotels."
+  },
+  "marriott-bonvoy": {
+   "name": "Marriott Bonvoy",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.75,
+   "transfer": 0.75,
+   "source": "TPG October 2026 valuation 0.75; NerdWallet Oct 2026: 0.7",
+   "note": "Dynamic pricing with a mid-2026 devaluation; the fifth award night is free, and free night certificates can be topped up with points, so earn through cobranded cards rather than transfers."
+  },
+  "hilton-honors": {
+   "name": "Hilton Honors",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.4,
+   "transfer": 0.4,
+   "source": "TPG October 2026 valuation 0.4; NerdWallet Oct 2026: 0.4",
+   "note": "Low per-point value but easy to earn; the fifth award night is free on standard-room stays, and Amex Membership Rewards transfer at 1:2."
+  },
+  "ihg-one": {
+   "name": "IHG One Rewards",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.6,
+   "transfer": 0.6,
+   "source": "TPG October 2026 valuation 0.6; NerdWallet Oct 2026: 0.6",
+   "note": "Cardholders get the fourth award night free; buy-points sales and Chase Ultimate Rewards transfers at 1:1 are the main sources beyond the cobranded cards."
+  },
+  "aeroplan-points": {
+   "name": "Air Canada Aeroplan",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.5,
+   "transfer": 1.5,
+   "source": "TPG October 2026 valuation 1.5; NerdWallet Oct 2026: 1.1",
+   "note": "Distance-based award chart with stopovers for 5,000 points; transfer 1:1 from Chase, Amex, Capital One or Bilt for Star Alliance partner business class."
+  },
+  "synchrony-cashback": {
+   "name": "Cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "amazon-points": {
+   "name": "Amazon rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "paypal-cashback": {
+   "name": "PayPal cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "best-buy-rewards": {
+   "name": "My Best Buy rewards (Best Buy certificates)",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "verizon-dollars": {
+   "name": "Verizon Dollars (spend with Verizon)",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "target-circle": {
+   "name": "Target Circle",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "discover-cashback": {
+   "name": "Discover cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "apple-cash": {
+   "name": "Apple Cash daily cash",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "cashback": {
+   "name": "Cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "bofa-points": {
+   "name": "Bank of America points",
+   "unit": "points",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each as a statement credit (Travel Rewards points go against travel and dining purchases; Premium Rewards points can be cash)."
+  },
+  "disney-rewards": {
+   "name": "disney-rewards",
+   "unit": "points",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  }
+ }
+}
