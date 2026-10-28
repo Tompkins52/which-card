@@ -25,6 +25,7 @@
     if (!s.prefs.priority) s.prefs.priority = 'cash';
     if (!s.prefs.payMethod) s.prefs.payMethod = 'card';
     s.prefs.redeem = s.prefs.redeem || {};
+    s.customCards = s.customCards || [];
     return s;
   }
   function saveState() { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { /* storage may be unavailable */ } }
@@ -57,12 +58,15 @@
   }
   function normalizeData(d) {
     var out = {
-      categories: d.categories.categories, merchants: d.merchants.merchants, cards: d.cards.cards,
+      categories: d.categories.categories, merchants: d.merchants.merchants, catalog: d.cards.cards.slice(),
       bonuses: d.bonuses, valuations: d.valuations, version: d.cards.version, verified: d.cards.verified || d.cards.version
     };
-    out.cards.forEach(function (c) { if (!c.color) c.color = issuerColor(c.issuer); });
+    out.catalog.forEach(function (c) { if (!c.color) c.color = issuerColor(c.issuer); });
+    out.valuations.programs['custom-points'] = out.valuations.programs['custom-points'] || { name: 'Points (your estimate)', unit: 'points', cash: 1, travel: 1, transfer: 1, note: 'Valued at 1 cent each unless you change it in More.' };
+    out.cards = out.catalog.concat(state.customCards || []);
     return out;
   }
+  function rebuildCards() { if (data) data.cards = data.catalog.concat(state.customCards || []); }
   function issuerColor(issuer) {
     return { 'Chase': '#1B4F8A', 'American Express': '#2B6CB0', 'Capital One': '#8A1F2B', 'Citi': '#12365D', 'Discover': '#C8541D', 'Bank of America': '#9B1B30', 'Wells Fargo': '#8E1B1B', 'U.S. Bank': '#1E3A6B' }[issuer] || '#3C4A5A';
   }
@@ -610,6 +614,7 @@
     if (intro) nodes.push(h('div', { class: 'hero-copy' }, h('div', { class: 'steps' }, h('i', { class: 'on' }), h('i')), h('p', { class: 'muted' }, 'Tap every card you carry. Just the names, never a card number.')));
     nodes.push(search, chips, list,
       h('div', { class: 'note buddy' }, h('b', null, 'Why do the cards look like that? '), 'Yeah, those are not the real card pictures. Is it because we are cheap asses? Partially. Mostly it is because every one of those designs is trademarked, and the banks would keep our asses in court until the sun burns out. That should tell you something, though: the sites with the real pictures have a deal with the bank and get paid every time you click. We get squat. Nobody pays for a spot here, nobody buys your info, and the only thing we want from you is 99 cents and a good pump story.'),
+      h('button', { class: 'btn block', onclick: function () { openCustomCard(null, intro); } }, icon('plus'), 'My card isn\u2019t here'),
       h('button', { class: 'btn primary block', onclick: function () { closeSheet(); } }, 'Done'));
     openSheet(intro ? 'Your cards' : 'Add a card', nodes, { noClose: !!intro });
     sheetOnClose = function () {
@@ -617,6 +622,64 @@
       else { renderAll(); }
     };
   }
+  function openCustomCard(existing, intro) {
+    var c = existing || { name: '', issuer: '', network: 'Visa', annualFee: 0, fxFee: 0, program: 'cashback', base: 1, earn: [] };
+    var name = h('input', { class: 'field', type: 'text', value: c.name, placeholder: 'Card name, like Local Credit Union Visa', 'aria-label': 'Card name', maxlength: '60' });
+    var issuer = h('input', { class: 'field', type: 'text', value: c.issuer, placeholder: 'Bank or credit union', 'aria-label': 'Issuer', maxlength: '40' });
+    var network = h('select', { class: 'field', 'aria-label': 'Network' });
+    ['Visa', 'Mastercard', 'American Express', 'Discover'].forEach(function (n) { network.appendChild(h('option', { value: n }, n)); });
+    network.value = c.network;
+    var fee = h('input', { class: 'field', type: 'number', inputmode: 'decimal', value: c.annualFee || 0, 'aria-label': 'Annual fee' });
+    var fx = h('input', { class: 'field', type: 'number', inputmode: 'decimal', value: c.fxFee || 0, 'aria-label': 'Foreign transaction fee percent' });
+    var kind = h('select', { class: 'field', 'aria-label': 'Earns cash back or points' });
+    kind.appendChild(h('option', { value: 'cashback' }, 'Cash back (percent)'));
+    kind.appendChild(h('option', { value: 'custom-points' }, 'Points or miles (worth about 1 cent each)'));
+    kind.value = c.program === 'cashback' ? 'cashback' : 'custom-points';
+    var base = h('input', { class: 'field', type: 'number', inputmode: 'decimal', step: '0.25', value: c.base, 'aria-label': 'Rate on everything else' });
+    var rows = h('div', { class: 'stack' });
+    var earn = (c.earn || []).map(function (r) { return { category: r.category, rate: r.rate }; });
+    function drawRows() {
+      clear(rows);
+      earn.forEach(function (r, i) {
+        var sel = h('select', { class: 'field', 'aria-label': 'Category' });
+        data.categories.filter(function (x) { return x.id !== 'other' && x.id !== 'rotating' && x.id !== 'choice' && x.id !== 'select-merchants'; }).forEach(function (x) { sel.appendChild(h('option', { value: x.id }, x.name)); });
+        sel.value = r.category || 'gas';
+        sel.addEventListener('change', function () { r.category = sel.value; });
+        var rate = h('input', { class: 'field', type: 'number', inputmode: 'decimal', step: '0.25', value: r.rate, 'aria-label': 'Rate' });
+        rate.addEventListener('input', function () { r.rate = parseFloat(rate.value) || 0; });
+        rows.appendChild(h('div', { class: 'grid2', style: 'grid-template-columns: 1fr 90px auto; align-items:center' }, sel, rate,
+          h('button', { class: 'btn ghost', style: 'padding:6px', 'aria-label': 'Remove', onclick: function () { earn.splice(i, 1); drawRows(); } }, icon('x'))));
+      });
+    }
+    drawRows();
+    var nodes = [
+      h('p', { class: 'small muted' }, 'Put in the benefits that matter most to you; the app will rank it like any other card. If you also send it to us, we add it for everyone.'),
+      h('div', null, h('label', { class: 'lbl' }, 'Card name'), name),
+      h('div', { class: 'grid2' }, h('div', null, h('label', { class: 'lbl' }, 'Bank'), issuer), h('div', null, h('label', { class: 'lbl' }, 'Network'), network)),
+      h('div', { class: 'grid2' }, h('div', null, h('label', { class: 'lbl' }, 'Annual fee ($)'), fee), h('div', null, h('label', { class: 'lbl' }, 'Foreign fee (%)'), fx)),
+      h('div', null, h('label', { class: 'lbl' }, 'It earns'), kind),
+      h('div', null, h('label', { class: 'lbl' }, 'On everything else (rate)'), base),
+      h('div', null, h('label', { class: 'lbl' }, 'Bonus categories'), rows, h('button', { class: 'btn', style: 'margin-top:8px', onclick: function () { earn.push({ category: 'gas', rate: 3 }); drawRows(); } }, icon('plus'), 'Add a category')),
+      h('button', { class: 'btn primary block', onclick: function () {
+        if (!name.value.trim()) { toast('Give the card a name'); return; }
+        var card = existing || { id: 'custom-' + Date.now().toString(36), custom: true };
+        card.name = name.value.trim(); card.issuer = issuer.value.trim() || 'My bank'; card.network = network.value;
+        card.annualFee = parseFloat(fee.value) || 0; card.fxFee = parseFloat(fx.value) || 0; card.program = kind.value; card.base = parseFloat(base.value) || 0;
+        card.earn = earn.filter(function (r) { return r.rate > 0; }); card.type = 'personal'; card.verified = new Date().toISOString().slice(0, 10);
+        card.color = card.color || '#' + (Math.abs(hashStr(card.name)) % 0xFFFFFF).toString(16).padStart(6, '0');
+        card.tips = ['You added this card yourself; edit it from its page if a rate changes.'];
+        if (!existing) { state.customCards.push(card); }
+        rebuildCards();
+        if (!existing && !walletEntry(card.id)) state.wallet.push({ cardId: card.id, added: new Date().toISOString() });
+        saveState(); closeSheet(); toast(existing ? 'Card updated' : 'Added ' + card.name);
+      } }, existing ? 'Save' : 'Add to my wallet'),
+      h('p', { class: 'small muted' }, 'Want it in the catalog for everyone? ', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Which Card: please add a card') + '&body=' + encodeURIComponent('Card: \nBank: \nWhat it earns: \nLink to the bank page: '), }, 'Email us the card name and the bank page'), '.')
+    ];
+    openSheet(existing ? 'Edit my card' : 'My card isn\u2019t here', nodes);
+    sheetOnClose = function () { if (intro) openAddCards(true); else renderAll(); };
+  }
+  function hashStr(str) { var h = 0; for (var i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; } return h; }
+
   function toggleCard(c) {
     var e = walletEntry(c.id);
     if (e) { state.wallet.splice(state.wallet.indexOf(e), 1); }
@@ -903,7 +966,12 @@
       nodes.push(box);
     }
     nodes.push(h('p', { class: 'small muted' }, 'Rates checked ' + fmtLongDate(card.verified || data.verified) + ' against the issuer. ', card.sourceUrl ? h('a', { href: card.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : null, ' · ', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Which Card: wrong number on ' + card.name) }, 'Report a wrong number')));
-    if (inWallet) nodes.push(h('button', { class: 'btn danger block', onclick: function () { toggleCard(card); closeSheet(); renderAll(); toast('Removed ' + card.name); } }, 'Remove from wallet'));
+    if (card.custom) nodes.push(h('button', { class: 'btn block', onclick: function () { openCustomCard(card); } }, 'Edit this card'));
+    if (inWallet) nodes.push(h('button', { class: 'btn danger block', onclick: function () {
+      toggleCard(card);
+      if (card.custom) { state.customCards = state.customCards.filter(function (x) { return x.id !== card.id; }); rebuildCards(); saveState(); }
+      closeSheet(); renderAll(); toast('Removed ' + card.name);
+    } }, card.custom ? 'Delete this card' : 'Remove from wallet'));
     else nodes.push(h('button', { class: 'btn primary block', onclick: function () { toggleCard(card); closeSheet(); renderAll(); toast('Added ' + card.name); } }, 'Add to wallet'));
     openSheet(card.name, nodes);
     sheetOnClose = function () { renderAll(); };
@@ -1039,7 +1107,7 @@
 
     var ds = h('div', { class: 'section' }, h('h2', null, 'Card data'));
     ds.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Checked ' + fmtLongDate(data.verified)), h('span', null, data.cards.length + ' cards, ' + data.merchants.length + ' stores. Rates come from issuer pages and are reviewed daily.')),
-      PREVIEW ? null : h('button', { class: 'btn', onclick: function () { toast('Checking for new data'); fetchData().then(function (d) { if (!d) { toast('Could not reach the data file'); return; } var changed = d.cards.version !== data.version; data = normalizeData(d); try { localStorage.setItem(DATA_KEY, JSON.stringify(d)); } catch (e) { } toast(changed ? 'Updated to ' + fmtLongDate(d.cards.version) : 'Already up to date'); renderMore(); }); } }, 'Refresh')));
+      PREVIEW ? null : h('button', { class: 'btn', onclick: function () { toast('Checking for new data'); fetchData().then(function (d) { if (!d) { toast('Could not reach the data file'); return; } var changed = d.cards.version !== data.version; data = normalizeData(d); rebuildCards(); try { localStorage.setItem(DATA_KEY, JSON.stringify(d)); } catch (e) { } toast(changed ? 'Updated to ' + fmtLongDate(d.cards.version) : 'Already up to date'); renderMore(); }); } }, 'Refresh')));
     root.appendChild(ds);
 
     var ms = h('div', { class: 'section' }, h('h2', null, 'Move to another phone'), h('p', { class: 'small muted' }, 'Your cards and settings live only on this phone. Copy a setup code here and paste it on the other one.'));
@@ -1064,16 +1132,16 @@
   }
   function confirmReset() {
     openSheet('Erase everything?', [h('p', null, 'This removes your cards, goals and logged purchases from this phone. Card data comes back on the next load.'),
-      h('button', { class: 'btn danger block', onclick: function () { try { localStorage.removeItem(STATE_KEY); } catch (e) { } state = loadState(); ctx = { merchant: null, category: null, customName: '', amount: '', payMethod: 'card' }; closeSheet(); showView('pay'); toast('Erased'); } }, 'Yes, erase'),
+      h('button', { class: 'btn danger block', onclick: function () { try { localStorage.removeItem(STATE_KEY); } catch (e) { } state = loadState(); rebuildCards(); ctx = { merchant: null, category: null, customName: '', amount: '', payMethod: 'card' }; closeSheet(); showView('pay'); toast('Erased'); } }, 'Yes, erase'),
       h('button', { class: 'btn block', onclick: closeSheet }, 'Keep it')]);
   }
-  function exportCode() { try { return 'WC1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ wallet: state.wallet, prefs: state.prefs })))); } catch (e) { return ''; } }
+  function exportCode() { try { return 'WC1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ wallet: state.wallet, prefs: state.prefs, customCards: state.customCards })))); } catch (e) { return ''; } }
   function importCode(code) {
     try {
       code = (code || '').trim(); if (code.indexOf('WC1.') !== 0) return false;
       var obj = JSON.parse(decodeURIComponent(escape(atob(code.slice(4)))));
       if (!obj || !Array.isArray(obj.wallet)) return false;
-      state.wallet = obj.wallet; state.prefs = obj.prefs || state.prefs; state.prefs.redeem = state.prefs.redeem || {}; state.onboarded = true; saveState(); return true;
+      state.wallet = obj.wallet; state.prefs = obj.prefs || state.prefs; state.prefs.redeem = state.prefs.redeem || {}; state.customCards = obj.customCards || []; state.onboarded = true; rebuildCards(); saveState(); return true;
     } catch (e) { return false; }
   }
   function copyText(t) { if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t); return Promise.reject(); }

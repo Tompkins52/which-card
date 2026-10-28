@@ -181,8 +181,32 @@
    "transfer": 1,
    "note": ""
   },
+  "amazon-points": {
+   "name": "Amazon rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
   "target-circle": {
    "name": "Target Circle",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "verizon-dollars": {
+   "name": "Verizon Dollars (spend with Verizon)",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "best-buy-rewards": {
+   "name": "My Best Buy rewards (Best Buy certificates)",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -205,14 +229,6 @@
    "transfer": 1,
    "note": ""
   },
-  "discover-cashback": {
-   "name": "Discover cash back",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
   "paypal-cashback": {
    "name": "PayPal cash back",
    "unit": "percent",
@@ -221,24 +237,8 @@
    "transfer": 1,
    "note": ""
   },
-  "amazon-points": {
-   "name": "Amazon rewards",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "verizon-dollars": {
-   "name": "Verizon Dollars (spend with Verizon)",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "best-buy-rewards": {
-   "name": "My Best Buy rewards (Best Buy certificates)",
+  "discover-cashback": {
+   "name": "Discover cash back",
    "unit": "percent",
    "cash": 1,
    "travel": 1,

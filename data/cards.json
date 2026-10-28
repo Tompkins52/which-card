@@ -6440,7 +6440,7 @@
   },
   {
    "id": "capital-one-bass-pro-cabelas-club-mastercard",
-   "name": "Bass Pro Shops and Cabela's CLUB Mastercard",
+   "name": "Bass Pro and Cabela's CLUB Mastercard",
    "issuer": "Capital One",
    "network": "Mastercard",
    "type": "personal",
@@ -7346,7 +7346,7 @@
   },
   {
    "id": "citi-aadvantage-business",
-   "name": "Citi / AAdvantage Business World Elite Mastercard",
+   "name": "Citi AAdvantage Business",
    "issuer": "Citi",
    "network": "Mastercard",
    "type": "business",
@@ -7403,7 +7403,7 @@
   },
   {
    "id": "citi-costco-anywhere-visa-business",
-   "name": "Costco Anywhere Visa Business Card by Citi",
+   "name": "Costco Anywhere Visa Business",
    "issuer": "Citi",
    "network": "Visa",
    "type": "business",
@@ -7478,59 +7478,8 @@
    "color": "#1A4674"
   },
   {
-   "id": "citi-aadvantage-mileup",
-   "name": "American Airlines AAdvantage MileUp",
-   "issuer": "Citi",
-   "network": "Mastercard",
-   "type": "personal",
-   "program": "american-aadvantage",
-   "annualFee": 0,
-   "fxFee": 3,
-   "base": 1,
-   "earn": [
-    {
-     "merchant": "american-airlines",
-     "rate": 2
-    },
-    {
-     "category": "groceries",
-     "rate": 2,
-     "excludes": [
-      "warehouse",
-      "superstore"
-     ]
-    }
-   ],
-   "benefits": {},
-   "credits": [
-    "25% savings on American Airlines inflight food and beverage purchases"
-   ],
-   "bestFor": "Occasional American Airlines flyers who want a no-fee card that earns miles on groceries",
-   "tips": [
-    "2 AAdvantage miles per dollar at grocery stores including grocery delivery and on eligible American Airlines purchases; 1 mile on everything else with no cap",
-    "Every base mile also earns 1 Loyalty Point toward AAdvantage status",
-    "No annual fee, but no free checked bag or priority boarding; those perks need the Platinum Select card",
-    "Welcome offer currently 15,000 miles plus a $100 statement credit after $500 in 3 months"
-   ],
-   "watchOut": [
-    "3% foreign transaction fee, so do not use it abroad",
-    "Warehouse clubs, superstores, cafes, bars and fast food do not count as grocery stores",
-    "Car rentals and hotels booked through AAdvantage sites do not count as American Airlines purchases",
-    "No travel or purchase protections are listed"
-   ],
-   "sourceUrl": "https://www.citi.com/credit-cards/aadvantage-mile-up-credit-card",
-   "sourceUrls": [
-    "https://creditcards.aa.com/credit-cards/mileup_standard/",
-    "https://creditcards.aa.com/credit-cards/"
-   ],
-   "verified": "2026-10-28",
-   "confidence": "high",
-   "unsure": [],
-   "color": "#2C4681"
-  },
-  {
    "id": "citi-aadvantage-executive",
-   "name": "Citi / AAdvantage Executive World Legend Mastercard",
+   "name": "Citi AAdvantage Executive",
    "issuer": "Citi",
    "network": "Mastercard",
    "type": "personal",
@@ -7594,7 +7543,7 @@
   },
   {
    "id": "citi-aadvantage-globe",
-   "name": "Citi / AAdvantage Globe Mastercard",
+   "name": "Citi AAdvantage Globe",
    "issuer": "Citi",
    "network": "Mastercard",
    "type": "personal",
@@ -7663,6 +7612,57 @@
     "This card was not on the assignment list but is in Citi's current AAdvantage lineup, so it is included"
    ],
    "color": "#2B5673"
+  },
+  {
+   "id": "citi-aadvantage-mileup",
+   "name": "Citi AAdvantage MileUp",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "american-aadvantage",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "american-airlines",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2,
+     "excludes": [
+      "warehouse",
+      "superstore"
+     ]
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "25% savings on American Airlines inflight food and beverage purchases"
+   ],
+   "bestFor": "Occasional American Airlines flyers who want a no-fee card that earns miles on groceries",
+   "tips": [
+    "2 AAdvantage miles per dollar at grocery stores including grocery delivery and on eligible American Airlines purchases; 1 mile on everything else with no cap",
+    "Every base mile also earns 1 Loyalty Point toward AAdvantage status",
+    "No annual fee, but no free checked bag or priority boarding; those perks need the Platinum Select card",
+    "Welcome offer currently 15,000 miles plus a $100 statement credit after $500 in 3 months"
+   ],
+   "watchOut": [
+    "3% foreign transaction fee, so do not use it abroad",
+    "Warehouse clubs, superstores, cafes, bars and fast food do not count as grocery stores",
+    "Car rentals and hotels booked through AAdvantage sites do not count as American Airlines purchases",
+    "No travel or purchase protections are listed"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/aadvantage-mile-up-credit-card",
+   "sourceUrls": [
+    "https://creditcards.aa.com/credit-cards/mileup_standard/",
+    "https://creditcards.aa.com/credit-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#2C4681"
   },
   {
    "id": "citi-aadvantage-platinum-select",
@@ -9744,7 +9744,7 @@
   },
   {
    "id": "bofa-norwegian-cruise-line-mastercard",
-   "name": "Norwegian Cruise Line World Mastercard",
+   "name": "Norwegian Cruise Line Mastercard",
    "issuer": "Bank of America",
    "network": "Mastercard",
    "type": "personal",
@@ -10746,7 +10746,7 @@
   },
   {
    "id": "us-bank-business-altitude-power",
-   "name": "U.S. Bank Business Altitude Power World Elite Mastercard",
+   "name": "U.S. Bank Business Altitude Power",
    "issuer": "U.S. Bank",
    "network": "Mastercard",
    "type": "business",
@@ -10797,7 +10797,7 @@
   },
   {
    "id": "us-bank-business-triple-cash-rewards",
-   "name": "U.S. Bank Triple Cash Rewards Visa Business",
+   "name": "U.S. Bank Business Triple Cash",
    "issuer": "U.S. Bank",
    "network": "Visa",
    "type": "business",
@@ -12966,7 +12966,7 @@
   },
   {
    "id": "shell-performance-elite-world-mastercard",
-   "name": "Shell Performance Elite World Mastercard",
+   "name": "Shell Performance Elite Mastercard",
    "issuer": "First Bank & Trust",
    "network": "Mastercard",
    "type": "personal",
@@ -13370,7 +13370,7 @@
   },
   {
    "id": "navy-federal-more-rewards-amex",
-   "name": "Navy Federal More Rewards American Express",
+   "name": "Navy Federal More Rewards (Amex)",
    "issuer": "Navy Federal",
    "network": "American Express",
    "type": "personal",
@@ -13998,7 +13998,7 @@
   },
   {
    "id": "synchrony-mylowes-pro-rewards-amex",
-   "name": "MyLowe's Pro Rewards American Express",
+   "name": "MyLowe's Pro Rewards (Amex)",
    "issuer": "Synchrony",
    "network": "American Express",
    "type": "business",
@@ -14839,7 +14839,7 @@
   },
   {
    "id": "usaa-cashback-rewards-plus-amex",
-   "name": "USAA Cashback Rewards Plus American Express",
+   "name": "USAA Cashback Rewards Plus (Amex)",
    "issuer": "USAA",
    "network": "American Express",
    "type": "personal",
@@ -15021,7 +15021,7 @@
   },
   {
    "id": "usaa-eagle-ascend",
-   "name": "USAA Eagle Ascend American Express",
+   "name": "USAA Eagle Ascend (Amex)",
    "issuer": "USAA",
    "network": "American Express",
    "type": "personal",
@@ -15197,7 +15197,7 @@
   },
   {
    "id": "usaa-rate-advantage",
-   "name": "USAA Rate Advantage Visa Platinum",
+   "name": "USAA Rate Advantage",
    "issuer": "USAA",
    "network": "Visa",
    "type": "personal",
@@ -15344,7 +15344,7 @@
   },
   {
    "id": "upgrade-triple-cash-rewards-visa",
-   "name": "Upgrade Triple Cash Rewards Visa",
+   "name": "Upgrade Triple Cash",
    "issuer": "Upgrade",
    "network": "Visa",
    "type": "personal",
@@ -15401,7 +15401,7 @@
   },
   {
    "id": "petal-2-visa",
-   "name": "Petal 2 Cash Back, No Fees Visa",
+   "name": "Petal 2 Visa",
    "issuer": "WebBank",
    "network": "Visa",
    "type": "personal",

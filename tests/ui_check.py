@@ -167,6 +167,26 @@ with sync_playwright() as p:
     assert 'Customized Cash' in page.inner_text('.winner .name'), 'goal card should lead in bonus mode'
     assert 'to go' in page.inner_text('.winner'), 'goal flag missing'
 
+    # Custom card
+    page.click('.tabs button[data-view=wallet]')
+    page.click('#view-wallet button:has-text("Add a card")')
+    page.wait_for_selector('.sheet')
+    page.click('.sheet button:has-text("My card isn")')
+    page.wait_for_selector('.sheet input[aria-label="Card name"]')
+    page.fill('.sheet input[aria-label="Card name"]', 'Elgin Credit Union Visa')
+    page.fill('.sheet input[aria-label="Rate on everything else"]', '1.5')
+    page.click('.sheet button:has-text("Add a category")')
+    page.fill('.sheet input[aria-label="Rate"]', '4')
+    page.click('.sheet button:has-text("Add to my wallet")')
+    page.wait_for_timeout(300)
+    assert 'Elgin Credit Union Visa' in page.inner_text('#view-wallet'), 'custom card missing from wallet'
+    page.click('.tabs button[data-view=pay]')
+    page.click('.where-chip')
+    page.click('.quick button:has-text("Gas")')
+    page.wait_for_timeout(300)
+    assert 'Elgin Credit Union' in page.inner_text('#answer'), 'custom card not ranked'
+    page.screenshot(path=os.path.join(OUT, '18-custom-card.png'))
+
     # Setup code round trip
     page.click('.tabs button[data-view=more]')
     page.click('button:has-text("Copy my setup code")')

@@ -56,7 +56,7 @@ def hsl_to_hex(h, s, l):
 
 
 NAME_FIXES = {
-    'Costco Anywhere Visa Card by Citi': 'Costco Anywhere Visa', 'Target Circle Card (Target Credit Card)': 'Target Circle Card',
+    'Costco Anywhere Visa Card by Citi': 'Costco Anywhere Visa', 'Costco Anywhere Visa Business Card by Citi': 'Costco Anywhere Visa Business', 'Target Circle Card (Target Credit Card)': 'Target Circle Card',
     'Target Circle Card (Target Mastercard)': 'Target Circle Mastercard', 'Amazon Store Card (Prime Store Card)': 'Amazon Store Card',
     'Citi / AAdvantage Platinum Select World Elite Mastercard': 'Citi AAdvantage Platinum Select',
     'Bank of America Customized Cash Rewards': 'BofA Customized Cash Rewards', 'Bank of America Unlimited Cash Rewards': 'BofA Unlimited Cash Rewards',
@@ -76,9 +76,22 @@ AMEX_NAMES = {
 }
 
 
+MORE_NAMES = {
+    'citi-aadvantage-business': 'Citi AAdvantage Business', 'citi-aadvantage-mileup': 'Citi AAdvantage MileUp', 'citi-aadvantage-executive': 'Citi AAdvantage Executive',
+    'citi-aadvantage-globe': 'Citi AAdvantage Globe', 'capital-one-bass-pro-cabelas-club-mastercard': 'Bass Pro and Cabela\'s CLUB Mastercard',
+    'us-bank-business-altitude-power': 'U.S. Bank Business Altitude Power', 'us-bank-business-triple-cash-rewards': 'U.S. Bank Business Triple Cash',
+    'navy-federal-more-rewards-amex': 'Navy Federal More Rewards (Amex)', 'usaa-cashback-rewards-plus-amex': 'USAA Cashback Rewards Plus (Amex)',
+    'usaa-eagle-ascend': 'USAA Eagle Ascend (Amex)', 'usaa-rate-advantage': 'USAA Rate Advantage', 'synchrony-mylowes-pro-rewards-amex': 'MyLowe\'s Pro Rewards (Amex)',
+    'petal-2-visa': 'Petal 2 Visa', 'upgrade-triple-cash-rewards-visa': 'Upgrade Triple Cash', 'bofa-norwegian-cruise-line-mastercard': 'Norwegian Cruise Line Mastercard',
+    'shell-performance-elite-world-mastercard': 'Shell Performance Elite Mastercard',
+}
+
+
 def clean_name(n, card_id=None):
     if card_id in AMEX_NAMES:
         return AMEX_NAMES[card_id]
+    if card_id in MORE_NAMES:
+        return MORE_NAMES[card_id]
     n = NAME_FIXES.get(n, n)
     if n in ('Apple Card', 'Target Circle Card', 'Target Circle Mastercard', 'Amazon Store Card', 'Amazon Secured Card'):
         return n
@@ -86,7 +99,7 @@ def clean_name(n, card_id=None):
     stripped = re.sub(r'\s+(Credit Card|Card)$', '', n)
     if ' ' in stripped:
         n = stripped
-    n = n.replace(' Visa Signature', '').replace(' Rewards Credit', '')
+    n = n.replace(' Visa Signature', '').replace(' Rewards Credit', '').replace(' by Citi', '').replace(' from American Express', '')
     n = n.replace('\u00ae', '').replace('\u2120', '').replace('\u2122', '')
     return n.strip()
 
