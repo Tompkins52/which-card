@@ -15,6 +15,21 @@
   "Classic Green, Amex EveryDay, Amex EveryDay Preferred and Cash Magnet are closed to new applicants (Green since July 2026, the others since September 2024) but still widely held and still in Amex's cardmember agreements, so they are included with medium confidence",
   "No new merchant ids were added; all merchant rules use delta, hilton, marriott, amex-travel, netflix and spotify from the schema list",
   "Sources: Amex product pages, the Amex rewards-info category definition pages (retail, travel, business), and the Amex benefit policy eligible-card pages were used first; NerdWallet, The Points Guy, Doctor of Credit, AwardWallet, Upgraded Points, InsideFlyer, Frequent Miler and Delta's newsroom filled gaps where Amex pages were removed or did not render",
+  "New program ids used in this file: navy-federal-rewards (Navy Federal points, 1 cent each for cash, statement credit, deposit or travel through the Rewards Center, no minimum online), usaa-rewards (USAA Eagle Navigator points, 1 cent for travel through the USAA Rewards Center and 0.7 cent for cash; Upgraded Points quotes 1 cent for cruises and airfare, 0.8 for charity, 0.7 for cash and gift cards), penfed-rewards (PenFed points, no cash option, guaranteed minimum 0.85 cent and up to 1 cent on Pathfinder; NerdWallet quotes PenFed at about 1.7 cents for travel and 0.85 for gift cards on Platinum Rewards), flying-blue-miles (Air France KLM Flying Blue, NerdWallet 1.0 cent in October 2026, Frequent Miler 1.3, AwardWallet members average 2.25), norwegian-points (Norwegian WorldPoints, 1 cent toward onboard credit or cruise discounts, no cash), royal-caribbean-points (Royal ONE points, 1 cent toward cruise discounts or onboard credit, 5,000 minimum, no cash), choice-privileges (The Points Guy 0.85 cent, NerdWallet 0.8 cent, October 2026), onekey-cash (OneKeyCash, $1 per dollar but spendable only on Expedia, Hotels.com and Vrbo, expires after 18 months idle), skypass-miles (Korean Air SKYPASS, Frequent Miler 1.3 cents, not valued by TPG or NerdWallet), harley-davidson-points (H-D points, 1 cent each as H-D gift cards or Real-Time Rewards, expire after 3 years). Existing ids reused: cashback, alaska-miles (now Atmos Rewards; TPG 1.55 cents, NerdWallet 1.4 cents, October 2026), us-bank-points, discover-cashback.",
+  "New merchant ids used in this file: hawaiian-airlines (Atmos cards 3x), air-france-klm (Air France and KLM purchases), norwegian-cruise-line, royal-caribbean, celebrity-cruises, silversea, choice-hotels, hotels-com (Hotels.com), vrbo (already used in chase.json), expedia (existing), korean-air, harley-davidson. alaska-airlines is the existing id.",
+  "Issuer values outside the schema enum: Navy Federal, USAA, PenFed, Alliant, SoFi, Robinhood, Upgrade and WebBank (Petal 2), as the assignment directed short institution names; the merge step may remap WebBank to 'other'.",
+  "Navy Federal: Flagship Rewards closed to new applicants September 10, 2026 and was replaced by Flagship Premier ($95, 4x travel, 3x dining, 1x other, $100 airline credit, no Amazon Prime); the old card is included for existing holders with medium confidence. nRewards Secured is now sold as cashRewards Secured (1%). cashRewards network is Visa or Mastercard by applicant choice; Visa is recorded. The 1.75% direct deposit tier ended October 6, 2024. Membership is required for every Navy Federal card.",
+  "USAA: usaa.com product pages require cookies and would not render, but the rewards terms pages at usaa.com/banking/terms/ did for Preferred Cash, Eagle Navigator and Eagle Adapt. USAA launched Eagle Adapt (Visa, 3% on eight categories up to $3,000 per quarter combined) and Eagle Ascend (Amex, 2% on the top eligible category each month, automatic) on July 15, 2026 and refreshed Cashback Rewards Plus (separate 5% gas and 5% military base caps, groceries up to 3%, 0% foreign fee). The older USAA Rewards American Express and Rewards Visa Signature are no longer offered and are left out. Eagle Adapt's health and wellness category is mapped to drugstore plus fitness, and Eagle Ascend uses a choice object with a non-schema automatic flag.",
+  "PenFed: product pages render fee and multiplier numbers client-side, so figures were cross-checked with NerdWallet and the PenFed Honors Advantage page. Pathfinder lost its Honors Advantage annual fee waiver on September 28, 2026; everyone now pays $95. Power Cash is 1.5% base and 2% with Honors Advantage (military service or qualifying PenFed checking); the merge step may model Honors Advantage as an optional base override of 2 and an extra 1x on Pathfinder travel and dining. Defender Rewards (July 2026, 5x gas, 3x military stores and sporting goods) was added although not in the assignment. Anyone can join PenFed.",
+  "Alliant: the 2.5% tier ended November 1, 2025 and the card is a flat 1.5% for everyone; 90 days of membership are required before applying. SoFi: the Unlimited 2% card is invitation based and pays 1 cent only into SoFi products; Everyday Cash Rewards (3% dining, 2% groceries) was added; the SoFi Essential card (3% only on SoFi Travel, no other rewards) is left out as a credit-builder with effectively no earning. Robinhood Gold Card: 3% everything, 5% portal travel, requires Robinhood Gold ($50 per year); 3% foreign transaction fee for accounts opened on or after July 1, 2026 (fxFee recorded as 3; earlier accounts have 0). Statement credit redemption is 0.7 cent, so 1 cent requires depositing to the brokerage account.",
+  "Upgrade: upgrade.com/credit-cards was blocked from fetching; the help center pages for Cash Rewards and Triple Cash Rewards were used. Upgrade now markets OneCard Essentials (invitation and pre-approval, 3% gas, groceries, streaming and utilities, 1% other), which was added. Cash back on the Cash Rewards and Triple Cash cards is earned as you repay, not at purchase; the schema has no field for this so it is in tips. The standard Upgrade OneCard (3% on everyday categories capped at $500 per year, 2% or 1.5% base depending on a Rewards Checking account) is left out because its terms changed for accounts opened after April 6, 2026 and current terms are not published.",
+  "Petal 2: closed to new applicants; Petal cards were replaced by Tilt Engage, Tilt Motion and Tilt Essentials (WebBank) in August 2025. Included for existing holders with base 1 (starting tier) and tips explaining the 1.25% and 1.5% tiers after 6 and 12 consecutive on-time payments. X1 Card: left out; Robinhood cut X1 earning to 1.5x on November 21, 2025, eliminated boosts and invited holders to the Robinhood Gold Card, and X1 points were worth 1 cent only at select merchants, so it no longer has a published current rewards structure worth modeling.",
+  "Bank of America co-brands: bankofamerica.com product pages were blocked by the fetch tool, so reference sites dated October 2026 were used and are listed per card. Alaska Airlines Visa Signature and Alaska Business are now the Atmos Rewards Ascent Visa Signature ($95) and Atmos Rewards Visa Signature Business ($70 plus $25 per card) after the August 2025 Alaska and Hawaiian program merger; the Companion Fare now requires $6,000 in prior-year spend. Air France KLM moved from World Elite Mastercard to Visa Signature in March 2026 and added 3x dining with a 1.5x base. Royal Caribbean Visa Signature and Celebrity Visa Signature were replaced March 31, 2026 by Royal ONE ($0) and Royal ONE Plus ($99); old cardholders are being converted to Royal ONE, so the old cards are left out. Norwegian Cruise Line World Mastercard is unchanged. Free Spirit Travel More and Free Spirit Travel Mastercard are left out: Spirit Airlines ceased operations May 2, 2026 and Bank of America is converting those accounts to Customized Cash Rewards (keeping no foreign transaction fee) with Free Spirit points converting to Bank of America cash rewards. AAA Member Rewards Visa is left out: Bank of America discontinued it in 2022 and the current AAA cards are issued by Comenity (Bread).",
+  "Wells Fargo: Choice Privileges, Choice Privileges Select, One Key, Reflect and Signify Business Cash were confirmed on creditcards.wellsfargo.com. One Key+ has no product page on Wells Fargo's site as of October 28, 2026 and is included with medium confidence from NerdWallet, Upgraded Points and AwardWallet for existing holders. Wells Fargo bonus categories exclude purchases made through third-party payment accounts, online marketplaces, mobile card readers and digital wallets on the Choice cards; One Key cards exclude PayPal and supplier-billed charges.",
+  "U.S. Bank: usbank.com personal card pages for SKYPASS and LATAM returned errors; the SKYPASS cards use NerdWallet (October 9, 2026) and Frequent Miler with medium confidence because sources disagree on the Visa Signature fee ($95 vs $99) and whether the second 2x category is gas or restaurants. LATAM Pass is left out: U.S. Bank no longer issues it and LATAM's U.S. cards are now issued through Cardless. Business Altitude Power ($195, 2x everything, 2.5x mobile wallet up to $5,000 per quarter, 6x portal hotels and cars) is still shown on bizcards.usbank.com but not on the main business card page, so it is medium confidence. Business Altitude Connect's 4x cap of $150,000 per calendar year is combined across travel and gas. Harley-Davidson Visa Signature charges a 5% foreign transaction fee.",
+  "Discover: Discover it Secured closed to new applicants June 2, 2026 but is widely held and included; its 2% on gas and restaurants is capped at $1,000 combined per quarter and it does not use the rotating calendar. Discover it Business is left out: Discover no longer offers any business card to new applicants (the 1.5% card closed years ago).",
+  "Rule fields beyond the schema used here: label (issuer wording for select-merchants rules), walletPayOnly (Business Altitude Power mobile wallet rule), and choice.automatic (Eagle Ascend). No rules use until or afterRate.",
+  "Fetch blocks encountered: bankofamerica.com product pages (Alaska, Alaska Business, Air France KLM), robinhood.com/creditcard/ (the non-trailing-slash URL worked), upgrade.com/credit-cards/, usaa.com product pages (cookie wall), usbank.com SKYPASS and LATAM pages, nerdwallet.com Eagle Navigator and PenFed Power Cash reviews, bankrate.com PenFed Power Cash review.",
   "Capital One Walmart Rewards Mastercard is left out: Capital One stopped accepting applications in 2024 and converted existing accounts to Quicksilver; Walmart's current card is the OnePay CashRewards card from Synchrony.",
   "Capital One Spark Miles no longer exists under that name. On April 14, 2026 Capital One renamed Spark Miles to Venture Business ($95, 2X everything, 5X Capital One Business Travel) and Spark Miles Select to VentureOne Business ($0, 1.5X). The entry capital-one-venture-business covers the former Spark Miles; the old Spark Miles URL now redirects to the Venture Business page.",
   "Capital One business card names as sold today are Spark 2% Cash Plus, Spark 2% Cash, Spark 1.5% Cash Select, Spark 1% Classic, Venture X Business, Venture Business and VentureOne Business. Only Spark Cash Plus, Spark Cash Select and Venture Business (ex Spark Miles) were in scope.",
@@ -7679,6 +7694,57 @@
    "color": "#B4541A"
   },
   {
+   "id": "discover-it-secured",
+   "name": "Discover it Secured",
+   "issuer": "Discover",
+   "network": "Discover",
+   "type": "personal",
+   "program": "discover-cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "gas",
+     "rate": 2,
+     "cap": 1000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "dining",
+     "rate": 2,
+     "cap": 1000,
+     "capPeriod": "quarter"
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "Existing holders building credit with 2% at gas stations and restaurants and a first-year Cashback Match",
+   "tips": [
+    "Closed to new applicants on June 2, 2026; existing accounts continue with these terms and are moving to Capital One with other Discover accounts",
+    "2% at gas stations and restaurants on the first $1,000 in combined purchases each calendar quarter, then 1%; 1% on everything else",
+    "Cashback Match doubles all cash back earned in the first 12 billing periods for new cardmembers",
+    "Deposit of $200 up to $2,500 sets the credit limit; automatic monthly reviews from month 8 can move you to an unsecured card and refund the deposit",
+    "No annual fee and no foreign transaction fee"
+   ],
+   "watchOut": [
+    "Gas stations attached to supermarkets or supercenters may not count as gas stations",
+    "Discover has no purchase protection, extended warranty, cell phone protection or rental car coverage",
+    "Discover acceptance abroad is narrower than Visa or Mastercard"
+   ],
+   "sourceUrl": "https://www.discover.com/credit-cards/secured/",
+   "sourceUrls": [
+    "https://wtop.com/news/2026/06/discover-discontinues-its-secured-credit-card/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Discover page did not state the foreign transaction fee; 0 matches every other Discover card and other-issuers.json",
+    "What happens to secured accounts after migration to Capital One is not confirmed"
+   ],
+   "color": "#653825"
+  },
+  {
    "id": "discover-it-student-cash-back",
    "name": "Discover it Student Cash Back",
    "issuer": "Discover",
@@ -7763,6 +7829,271 @@
     "Whether the Student card remains open to new applicants after the Capital One migration is not stated on the issuer page"
    ],
    "color": "#F08A3E"
+  },
+  {
+   "id": "bofa-atmos-rewards-business",
+   "name": "Atmos Rewards Business",
+   "issuer": "Bank of America",
+   "network": "Visa",
+   "type": "business",
+   "program": "alaska-miles",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "alaska-airlines",
+     "rate": 3
+    },
+    {
+     "merchant": "hawaiian-airlines",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "ev-charging",
+     "rate": 2
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "Shipping"
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$99 Companion Fare (plus taxes and fees from $23) each account anniversary after $6,000 in purchases in the prior anniversary year",
+    "First checked bag free for the cardholder and up to six guests on the same reservation when the flight is paid with the card",
+    "$100 off an annual Alaska Lounge+ membership paid with the card",
+    "20% back on Alaska and Hawaiian inflight purchases"
+   ],
+   "bestFor": "Small businesses that fly Alaska or Hawaiian and ship often, with a Companion Fare each year after $6,000 spend",
+   "tips": [
+    "This is the former Alaska Airlines Visa Business card; the annual fee is $70 for the company plus $25 per card, so one card costs $95",
+    "3x on Alaska and Hawaiian purchases; 2x on gas, EV charging, shipping and local transit including rideshare; 1x elsewhere, with no caps",
+    "select-merchants here means shipping providers",
+    "A 10% points bonus applies if the company has an eligible Bank of America business account; cardholders also earn 1 Atmos status point per $3 spent",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "The Companion Fare requires $6,000 of purchases in the prior anniversary year",
+    "Free bags and priority boarding apply only when the flight is paid with the card and not on partner-operated codeshares",
+    "No purchase or travel protections are published for this card beyond the Visa Signature guide"
+   ],
+   "sourceUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/alaska-airlines-business-credit-card/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/reviews/credit-cards/alaska-airlines-business",
+    "https://www.bankrate.com/credit-cards/reviews/atmos-ascent-business-card/",
+    "https://frequentmiler.com/atmosbusiness/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Bank of America product page was blocked from fetching; rates and fees come from NerdWallet and Bankrate (both October 1, 2026) and CardPointers, which agree",
+    "Protections are not published by those sources"
+   ],
+   "color": "#6A2026",
+   "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
+   "boostOptions": [
+    {
+     "label": "Member (10% more)",
+     "multiplier": 1.1
+    },
+    {
+     "label": "Preferred Plus or legacy Gold (25% more)",
+     "multiplier": 1.25
+    },
+    {
+     "label": "Preferred Honors or legacy Platinum (50% more)",
+     "multiplier": 1.5
+    },
+    {
+     "label": "Premier or legacy Platinum Honors (75% more)",
+     "multiplier": 1.75
+    }
+   ]
+  },
+  {
+   "id": "bofa-air-france-klm-visa",
+   "name": "Air France KLM",
+   "issuer": "Bank of America",
+   "network": "Visa",
+   "type": "personal",
+   "program": "flying-blue-miles",
+   "annualFee": 89,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [
+    {
+     "merchant": "air-france-klm",
+     "rate": 3
+    },
+    {
+     "category": "select-merchants",
+     "rate": 3,
+     "label": "SkyTeam member airlines booked direct"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "5,000 bonus miles each account anniversary after $50 in purchases in the anniversary year",
+    "20 XP (Flying Blue status credits) each account anniversary, plus 80 XP after $15,000 and another 60 XP after $25,000 in purchases in the anniversary year"
+   ],
+   "bestFor": "Flying Blue members who want 3x on Air France, KLM, SkyTeam and dining with a 1.5x base and a path to Silver status",
+   "tips": [
+    "Formerly the Air France KLM World Elite Mastercard; it moved to the Visa network in March 2026 and existing holders received new Visa cards",
+    "3x on Air France, KLM and SkyTeam member airline purchases made directly and on dining; 1.5x on everything else, with no caps",
+    "air-france-klm stands for Air France and KLM Royal Dutch Airlines purchases; select-merchants stands for other SkyTeam airlines such as Delta booked direct",
+    "The 5,000 mile anniversary bonus after $50 of spend covers more than half the $89 fee",
+    "No foreign transaction fee; NerdWallet valued Flying Blue miles at 1 cent in October 2026"
+   ],
+   "watchOut": [
+    "Flying Blue uses dynamic award pricing and raised prices on many routes in 2025 and 2026",
+    "Few protections are published; no cell phone, purchase protection or rental car coverage is listed",
+    "Miles expire unless the account has a purchase at least once every two years"
+   ],
+   "sourceUrl": "https://www.bankofamerica.com/credit-cards/products/air-france-klm-credit-card/",
+   "sourceUrls": [
+    "https://awardwallet.com/blog/air-france-klm-flying-blue-credit-card-review",
+    "https://onemileatatime.com/news/air-france-klm-flying-blue-credit-card-changes",
+    "https://frequentmiler.com/?p=225702"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Bank of America product page was blocked from fetching; rates and fees come from AwardWallet (October 24, 2026, citing Bank of America terms updated October 1, 2026), One Mile at a Time and Frequent Miler",
+    "AwardWallet also reports 3x on rent paid through Bilt (capped at $50,000 per year with a 3% fee), which is not modeled here"
+   ],
+   "color": "#7D213A",
+   "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
+   "boostOptions": [
+    {
+     "label": "Member (10% more)",
+     "multiplier": 1.1
+    },
+    {
+     "label": "Preferred Plus or legacy Gold (25% more)",
+     "multiplier": 1.25
+    },
+    {
+     "label": "Preferred Honors or legacy Platinum (50% more)",
+     "multiplier": 1.5
+    },
+    {
+     "label": "Premier or legacy Platinum Honors (75% more)",
+     "multiplier": 1.75
+    }
+   ]
+  },
+  {
+   "id": "bofa-atmos-rewards-ascent",
+   "name": "Atmos Rewards Ascent",
+   "issuer": "Bank of America",
+   "network": "Visa",
+   "type": "personal",
+   "program": "alaska-miles",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "alaska-airlines",
+     "rate": 3
+    },
+    {
+     "merchant": "hawaiian-airlines",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "ev-charging",
+     "rate": 2
+    },
+    {
+     "category": "streaming",
+     "rate": 2
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "Cable services"
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "extendedWarranty": true,
+    "purchaseProtection": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true
+   },
+   "credits": [
+    "$99 Companion Fare (plus taxes and fees from $23) each account anniversary after $6,000 in purchases in the prior anniversary year",
+    "First checked bag free for the cardholder and up to six guests on the same reservation when the flight is paid with the card",
+    "$100 off an annual Alaska Lounge+ membership paid with the card",
+    "20% back on Alaska and Hawaiian inflight purchases"
+   ],
+   "bestFor": "Alaska and Hawaiian flyers who value the Companion Fare and free bags, with 2x on gas, streaming and local transit",
+   "tips": [
+    "This is the former Alaska Airlines Visa Signature card, renamed Atmos Rewards Ascent when Alaska and Hawaiian merged their programs in August 2025",
+    "3x on Alaska and Hawaiian purchases; 2x on gas, EV charging, cable, streaming and local transit including rideshare; 1x elsewhere, with no caps",
+    "The Companion Fare now requires $6,000 of purchases in the prior anniversary year; it is valid on Alaska and Hawaiian flights within North America booked on alaskaair.com",
+    "An eligible Bank of America account adds a 10% bonus on points earned from purchases",
+    "The Points Guy valued Atmos points at 1.55 cents and NerdWallet at 1.4 cents in October 2026; no foreign transaction fee"
+   ],
+   "watchOut": [
+    "The free bag and priority boarding apply only when the ticket is bought with the card and not on partner-operated codeshares",
+    "Rental car collision coverage is secondary",
+    "The Companion Fare still requires paying taxes and fees from $23"
+   ],
+   "sourceUrl": "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/atmos-rewards-ascent-visa-card/",
+    "https://10xtravel.com/creditcards/alaska-airlines-personal-credit-card",
+    "https://www.nerdwallet.com/credit-cards/news/atmos-credit-card-welcome-offers-april-2026"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Bank of America product page was blocked from fetching; rates, fee and benefits come from Upgraded Points (October 22, 2026), 10xTravel (October 21, 2026) and NerdWallet (October 21, 2026), which agree",
+    "Purchase protection is listed by Upgraded Points without details"
+   ],
+   "color": "#7B2833",
+   "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
+   "boostOptions": [
+    {
+     "label": "Member (10% more)",
+     "multiplier": 1.1
+    },
+    {
+     "label": "Preferred Plus or legacy Gold (25% more)",
+     "multiplier": 1.25
+    },
+    {
+     "label": "Preferred Honors or legacy Platinum (50% more)",
+     "multiplier": 1.5
+    },
+    {
+     "label": "Premier or legacy Platinum Honors (75% more)",
+     "multiplier": 1.75
+    }
+   ]
   },
   {
    "id": "bofa-customized-cash-rewards",
@@ -8178,6 +8509,589 @@
    ]
   },
   {
+   "id": "bofa-norwegian-cruise-line-mastercard",
+   "name": "Norwegian Cruise Line World Mastercard",
+   "issuer": "Bank of America",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "norwegian-points",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "norwegian-cruise-line",
+     "rate": 3
+    },
+    {
+     "category": "flights",
+     "rate": 2
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [],
+   "bestFor": "Norwegian cruisers who want onboard credit or cruise discounts from everyday spend with no annual fee",
+   "tips": [
+    "3 WorldPoints per dollar on Norwegian Cruise Line purchases, 2 on airline and hotel purchases, 1 on everything else, with no caps",
+    "Points are worth 1 cent each toward onboard credit (5,000 points for $50) or cruise discounts (10,000 points for $100 off), starting at 2,500 points",
+    "World Mastercard cell phone protection up to $600 per claim, two claims per year, with a $50 deductible, when you pay your phone bill with the card",
+    "Bank of America Rewards tiers add 10% to 75% more points",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "Points expire five years after the month earned regardless of activity",
+    "Onboard credit must be redeemed before sailing and cannot be used for service charges or pre-purchased activities",
+    "No trip delay, baggage, trip cancellation, extended warranty or purchase protection"
+   ],
+   "sourceUrl": "https://www.ncl.com/world-points",
+   "sourceUrls": [
+    "https://thepointsguy.com/credit-cards/reviews/norwegian-cruise-line-credit-card-review/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The Bank of America product page was not fetched; rates and fees come from Norwegian's WorldPoints page and The Points Guy (modified March 2026)",
+    "Car rental purchases are not listed as a 2x category on Norwegian's page"
+   ],
+   "color": "#7D2141",
+   "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
+   "boostOptions": [
+    {
+     "label": "Member (10% more)",
+     "multiplier": 1.1
+    },
+    {
+     "label": "Preferred Plus or legacy Gold (25% more)",
+     "multiplier": 1.25
+    },
+    {
+     "label": "Preferred Honors or legacy Platinum (50% more)",
+     "multiplier": 1.5
+    },
+    {
+     "label": "Premier or legacy Platinum Honors (75% more)",
+     "multiplier": 1.75
+    }
+   ]
+  },
+  {
+   "id": "bofa-royal-one-visa",
+   "name": "Royal ONE",
+   "issuer": "Bank of America",
+   "network": "Visa",
+   "type": "personal",
+   "program": "royal-caribbean-points",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "royal-caribbean",
+     "rate": 3
+    },
+    {
+     "merchant": "celebrity-cruises",
+     "rate": 3
+    },
+    {
+     "merchant": "silversea",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "ev-charging",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$100 cruise discount each anniversary after $10,000 in purchases in the prior anniversary year"
+   ],
+   "bestFor": "Royal Caribbean, Celebrity and Silversea cruisers who want cruise credit from groceries and gas with no annual fee",
+   "tips": [
+    "Launched March 31, 2026 to replace the Royal Caribbean Visa Signature and Celebrity Visa Signature cards; holders of the old cards are being converted to Royal ONE automatically",
+    "3x on Royal Caribbean, Celebrity Cruises and Silversea purchases; 2x on groceries, gas and EV charging; 1x elsewhere, with no caps",
+    "Points are worth 1 cent each toward cruise discounts or onboard credit, starting at 5,000 points, and do not expire",
+    "Priority boarding on Royal Caribbean and Celebrity where available; no foreign transaction fee"
+   ],
+   "watchOut": [
+    "Points cannot be used for taxes, fees or gratuities and have no cash option",
+    "Only Visa Signature travel accident insurance and concierge are listed; no purchase or rental car protections are published",
+    "The $100 anniversary discount applies only to future cruises booked directly with Royal Caribbean Group lines"
+   ],
+   "sourceUrl": "https://www.bankofamerica.com/credit-cards/products/royal-one-plus-credit-card/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/reviews/royal-one-visa",
+    "https://www.doctorofcredit.com/bank-of-america-launches-royal-caribbean-credit-cards-royal-one-and-royal-one-plus/",
+    "https://awardwallet.com/blog/?p=253676"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Bank of America product page was not fetched; rates, fee and conversion details come from NerdWallet (October 1, 2026), Doctor of Credit and AwardWallet, which agree"
+   ],
+   "color": "#8A1E27",
+   "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
+   "boostOptions": [
+    {
+     "label": "Member (10% more)",
+     "multiplier": 1.1
+    },
+    {
+     "label": "Preferred Plus or legacy Gold (25% more)",
+     "multiplier": 1.25
+    },
+    {
+     "label": "Preferred Honors or legacy Platinum (50% more)",
+     "multiplier": 1.5
+    },
+    {
+     "label": "Premier or legacy Platinum Honors (75% more)",
+     "multiplier": 1.75
+    }
+   ]
+  },
+  {
+   "id": "bofa-royal-one-plus-visa",
+   "name": "Royal ONE Plus",
+   "issuer": "Bank of America",
+   "network": "Visa",
+   "type": "personal",
+   "program": "royal-caribbean-points",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "royal-caribbean",
+     "rate": 4
+    },
+    {
+     "merchant": "celebrity-cruises",
+     "rate": 4
+    },
+    {
+     "merchant": "silversea",
+     "rate": 4
+    },
+    {
+     "category": "flights",
+     "rate": 2
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "ev-charging",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true
+   },
+   "credits": [
+    "Up to $120 Global Entry or TSA PreCheck application fee credit every four years",
+    "$200 cruise discount each anniversary after $20,000 in purchases in the prior anniversary year"
+   ],
+   "bestFor": "Frequent Royal Caribbean Group cruisers who want 4x on cruise purchases and 2x on travel, dining and everyday categories",
+   "tips": [
+    "Launched March 31, 2026 alongside the no-fee Royal ONE card",
+    "4x on Royal Caribbean, Celebrity Cruises and Silversea; 2x on airline, hotel, dining, grocery, gas and EV charging purchases; 1x elsewhere, with no caps",
+    "Points are worth 1 cent each toward cruise discounts or onboard credit, starting at 5,000 points, and do not expire",
+    "Priority suite boarding and priority luggage handling with Royal Caribbean and Celebrity; no foreign transaction fee"
+   ],
+   "watchOut": [
+    "Points cannot be used for taxes, fees or gratuities and have no cash option",
+    "The $200 anniversary discount requires $20,000 of spend in a year",
+    "Rental car coverage, trip delay and cancellation are the standard Visa Signature versions and are secondary"
+   ],
+   "sourceUrl": "https://www.bankofamerica.com/credit-cards/products/royal-one-plus-credit-card/",
+   "sourceUrls": [
+    "https://thepointsguy.com/credit-cards/reviews/royal-one-plus-visa-signature-review/",
+    "https://www.doctorofcredit.com/bank-of-america-launches-royal-caribbean-credit-cards-royal-one-and-royal-one-plus/",
+    "https://www.cardrates.com/news/bofa-royal-caribbean-launch-co-branded-cruise-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Bank of America product page was not fetched; rates and benefits come from The Points Guy (updated September 30, 2026), Doctor of Credit and CardRates, which agree",
+    "Whether the rental car waiver is primary or secondary is not stated; secondary is assumed as the Bank of America default"
+   ],
+   "color": "#6A2032",
+   "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
+   "boostOptions": [
+    {
+     "label": "Member (10% more)",
+     "multiplier": 1.1
+    },
+    {
+     "label": "Preferred Plus or legacy Gold (25% more)",
+     "multiplier": 1.25
+    },
+    {
+     "label": "Preferred Honors or legacy Platinum (50% more)",
+     "multiplier": 1.5
+    },
+    {
+     "label": "Premier or legacy Platinum Honors (75% more)",
+     "multiplier": 1.75
+    }
+   ]
+  },
+  {
+   "id": "wells-fargo-signify-business-cash",
+   "name": "Wells Fargo Signify Business Cash",
+   "issuer": "Wells Fargo",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 2,
+   "earn": [],
+   "benefits": {
+    "rentalCarCDW": "primary",
+    "loungeAccess": true
+   },
+   "credits": [
+    "Priority Pass membership with pay-per-visit lounge access ($35 per visit)"
+   ],
+   "bestFor": "Flat 2% cash rewards on all business purchases with no annual fee and free employee cards",
+   "tips": [
+    "Unlimited 2% cash rewards on business purchases with no caps or categories; redeem as a statement credit to an eligible account",
+    "World Elite Mastercard benefits include primary rental car coverage through MasterRental, $250,000 travel accident insurance and baggage delay reimbursement up to $300",
+    "Employee cards are free; 0% intro APR on purchases for 12 months",
+    "Priority Pass membership is complimentary but each lounge visit costs about $35"
+   ],
+   "watchOut": [
+    "Foreign transaction fee of 3%",
+    "No cell phone protection, purchase protection or extended warranty is listed",
+    "Account guarantors are responsible for all employee card charges"
+   ],
+   "sourceUrl": "https://creditcards.wellsfargo.com/business-credit-cards/signify-business-cash-credit-card/",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/signify-business-cash-card-by-wells-fargo/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The 3% foreign transaction fee and the primary rental car coverage come from Upgraded Points (September 2026), not the Wells Fargo page"
+   ],
+   "color": "#782821"
+  },
+  {
+   "id": "wells-fargo-choice-privileges-mastercard",
+   "name": "Choice Privileges Mastercard",
+   "issuer": "Wells Fargo",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "choice-privileges",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "choice-hotels",
+     "rate": 5
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "category": "home-improvement",
+     "rate": 3
+    },
+    {
+     "category": "phone",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [
+    "Automatic Choice Privileges Gold Elite status with 10 elite qualifying nights each calendar year"
+   ],
+   "bestFor": "No-fee hotel card with 3x on gas, groceries, home improvement and phone bills for Choice Hotels guests",
+   "tips": [
+    "5x on stays at participating Choice Hotels booked on choicehotels.com, directly with the hotel or through the Choice service center, and on Choice Privileges point purchases",
+    "3x at gas stations and EV charging, grocery stores (including delis and bakeries), home improvement stores (hardware, nursery, furniture, appliance, paint, flooring and contractors) and landline or cell phone providers; 1x elsewhere, with no caps",
+    "Gold Elite adds 10% bonus points on stays; card spend counts toward higher status",
+    "Cell phone protection up to $800 per claim with a $25 deductible, two claims per 12 months, when you pay your phone bill with the card",
+    "No foreign transaction fee; The Points Guy valued Choice points at 0.85 cent in October 2026"
+   ],
+   "watchOut": [
+    "Bonus points are not earned on purchases made through third-party payment accounts, online marketplaces, mobile card readers or digital wallets",
+    "Hotel stays booked through online travel agencies earn only 1x",
+    "WoodSpring Suites does not participate; extended-stay brands cap 5x stays at 30 nights",
+    "No purchase protection, extended warranty or rental car coverage is listed on the product page"
+   ],
+   "sourceUrl": "https://creditcards.wellsfargo.com/choice-hotel-privileges-mastercard/",
+   "sourceUrls": [
+    "https://creditcards.wellsfargo.com/",
+    "https://thepointsguy.com/news/monthly-valuations"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#6D1E1D"
+  },
+  {
+   "id": "wells-fargo-choice-privileges-select-mastercard",
+   "name": "Choice Privileges Select Mastercard",
+   "issuer": "Wells Fargo",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "choice-privileges",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "choice-hotels",
+     "rate": 10
+    },
+    {
+     "category": "gas",
+     "rate": 5
+    },
+    {
+     "category": "ev-charging",
+     "rate": 5
+    },
+    {
+     "category": "groceries",
+     "rate": 5
+    },
+    {
+     "category": "home-improvement",
+     "rate": 5
+    },
+    {
+     "category": "phone",
+     "rate": 5
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [
+    "30,000 bonus points each account anniversary, enough for up to three reward nights",
+    "Up to $120 Global Entry or TSA PreCheck application or renewal fee credit every four years",
+    "Automatic Choice Privileges Platinum Elite status with 20 elite qualifying nights each calendar year"
+   ],
+   "bestFor": "Choice Hotels regulars who want 10x on stays, 5x on gas, groceries, home improvement and phone bills, and 30,000 anniversary points",
+   "tips": [
+    "10x on stays at participating Choice Hotels booked direct and on Choice point purchases; 5x at gas stations and EV charging, grocery stores, home improvement stores and phone plan providers; 1x elsewhere, with no caps",
+    "The 30,000 point anniversary bonus is worth about $255 at The Points Guy's October 2026 value of 0.85 cent, well above the $95 fee",
+    "Platinum Elite adds 25% bonus points on stays",
+    "Cell phone protection up to $800 per claim with a $25 deductible, two claims per 12 months, when you pay your phone bill with the card",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "Bonus points are not earned on purchases made through third-party payment accounts, online marketplaces, mobile card readers or digital wallets",
+    "Hotel stays booked through online travel agencies earn only 1x",
+    "You may not qualify for the welcome bonus if you opened either Choice Privileges card in the last 15 months",
+    "No purchase protection, extended warranty or rental car coverage is listed on the product page"
+   ],
+   "sourceUrl": "https://creditcards.wellsfargo.com/choice-hotels-privileges-select-mastercard/",
+   "sourceUrls": [
+    "https://creditcards.wellsfargo.com/",
+    "https://thepointsguy.com/news/monthly-valuations"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#8B2D36"
+  },
+  {
+   "id": "wells-fargo-one-key-card",
+   "name": "One Key",
+   "issuer": "Wells Fargo",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "onekey-cash",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [
+    {
+     "merchant": "expedia",
+     "rate": 3
+    },
+    {
+     "merchant": "hotels-com",
+     "rate": 3
+    },
+    {
+     "merchant": "vrbo",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "primary"
+   },
+   "credits": [
+    "Automatic One Key Silver status with Silver Member Prices on hotels; Gold after $15,000 in purchases in a calendar year"
+   ],
+   "bestFor": "Expedia, Hotels.com and Vrbo bookers who want 3% on those sites plus gas, groceries and dining with no annual fee",
+   "tips": [
+    "3% OneKeyCash on eligible Expedia, Hotels.com and Vrbo bookings on the U.S. sites, at gas stations and EV charging, grocery stores (including delis and bakeries) and dining (restaurants, bars, fast food and caterers); 1.5% elsewhere, with no caps",
+    "OneKeyCash is worth $1 per dollar but can be spent only on Expedia, Hotels.com and Vrbo; it is not redeemable for cash",
+    "Primary rental car collision coverage up to $50,000 (secondary for New York residents) when you pay for the full rental with the card and decline the rental company's waiver",
+    "Cell phone protection up to $1,000 per claim with a $25 deductible, two claims per 12 months, when you pay your phone bill with the card",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "OneKeyCash expires if there is no eligible booking or redemption within 18 months",
+    "Charges billed directly by the travel supplier (resort fees, change fees, damage deposits) and PayPal checkouts do not earn the 3%",
+    "You may not be eligible for the welcome offer if you opened a One Key, One Key+ or Hotels.com card in the last 48 months"
+   ],
+   "sourceUrl": "https://creditcards.wellsfargo.com/one-key-credit-card/",
+   "sourceUrls": [
+    "https://creditcards.wellsfargo.com/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The 18-month expiration comes from NerdWallet's One Key+ review, not the Wells Fargo page for this card"
+   ],
+   "color": "#851E2E"
+  },
+  {
+   "id": "wells-fargo-one-key-plus-card",
+   "name": "One Key+",
+   "issuer": "Wells Fargo",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "onekey-cash",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "expedia",
+     "rate": 3
+    },
+    {
+     "merchant": "hotels-com",
+     "rate": 3
+    },
+    {
+     "merchant": "vrbo",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3,
+     "excludes": [
+      "superstore",
+      "warehouse"
+     ]
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "primary"
+   },
+   "credits": [
+    "$100 in OneKeyCash each cardholder anniversary",
+    "Up to $120 Global Entry or TSA PreCheck application fee credit every four years",
+    "Automatic One Key Gold status; Platinum after $30,000 in purchases in a calendar year"
+   ],
+   "bestFor": "Frequent Expedia-family bookers who want a 2% base rate, 3% on bookings and everyday categories, and Gold status",
+   "tips": [
+    "3% OneKeyCash on Expedia, Hotels.com and Vrbo, gas and EV charging, grocery stores and dining; 2% on everything else, with no caps",
+    "Gold members earn extra OneKeyCash on VIP Access properties (up to 6%, or 9% at Platinum) and get 20% or more off select hotels",
+    "The $100 anniversary OneKeyCash offsets most of the $99 fee if you book through the Expedia sites",
+    "Primary rental car collision coverage up to $50,000; cell phone protection up to $1,000 per claim with a $25 deductible, two claims per 12 months",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "OneKeyCash is not redeemable for cash and expires after 18 months without an eligible booking or redemption",
+    "Superstores and wholesale clubs do not count as grocery stores",
+    "Wells Fargo's credit card page no longer lists One Key+ as of October 28, 2026, so it may be closed to new applicants; existing accounts keep these terms"
+   ],
+   "sourceUrl": "https://creditcards.wellsfargo.com/one-key-credit-card/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/reviews/one-key-plus",
+    "https://upgradedpoints.com/credit-cards/reviews/one-key-plus-card/",
+    "https://awardwallet.com/credit-cards/hotels/one-key-plus-card/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Wells Fargo's site shows no One Key+ product page and the main card list omits it; whether it is still open to new applicants is not confirmed, and the terms here come from NerdWallet (November 2025), Upgraded Points (June 2026) and AwardWallet (July 2026)"
+   ],
+   "color": "#7D2C31"
+  },
+  {
    "id": "wells-fargo-active-cash",
    "name": "Wells Fargo Active Cash",
    "issuer": "Wells Fargo",
@@ -8452,6 +9366,455 @@
     }
    ],
    "color": "#1A1A1A"
+  },
+  {
+   "id": "wells-fargo-reflect",
+   "name": "Wells Fargo Reflect",
+   "issuer": "Wells Fargo",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 0,
+   "earn": [],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [],
+   "bestFor": "Carrying a balance interest-free for 21 months; it earns no rewards",
+   "tips": [
+    "No rewards; the card offers 0% intro APR for 21 months from account opening on purchases and on balance transfers made within 120 days",
+    "Cell phone protection up to $600 per claim with a $25 deductible, two claims per 12 months, when you pay your phone bill with the card",
+    "My Wells Fargo Deals offers occasional merchant cash back as account credits",
+    "No annual fee"
+   ],
+   "watchOut": [
+    "No rewards of any kind",
+    "Foreign transaction fee of 3%",
+    "You may not be eligible for the intro APR if you opened a Reflect card in the last 48 months"
+   ],
+   "sourceUrl": "https://creditcards.wellsfargo.com/reflect-visa-credit-card/",
+   "sourceUrls": [
+    "https://creditcards.wellsfargo.com/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The foreign transaction fee answer did not render on the product page; 3% is Wells Fargo's standard for cards without the no-fee feature and matches the Active Cash entry in other-issuers.json"
+   ],
+   "color": "#63222A"
+  },
+  {
+   "id": "us-bank-business-altitude-connect",
+   "name": "U.S. Bank Business Altitude Connect",
+   "issuer": "U.S. Bank",
+   "network": "Visa",
+   "type": "business",
+   "program": "us-bank-points",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 5,
+     "label": "U.S. Bank Travel Center"
+    },
+    {
+     "category": "travel",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "flights",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "hotels",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "rental-car",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "transit",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "gas",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year",
+     "excludes": [
+      "warehouse",
+      "superstore"
+     ]
+    },
+    {
+     "category": "ev-charging",
+     "rate": 4,
+     "cap": 150000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary",
+    "loungeAccess": true
+   },
+   "credits": [
+    "Priority Pass Digital membership with four free lounge visits per membership year",
+    "$25 statement credit after three consecutive monthly taxi or rideshare purchases"
+   ],
+   "bestFor": "Business travel and fuel spend at 4x with a first-year fee waiver and Priority Pass visits",
+   "tips": [
+    "5x on prepaid hotels and car rentals booked in the U.S. Bank Travel Center; 4x on travel (airlines, hotels, car rentals, taxis, limousines, trains, cruise lines) and gas and EV charging on the first $150,000 in combined spend per calendar year; 2x on dining, takeout, delivery and cell phone service; 1x elsewhere",
+    "Annual fee is $0 the first year, then $95; employee cards are free",
+    "Points are worth 1 cent each for travel or deposits to a U.S. Bank account; statement credits and merchandise can be worth less; points can be moved to a personal Altitude Go or Altitude Connect card",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "The $150,000 cap is combined across travel and gas; after that those categories earn 1x",
+    "Wholesale clubs and supercenters do not count as gas stations",
+    "Priority Pass visits beyond four per year are charged",
+    "Points expire after 12 consecutive statement cycles with no activity"
+   ],
+   "sourceUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-altitude-connect-credit-card.html",
+   "sourceUrls": [
+    "https://bizcards.usbank.com/",
+    "https://www.nerdwallet.com/card-details/card-name/US-Bank-Business-Altitude-Connect"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The ongoing $95 fee did not render on the product page; it comes from bizcards.usbank.com and NerdWallet (June 2026)",
+    "The product page lists auto rental collision damage waiver without saying primary or secondary; the bizcards page calls the card a World Elite Mastercard while the product page says Visa Signature, so the network may vary by channel"
+   ],
+   "color": "#203D6F"
+  },
+  {
+   "id": "us-bank-business-altitude-power",
+   "name": "U.S. Bank Business Altitude Power World Elite Mastercard",
+   "issuer": "U.S. Bank",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "us-bank-points",
+   "annualFee": 195,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 6,
+     "label": "U.S. Bank Travel Center"
+    },
+    {
+     "category": "wallet-pay",
+     "rate": 2.5,
+     "cap": 5000,
+     "capPeriod": "quarter",
+     "walletPayOnly": true
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "Businesses that want a flat 2x on everything with a 2.5x boost on mobile wallet payments",
+   "tips": [
+    "2x points on all purchases with no cap; 2.5x on the first $5,000 per quarter of purchases made with a mobile wallet such as Apple Pay or Google Pay; 6x on prepaid hotels and car rentals booked in the Rewards Center",
+    "Points are worth 1 cent each for travel or deposits to a U.S. Bank account, and Real-Time Rewards redeem at full value at the time of purchase",
+    "Employee cards are free; no foreign transaction fee",
+    "Still listed on U.S. Bank's business card site (bizcards.usbank.com) as of October 28, 2026, though some reference sites mark it unavailable"
+   ],
+   "watchOut": [
+    "$195 annual fee with no credits to offset it",
+    "The 2.5x mobile wallet rate is capped at $5,000 of spend per quarter",
+    "No protections are published on the issuer page"
+   ],
+   "sourceUrl": "https://bizcards.usbank.com/",
+   "sourceUrls": [
+    "https://www.doctorofcredit.com/u-s-bank-launches-new-business-card-u-s-bank-business-altitude-power-world-elite-mastercard",
+    "https://frequentmiler.com/USBAltitudePower/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "U.S. Bank's main business card page does not list this card and Frequent Miler (October 2025) says it is no longer available, but bizcards.usbank.com still shows it with a 75,000 point offer; availability may be limited to certain channels",
+    "The 0% foreign transaction fee is from CardPointers and Frequent Miler"
+   ],
+   "color": "#264692"
+  },
+  {
+   "id": "us-bank-business-triple-cash-rewards",
+   "name": "U.S. Bank Triple Cash Rewards Visa Business",
+   "issuer": "U.S. Bank",
+   "network": "Visa",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 5,
+     "label": "U.S. Bank Travel Center"
+    },
+    {
+     "category": "gas",
+     "rate": 3,
+     "excludes": [
+      "warehouse",
+      "superstore"
+     ]
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "select-merchants",
+     "rate": 3,
+     "label": "Office supply stores"
+    },
+    {
+     "category": "phone",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$100 statement credit per 12 months after 11 consecutive months of recurring software purchases such as QuickBooks or FreshBooks"
+   ],
+   "bestFor": "Small businesses that spend on gas, office supplies, phone service and restaurants, with a $100 annual software credit",
+   "tips": [
+    "3% on gas and EV charging, office supply stores, cell phone service providers and restaurants including delivery; 5% on prepaid hotels and car rentals booked in the U.S. Bank Travel Center; 1% elsewhere, with no caps",
+    "select-merchants here means office supply stores",
+    "The $100 software credit needs 11 consecutive months of eligible software purchases made directly with the provider",
+    "No annual fee and free employee cards; 0% intro APR on purchases and balance transfers for 12 billing cycles"
+   ],
+   "watchOut": [
+    "Gas or EV charging transactions over $200 earn only 1%",
+    "Wholesale clubs and supercenters do not count as gas stations",
+    "Foreign transaction fee of 3%",
+    "Rewards expire after 12 consecutive statement cycles with no activity"
+   ],
+   "sourceUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-triple-cash-back-credit-card.html",
+   "sourceUrls": [
+    "https://bizcards.usbank.com/",
+    "https://www.usbank.com/business-banking/business-credit-cards.html"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The foreign transaction fee did not render on the product page; 3% is U.S. Bank's standard for cards that do not advertise no foreign fees and should be confirmed in the cardmember agreement",
+    "Protections are not described on the product page"
+   ],
+   "color": "#2A436F"
+  },
+  {
+   "id": "us-bank-harley-davidson-visa-signature",
+   "name": "H-D",
+   "issuer": "U.S. Bank",
+   "network": "Visa",
+   "type": "personal",
+   "program": "harley-davidson-points",
+   "annualFee": 0,
+   "fxFee": 5,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "harley-davidson",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Harley riders who want gift cards toward dealership spending from gas, dining and lodging",
+   "tips": [
+    "3 points per dollar at Harley-Davidson dealerships, H-D.com, the H-D Museum and H-D Insurance and at gas stations; 2 points at restaurants, fast food, bars, hotels and other lodging booked direct; 1 point elsewhere, with no caps on purchases",
+    "Points are worth 1 cent each as H-D gift cards (10,000 points for $100) or Real-Time Rewards statement credits against purchases",
+    "H.O.G. members earn 1 point per mile ridden, up to 50,000 points per calendar year, after an odometer reading at a participating dealership",
+    "The $99 H.O.G. Elite Visa version earns 5 points at H-D and gas stations and adds membership and SiriusXM credits"
+   ],
+   "watchOut": [
+    "Foreign transaction fee of 5%, among the highest on any card",
+    "Points expire 3 years after they are awarded",
+    "Lodging booked through a booking site earns only 1 point"
+   ],
+   "sourceUrl": "https://www.h-dvisa.com/credit/harley-davidson-visa-signature-credit.do",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/harley-davidson-credit-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "NerdWallet (September 2026) describes the program as Genuine Rewards points; the issuer site redeems to H-D gift cards at 100 points per dollar either way",
+    "Rental car coverage is listed by NerdWallet without saying primary or secondary"
+   ],
+   "color": "#1A3070"
+  },
+  {
+   "id": "us-bank-skypass-visa-signature",
+   "name": "SKYPASS",
+   "issuer": "U.S. Bank",
+   "network": "Visa",
+   "type": "personal",
+   "program": "skypass-miles",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "korean-air",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Two Korean Air KAL Lounge coupons each year",
+    "5% off one Korean Air ticket for the cardholder and a companion each calendar year",
+    "2,000 bonus miles each year at renewal"
+   ],
+   "bestFor": "Korean Air flyers who want lounge coupons and 2x on Korean Air, dining and hotels",
+   "tips": [
+    "2 SKYPASS miles per dollar on Korean Air tickets, restaurants and hotels; 1 mile elsewhere, with no caps",
+    "SKYPASS miles can be used on Korean Air and SkyTeam partners; Frequent Miler values them at about 1.3 cents",
+    "No foreign transaction fee",
+    "The $450 SKYPASS Select card adds 3x on Korean Air, 2x on other airlines and car rentals, a $200 travel credit and more coupons"
+   ],
+   "watchOut": [
+    "Sources disagree on the annual fee ($95 per Frequent Miler, $99 per NerdWallet in October 2026); confirm on the application",
+    "Lounge coupons and the ticket discount are useful only if you fly Korean Air",
+    "No purchase or travel protections are published beyond the Visa Signature guide"
+   ],
+   "sourceUrl": "https://www.usbank.com/credit-cards/skypass-visa-signature-credit-card.html",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/korean-air-skypass-credit-cards",
+    "https://frequentmiler.com/KE/",
+    "https://doctorofcredit.com/u-s-bank-korean-skypass-credit-card-50000-miles-offers-personal-business"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The U.S. Bank product page returned an error; NerdWallet (October 9, 2026) says $99 annual fee and 2x on Korean Air, restaurants and hotels, while Frequent Miler (October 2025) says $95; older Doctor of Credit text lists gas instead of restaurants, so the current 2x categories should be confirmed on the application page",
+    "The 2,000 mile renewal bonus is from Frequent Miler only"
+   ],
+   "color": "#283E77"
+  },
+  {
+   "id": "us-bank-skypass-select-visa-signature",
+   "name": "SKYPASS Select",
+   "issuer": "U.S. Bank",
+   "network": "Visa",
+   "type": "personal",
+   "program": "skypass-miles",
+   "annualFee": 450,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "korean-air",
+     "rate": 3
+    },
+    {
+     "category": "flights",
+     "rate": 2
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    },
+    {
+     "category": "rental-car",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "Up to $200 annual statement credit on airline, hotel and car rental purchases",
+    "Up to $120 Global Entry or TSA PreCheck application fee credit every four years",
+    "$100 discount coupon on a Korean Air ticket each year",
+    "Two $25 Korean Air inflight duty free coupons each year",
+    "Two KAL Lounge coupons each year plus Priority Pass Select with four free visits per year",
+    "5% off a Korean Air ticket for the cardholder and a companion twice per calendar year",
+    "10,000 bonus miles at renewal after $35,000 in purchases, or 5,000 after $15,000"
+   ],
+   "bestFor": "Frequent Korean Air flyers who will use the $200 travel credit, lounge coupons and ticket discounts to offset the $450 fee",
+   "tips": [
+    "3 SKYPASS miles per dollar on Korean Air tickets; 2 on other airline tickets, hotels, car rentals and restaurants; 1 elsewhere, with no caps",
+    "The $200 travel credit applies to airline, hotel and car rental purchases each cardmember year",
+    "Trip cancellation, interruption and delay reimbursement and rental car collision coverage are included",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "The $450 fee is not waived the first year",
+    "The anniversary miles require $15,000 or $35,000 in annual spend",
+    "Korean Air coupons are mailed and some cardholders report delays getting them"
+   ],
+   "sourceUrl": "https://www.usbank.com/credit-cards/skypass-visa-signature-credit-card.html",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/korean-air-skypass-credit-cards",
+    "https://frequentmiler.com/keselect"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The U.S. Bank product page returned an error; NerdWallet (October 9, 2026) and Frequent Miler agree on 3x Korean Air and 2x other airlines, hotels, car rentals and restaurants, while the older CardPointers text shows 2x on Korean Air",
+    "Whether the rental car waiver is primary or secondary is not stated"
+   ],
+   "color": "#313F8C"
   },
   {
    "id": "us-bank-altitude-connect",
@@ -8952,6 +10315,49 @@
     "Issuer page does not show the foreign transaction fee; 3% is from NerdWallet and Bankrate (2026)"
    ],
    "color": "#2E4A7A"
+  },
+  {
+   "id": "alliant-cashback-visa-signature",
+   "name": "Alliant Cashback",
+   "issuer": "Alliant",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Flat 1.5% cash back with no annual or foreign transaction fee for Alliant members",
+   "tips": [
+    "You must be an Alliant member for at least 90 days before applying; anyone can join through the Alliant Credit Union Foundation",
+    "The old 2.5% Tier One rate (first $10,000 per billing cycle with a qualifying checking account) ended November 1, 2025; every cardholder now earns a flat 1.5%",
+    "Cash back can be redeemed only after you accrue $50, as a deposit to an Alliant account or a statement credit",
+    "No foreign transaction fee, purchase security for 90 days and extended warranty on eligible items"
+   ],
+   "watchOut": [
+    "Cash back expires on a rolling basis after five calendar years, and it is forfeited if the account closes",
+    "Business purchases, PIN-based purchases, balance transfers and gift or prepaid cards earn nothing",
+    "$50 minimum redemption"
+   ],
+   "sourceUrl": "https://www.alliantcreditunion.org/bank/visa-signature-card",
+   "sourceUrls": [
+    "https://secure.alliantcreditunion.org:443/images/uploads/files/CashbackVisaSignatureProgramTermsConditions.pdf",
+    "https://www.doctorofcredit.com/alliant-2-5-card-will-become-1-6-on-all-purchases-effective-9-1-25/",
+    "https://www.nerdwallet.com/credit-cards/news/alliant-cashback-card-slashing-rewards-rate"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The program terms PDF still linked from Alliant is the October 2022 version with the old tiers; the product page and NerdWallet (spring 2026) confirm the flat 1.5%",
+    "Rental car coverage is listed on the product page without saying primary or secondary"
+   ],
+   "color": "#285277"
   },
   {
    "id": "bilt-blue",
@@ -9524,6 +10930,816 @@
    "finish": "silver"
   },
   {
+   "id": "navy-federal-flagship-premier",
+   "name": "Navy Federal Flagship Premier",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "navy-federal-rewards",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "travel",
+     "rate": 4
+    },
+    {
+     "category": "flights",
+     "rate": 4
+    },
+    {
+     "category": "hotels",
+     "rate": 4
+    },
+    {
+     "category": "rental-car",
+     "rate": 4
+    },
+    {
+     "category": "transit",
+     "rate": 4
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "$100 annual airline statement credit after $100 or more in eligible airline purchases",
+    "Up to $120 Global Entry or TSA PreCheck application fee credit every four years",
+    "Complimentary 3GB GigSky global mobile data plan"
+   ],
+   "bestFor": "4x on all travel booked anywhere and 3x on dining for Navy Federal members, with an airline credit that offsets the fee",
+   "tips": [
+    "Navy Federal membership is required: active duty, veterans, retirees, Department of Defense personnel and their family members can join",
+    "Travel earns 4x no matter how you book: airlines, hotels, car rentals, rideshare, taxis, bus lines, parking and transit all count",
+    "Points are worth 1 cent each for cash with no minimum; travel, gift cards and merchandise are also offered",
+    "Launched September 10, 2026 as the replacement for Flagship Rewards; existing Flagship Rewards holders can switch without a new application, and Flagship Rewards is closed to new applicants",
+    "No foreign transaction fee and no cap on points"
+   ],
+   "watchOut": [
+    "The $100 airline credit excludes charter and private jet flights and does not carry over if unused",
+    "Restaurants inside casinos, hotels or grocery stores may not code as dining and earn only 1x",
+    "Purchases outside travel and dining earn only 1x, down from 2x on the old Flagship Rewards card",
+    "Rental car collision coverage is secondary and limited to rentals of 15 days or less"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/flagship-premier-visa-signature.html",
+   "sourceUrls": [
+    "https://www.navyfederal.org/about/press-releases/2026-press-releases/Flagship-Premier-Launch.html",
+    "https://www.navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/nfcu_829b.pdf",
+    "https://upgradedpoints.com/news/navy-federal-flagship-premier-card-refresh",
+    "https://www.nerdwallet.com/credit-cards/news/navy-federal-flagship-premier"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Cell phone protection, purchase protection, extended warranty and trip delay coverage are not listed on the product page; the Visa Signature guide to benefits governs"
+   ],
+   "color": "#225887"
+  },
+  {
+   "id": "navy-federal-flagship-rewards",
+   "name": "Navy Federal Flagship Rewards",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "navy-federal-rewards",
+   "annualFee": 49,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "category": "travel",
+     "rate": 3
+    },
+    {
+     "category": "flights",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 3
+    },
+    {
+     "category": "rental-car",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Up to $120 Global Entry or TSA PreCheck application fee credit every four years"
+   ],
+   "bestFor": "Existing holders who want 2x on everything and 3x on travel for a $49 fee",
+   "tips": [
+    "Closed to new applicants on September 10, 2026; existing holders keep the card and can switch to Flagship Premier without a new application",
+    "Points are worth 1 cent each for cash with no minimum; travel, gift cards and merchandise are also offered",
+    "No foreign transaction fee",
+    "Holders who switch to Flagship Premier are not charged two annual fees in the same year and get 10x on travel for 90 days after the switch"
+   ],
+   "watchOut": [
+    "The complimentary Amazon Prime benefit was dropped from the new Flagship Premier card, so weigh that before switching",
+    "Rental car collision coverage is secondary and limited to rentals of 15 days or less"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/nfcu_829b.pdf",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/news/navy-federal-flagship-premier",
+    "https://upgradedpoints.com/news/navy-federal-flagship-premier-card-refresh"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The $49 annual fee and the Global Entry credit are from Upgraded Points and NerdWallet, not an issuer page; Navy Federal no longer publishes a product page for this card",
+    "Whether the 3x travel definition matches Flagship Premier's broad definition (rideshare, parking, transit) is not confirmed for this older card"
+   ],
+   "color": "#215D7D"
+  },
+  {
+   "id": "navy-federal-go-rewards",
+   "name": "Navy Federal GO REWARDS",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "navy-federal-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 2,
+     "excludes": [
+      "superstore",
+      "warehouse",
+      "groceries"
+     ]
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "No-fee 3x at restaurants and 2x on gas for Navy Federal members who want a simple card",
+   "tips": [
+    "Navy Federal membership is required: active duty, veterans, retirees, Department of Defense personnel and their family members can join",
+    "Available as Visa or Mastercard; no annual fee, no foreign transaction fee and no cap on points",
+    "Points are worth 1 cent each for cash with no minimum; travel, gift cards and merchandise are also offered",
+    "The More Rewards American Express card earns 3x on the same restaurant spend plus supermarkets, gas and transit for the same $0 fee"
+   ],
+   "watchOut": [
+    "Restaurants inside hotels, casinos, commissaries, grocery stores or event venues may earn only 1x",
+    "Gas bought at superstores, supermarkets and warehouse clubs may earn only 1x",
+    "Rental car collision coverage is secondary and limited to rentals of 15 days or less"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/go-rewards.html",
+   "sourceUrls": [
+    "https://www.navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/nfcu_829b.pdf"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Cell phone protection, purchase protection and extended warranty are not listed on the product page"
+   ],
+   "color": "#2B4473"
+  },
+  {
+   "id": "navy-federal-more-rewards-amex",
+   "name": "Navy Federal More Rewards American Express",
+   "issuer": "Navy Federal",
+   "network": "American Express",
+   "type": "personal",
+   "program": "navy-federal-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 3,
+     "excludes": [
+      "superstore",
+      "warehouse",
+      "groceries"
+     ]
+    },
+    {
+     "category": "transit",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "No-fee 3x on supermarkets, restaurants and food delivery, gas and transit for Navy Federal members",
+   "tips": [
+    "Navy Federal membership is required: active duty, veterans, retirees, Department of Defense personnel and their family members can join",
+    "3x covers restaurants and food delivery, supermarkets, gas stations and transit (railway, ferries, taxis, limousines, buses, tolls and parking); everything else earns 1x",
+    "Points are worth 1 cent each for cash, with no minimum when redeemed online or in the app; travel, gift cards and merchandise are also offered",
+    "No caps on bonus categories and no foreign transaction fee",
+    "Points do not expire while the account is open"
+   ],
+   "watchOut": [
+    "Restaurants inside hotels, casinos, grocery stores or event venues and gas bought at superstores, supermarkets or warehouse clubs may earn only 1x",
+    "American Express acceptance is narrower than Visa or Mastercard, including at Costco",
+    "Gift cards, prepaid cards, money orders and person-to-person transfers earn nothing"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/more-rewards.html",
+   "sourceUrls": [
+    "https://www.navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/nfcu_829b.pdf",
+    "https://www.nerdwallet.com/credit-cards/best/navy-federal-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Cell phone protection, purchase protection and extended warranty are not listed on the product page"
+   ],
+   "color": "#226887"
+  },
+  {
+   "id": "navy-federal-platinum",
+   "name": "Navy Federal Platinum",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [],
+   "benefits": {
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Navy Federal's lowest-rate card for carrying a balance; it earns no rewards",
+   "tips": [
+    "Navy Federal membership is required: active duty, veterans, retirees, Department of Defense personnel and their family members can join",
+    "No rewards; the card is built around a low variable APR (10.24% to 18.00% as of October 28, 2026) and no balance transfer fee",
+    "Available as Visa or Mastercard with no annual fee and no foreign transaction fee",
+    "Use a rewards card for everyday spending and keep this one for balances you need to pay down"
+   ],
+   "watchOut": [
+    "No rewards of any kind",
+    "The 0.99% intro APR on balance transfers applies only to transfers made within 60 days of opening and requires applying by January 3, 2027"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/platinum.html",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/best/navy-federal-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#224B63"
+  },
+  {
+   "id": "navy-federal-cashrewards",
+   "name": "Navy Federal cashRewards",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Flat 1.5% cash back with no annual or foreign transaction fee for Navy Federal members approved for a credit limit under $5,000",
+   "tips": [
+    "Navy Federal membership is required: active duty, veterans, retirees, Department of Defense personnel and their family or household members can join",
+    "Approval with a credit limit under $5,000 gets the 1.5% cashRewards card; a limit of $5,000 or more gets the 2% cashRewards Plus card instead",
+    "If your credit limit is later raised to $5,000 or more, the account is upgraded to cashRewards Plus automatically",
+    "You choose Visa or Mastercard when you apply; network benefits differ slightly",
+    "Rewards redeem as a statement credit or a deposit to a Navy Federal account with no minimum, and they do not expire while the account is open"
+   ],
+   "watchOut": [
+    "The former 1.75% direct deposit tier was discontinued on October 6, 2024",
+    "Gift cards, prepaid cards, money orders, person-to-person transfers, gambling and securities broker purchases earn nothing",
+    "Rental car collision coverage is secondary and applies only to rentals of 15 days or less"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/cash-rewards.html",
+   "sourceUrls": [
+    "https://navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/cashrewards-plus-faqs.pdf",
+    "https://www.nerdwallet.com/credit-cards/best/navy-federal-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Cell phone protection, purchase protection and extended warranty are not listed on the product page; they depend on the Visa or Mastercard benefits guide for the card tier issued"
+   ],
+   "color": "#1D4572"
+  },
+  {
+   "id": "navy-federal-cashrewards-plus",
+   "name": "Navy Federal cashRewards Plus",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Flat 2% cash back with no annual or foreign transaction fee for Navy Federal members approved for a $5,000 or higher credit limit",
+   "tips": [
+    "Navy Federal membership is required: active duty, veterans, retirees, Department of Defense personnel and their family or household members can join",
+    "Issued as a Visa Signature or World Mastercard when the approved credit limit is $5,000 or more; a lower limit gets the 1.5% cashRewards card",
+    "No cap on rewards and no categories to track; cash back redeems as a statement credit or a deposit to a Navy Federal account with no minimum",
+    "No foreign transaction fee, no balance transfer fee and no cash advance fee at Navy Federal branches or ATMs"
+   ],
+   "watchOut": [
+    "Gift cards, prepaid cards, money orders, person-to-person transfers, gambling and securities broker purchases earn nothing",
+    "Rental car collision coverage is secondary and applies only to rentals of 15 days or less",
+    "Rewards are forfeited if Navy Federal closes the account"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/cash-rewards.html",
+   "sourceUrls": [
+    "https://navyfederal.org/content/dam/nfculibs/pdfs/credit-debit-cards/cashrewards-plus-faqs.pdf",
+    "https://www.nerdwallet.com/credit-cards/best/navy-federal-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Cell phone protection, purchase protection and extended warranty are not listed on the product page; they depend on the Visa Signature or World Mastercard benefits guide"
+   ],
+   "color": "#1D446D"
+  },
+  {
+   "id": "navy-federal-cashrewards-secured",
+   "name": "Navy Federal cashRewards Secured",
+   "issuer": "Navy Federal",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Building credit with a $200 deposit while earning 1% cash back, with a path to the unsecured cashRewards card",
+   "tips": [
+    "Navy Federal membership is required; this is the current name of the card formerly sold as nRewards Secured",
+    "Deposit $200 to $5,000 into a Navy Federal savings account; the deposit sets your credit limit",
+    "After 3 months you may qualify for a credit limit increase without adding to the deposit; after 6 months the account is reviewed monthly for an upgrade to the unsecured cashRewards card and the deposit is returned",
+    "No annual fee, no foreign transaction fee and no cap on cash back"
+   ],
+   "watchOut": [
+    "Only 1% cash back; the unsecured cashRewards cards earn 1.5% or 2%",
+    "Gift cards, prepaid cards, money orders and gambling earn nothing"
+   ],
+   "sourceUrl": "https://www.navyfederal.org/loans-cards/credit-cards/cash-rewards-secured.html",
+   "sourceUrls": [
+    "https://www.navyfederal.org/loans-cards/credit-cards.html"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The product page does not mention the old nRewards Secured name; the rename is inferred from Navy Federal's current lineup, which lists only cashRewards Secured"
+   ],
+   "color": "#234F6C"
+  },
+  {
+   "id": "penfed-defender-rewards",
+   "name": "PenFed Defender Rewards",
+   "issuer": "PenFed",
+   "network": "Visa",
+   "type": "personal",
+   "program": "penfed-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "gas",
+     "rate": 5
+    },
+    {
+     "category": "ev-charging",
+     "rate": 5
+    },
+    {
+     "category": "select-merchants",
+     "rate": 3,
+     "label": "Military exchanges and commissaries (on base and online) and sporting goods stores"
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [],
+   "bestFor": "No-fee 5x at the pump and 3x at military exchanges, commissaries and sporting goods stores",
+   "tips": [
+    "Launched July 2026; anyone can join PenFed, but the 3x categories suit military families who shop on base",
+    "5x applies to gas paid at the pump and EV charging; select-merchants means military exchange stores, commissaries and sporting goods stores at 3x",
+    "Points cannot be redeemed for cash; travel, gift cards and merchandise only",
+    "No annual fee, no foreign transaction fee and no caps"
+   ],
+   "watchOut": [
+    "Points expire 5 years from the date earned",
+    "Fuel for boats and planes and purchases inside the gas station store earn only 1x",
+    "The PenFed page is inconsistent about whether supermarkets, restaurants and streaming earn a bonus on this card; assume 1x unless your cardholder agreement says otherwise"
+   ],
+   "sourceUrl": "https://www.penfed.org/credit-cards/defender-rewards-visa",
+   "sourceUrls": [
+    "https://www.penfed.org/credit-cards",
+    "https://www.insideflyer.com/posts/penfed-credit-card-changes-prompt-strategy-shift/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Not in the assignment list but it is a current PenFed card; included for completeness",
+    "Whether supermarkets, restaurants and streaming earn 3x on this card is unclear on PenFed's page (the comparison page lists only gas, military stores and sporting goods)"
+   ],
+   "color": "#223C67"
+  },
+  {
+   "id": "penfed-gold-visa",
+   "name": "PenFed Gold Visa",
+   "issuer": "PenFed",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [],
+   "bestFor": "PenFed's low-APR card for carrying a balance; it earns no rewards",
+   "tips": [
+    "Anyone can join PenFed with a $5 savings deposit",
+    "No rewards; PenFed describes it as its low APR card with intro APR offers on purchases and balance transfers",
+    "Cell phone protection up to $1,000 per year when you pay your wireless bill with the card",
+    "No annual fee and no foreign transaction fee"
+   ],
+   "watchOut": [
+    "No rewards of any kind",
+    "A balance transfer fee applies to each transfer"
+   ],
+   "sourceUrl": "https://www.penfed.org/credit-cards/gold-visa",
+   "sourceUrls": [
+    "https://www.penfed.org/credit-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#285877"
+  },
+  {
+   "id": "penfed-pathfinder-rewards",
+   "name": "PenFed Pathfinder Rewards",
+   "issuer": "PenFed",
+   "network": "Visa",
+   "type": "personal",
+   "program": "penfed-rewards",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [
+    {
+     "category": "travel",
+     "rate": 3
+    },
+    {
+     "category": "flights",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 3
+    },
+    {
+     "category": "rental-car",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "Up to $100 per calendar year in statement credits for domestic airline ancillary fees such as bags, seat changes and lounge day passes",
+    "$120 Global Entry or $85 TSA PreCheck application fee credit every four years",
+    "Priority Pass Select membership (lounge visit fees apply)"
+   ],
+   "bestFor": "Travel card with 1.5x base earning and 3x on travel (4x and 3x dining for Honors Advantage members) plus airline fee and Global Entry credits",
+   "tips": [
+    "Anyone can join PenFed; Honors Advantage members (military service or a qualifying PenFed checking account) earn 4x on travel and 3x on dining instead of 3x and 2x",
+    "Base earning is 1.5x on everything else, higher than most travel cards",
+    "Points are worth a minimum of 0.85 cent and up to 1 cent depending on the redemption; travel, gift cards and merchandise only, no cash",
+    "The $95 annual fee is charged to everyone since September 28, 2026; the Honors Advantage fee waiver ended",
+    "Free Checking holders must keep a $500 daily balance or $500 in monthly direct deposits to keep Honors Advantage"
+   ],
+   "watchOut": [
+    "PenFed does not refund the annual fee once it posts, so decide before the anniversary",
+    "Points expire 5 years from the end of the month earned",
+    "Priority Pass membership is free but each lounge visit is charged",
+    "The airline fee credit covers only domestic carriers' incidental fees, not airfare"
+   ],
+   "sourceUrl": "https://www.penfed.org/credit-cards/pathfinder-rewards-visa",
+   "sourceUrls": [
+    "https://penfed.org/credit-cards/honors-advantage-points",
+    "https://www.nerdwallet.com/reviews/credit-cards/penfed-pathfinder-rewards",
+    "https://www.doctorofcredit.com/penfed-to-remove-annual-fee-waiver-on-pathfinder/",
+    "https://frequentmiler.com/PENFEDPR/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "PenFed's page renders the multipliers client-side; the 3x/4x travel and 2x/3x dining rates come from NerdWallet (October 2026) and the PenFed Honors Advantage page, which confirm an extra 1x for Honors Advantage members",
+    "Rental car coverage is described on the PenFed page without saying primary or secondary"
+   ],
+   "color": "#1A3774"
+  },
+  {
+   "id": "penfed-platinum-rewards",
+   "name": "PenFed Platinum Rewards",
+   "issuer": "PenFed",
+   "network": "Visa",
+   "type": "personal",
+   "program": "penfed-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "gas",
+     "rate": 5
+    },
+    {
+     "category": "ev-charging",
+     "rate": 5
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "category": "superstore",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "streaming",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "No-fee 5x at the pump and 3x on supermarkets, restaurants and streaming, with points best used for travel",
+   "tips": [
+    "Anyone can join PenFed with a $5 savings deposit; membership is created during the card application",
+    "5x applies to gas paid at the pump and EV charging stations; 3x covers supermarkets including most Target and Walmart locations and military commissaries, restaurants, and TV, radio, cable and streaming services",
+    "Points cannot be redeemed for cash; a PenFed spokesperson quoted about 1.7 cents per point for travel and about 0.85 cent for gift cards and merchandise, with a 1,000 point minimum",
+    "No caps on bonus categories and no foreign transaction fee",
+    "Cell phone protection applies when you pay your wireless bill with the card"
+   ],
+   "watchOut": [
+    "Points expire 5 years from the date earned",
+    "Gas bought inside the station's convenience store and fuel for boats or planes earn only 1x",
+    "No cash back option; redemptions are travel, gift cards and merchandise only"
+   ],
+   "sourceUrl": "https://www.penfed.org/credit-cards/platinum-rewards-visa",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/reviews/credit-cards/penfed-platinum-rewards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The point values are from NerdWallet (October 2026) quoting PenFed, not a PenFed page",
+    "Rental car coverage is from NerdWallet's listing of Visa Signature benefits, not the product page"
+   ],
+   "color": "#1A4D74"
+  },
+  {
+   "id": "penfed-power-cash-rewards",
+   "name": "PenFed Power Cash Rewards",
+   "issuer": "PenFed",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [],
+   "bestFor": "Flat 1.5% cash back, or 2% for Honors Advantage members with military service or a PenFed checking account",
+   "tips": [
+    "Anyone can join PenFed; the base rate is 1.5%, and Honors Advantage members earn 2% on everything",
+    "Honors Advantage requires military service (active, reserve, honorably discharged or retired) or being the primary owner of a PenFed Access America or Free Checking account; Free Checking needs a $500 daily balance or $500 in monthly direct deposits",
+    "Cash back redeems as a statement credit, a deposit to a PenFed account or a transfer to another bank with a 1 cent minimum; new accounts default to a monthly statement credit",
+    "No annual fee, no foreign transaction fee and no cap",
+    "Cell phone protection applies when you pay your wireless bill with the card"
+   ],
+   "watchOut": [
+    "Without Honors Advantage the card is only 1.5%, below several no-fee 2% cards",
+    "If you close a qualifying checking account you drop back to 1.5%",
+    "Rewards stay on a closed account for only 120 days"
+   ],
+   "sourceUrl": "https://www.penfed.org/credit-cards/power-cash-rewards-visa",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/credit-cards/penfed-power-cash-rewards-card",
+    "https://penfed.org/credit-cards/honors-advantage-points"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "PenFed's page renders the percentages client-side; the 2% and 1.5% figures come from the page's chart and from NerdWallet (February 2026)",
+    "Rental car coverage, purchase protection and extended warranty are not listed on the product page"
+   ],
+   "color": "#2B4A73"
+  },
+  {
+   "id": "robinhood-gold-card",
+   "name": "Robinhood Gold",
+   "issuer": "Robinhood",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 3,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 5,
+     "label": "issuer travel site"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "3% on everything with no cap for Robinhood Gold members, and 5% on travel booked through Robinhood",
+   "tips": [
+    "Requires an active Robinhood Gold subscription ($5 per month or $50 per year) and a Robinhood brokerage account; the card itself has no annual fee",
+    "Cash back is worth 1 cent per point when deposited to your Robinhood brokerage account, which you can then withdraw; a statement credit pays only 0.7 cent",
+    "5% on travel booked through the Robinhood travel portal",
+    "Still waitlist based: reserve a spot, then wait for an invitation to apply",
+    "Issued by Coastal Community Bank as a Visa Signature; family members of any age can be added as cardholders at no cost"
+   ],
+   "watchOut": [
+    "Cards opened on or after July 1, 2026 carry a 3% foreign transaction fee; earlier accounts keep 0% for now",
+    "Robinhood declines some payments such as estimated tax payments",
+    "The Gold subscription is the real cost; cancel Gold and the card goes with it",
+    "No cell phone protection or trip delay coverage is published"
+   ],
+   "sourceUrl": "https://robinhood.com/creditcard",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/robinhood-credit-card",
+    "https://www.doctorofcredit.com/robinhood-adds-3-foreign-transaction-fee/",
+    "https://www.uscreditcardguide.com/robinhood-gold-credit-card",
+    "https://upgradedpoints.com/news/robinhood-gold-card-pros-cons/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Robinhood's page lists only trip interruption protection; purchase security, extended warranty and rental car coverage come from NerdWallet (October 2026) and Upgraded Points, and the rental coverage's primary or secondary status is not stated",
+    "fxFee is 3 for new accounts; existing accounts opened before July 1, 2026 still have 0"
+   ],
+   "color": "#1A446B"
+  },
+  {
+   "id": "sofi-everyday-cash-rewards",
+   "name": "SoFi Everyday Cash Rewards",
+   "issuer": "SoFi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "Invited SoFi members who want 3% on dining including delivery and 2% on groceries with no annual fee",
+   "tips": [
+    "Invitation only; SoFi sends offers by mail or email to members and non-members",
+    "3% on dining including food delivery apps; 2% on grocery and convenience stores including online orders; 1% elsewhere",
+    "Points are worth 1 cent each when redeemed into SoFi accounts, toward the card balance or on SoFi Travel",
+    "No annual fee"
+   ],
+   "watchOut": [
+    "Redemptions are limited to SoFi products; there is no deposit to an outside bank",
+    "SoFi allows one credit card per member",
+    "No caps are published, but confirm in your pricing terms"
+   ],
+   "sourceUrl": "https://www.sofi.com/credit-card/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/credit-cards/sofi-launches-two-new-invite-only-credit-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Not in the assignment list but it is a current SoFi card; included for completeness",
+    "Foreign transaction fee is not published on SoFi's page or in NerdWallet's launch article; 0 is assumed to match the other SoFi cards and should be confirmed",
+    "Protections are not published"
+   ],
+   "color": "#314D87"
+  },
+  {
+   "id": "sofi-unlimited-2-percent",
+   "name": "SoFi Unlimited 2%",
+   "issuer": "SoFi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 3,
+     "label": "issuer travel site"
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true
+   },
+   "credits": [],
+   "bestFor": "Flat 2% for SoFi customers who redeem into SoFi accounts, plus 3% on SoFi Travel bookings",
+   "tips": [
+    "Points are worth 1 cent each only when redeemed into a SoFi checking, savings, investing or loan account, toward the card balance or on SoFi Travel; there is no deposit to outside banks and no check",
+    "3% on trips booked through SoFi Travel",
+    "Applications are by invitation; check for a pre-qualified offer by logging into your SoFi account",
+    "World Elite Mastercard benefits include cell phone protection up to $1,000 when you pay your phone bill with the card",
+    "No annual fee and no foreign transaction fee for new applicants"
+   ],
+   "watchOut": [
+    "Some existing cardholders were notified before January 10, 2026 that a monthly fee now applies to their accounts; new applicants are not charged it",
+    "SoFi allows one credit card per member, so holders of the Everyday Cash Rewards or Essential card cannot also get this one",
+    "Returned or reversed purchases earn no points"
+   ],
+   "sourceUrl": "https://www.sofi.com/credit-card/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/reviews/credit-cards/sofi-credit-card",
+    "https://www.nerdwallet.com/article/credit-cards/sofi-credit-card-offers-cryptocurrency-redemption-option"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "SoFi's page confirms 2 points per dollar and 1 cent redemption but does not state the foreign transaction fee or the 3% SoFi Travel rate for this card; those come from NerdWallet (October 2026)",
+    "The invitation-only status is from NerdWallet; SoFi's page shows a prequalification check rather than an open application"
+   ],
+   "color": "#285277"
+  },
+  {
    "id": "amazon-secured-card",
    "name": "Amazon Secured Card",
    "issuer": "Synchrony",
@@ -9975,6 +12191,612 @@
     "Foreign transaction fee for the Mastercard version is not stated on the Target rates page"
    ],
    "color": "#254683"
+  },
+  {
+   "id": "usaa-cashback-rewards-plus-amex",
+   "name": "USAA Cashback Rewards Plus American Express",
+   "issuer": "USAA",
+   "network": "American Express",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "select-merchants",
+     "rate": 5,
+     "cap": 5000,
+     "capPeriod": "year",
+     "label": "Military base purchases (commissaries, exchanges, shoppettes)"
+    },
+    {
+     "category": "gas",
+     "rate": 5,
+     "cap": 3000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "groceries",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "year",
+     "excludes": [
+      "warehouse",
+      "superstore"
+     ]
+    }
+   ],
+   "benefits": {
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "USAA members who shop on base: 5% on the first $5,000 of base purchases and $3,000 of gas per year, 3% on groceries",
+   "tips": [
+    "USAA membership is required: current and former military members, their spouses and children qualify",
+    "Refreshed in July 2026: gas and military base purchases are now separate 5% categories with separate caps ($3,000 and $5,000 per year), and groceries rose from 2% to 3% on the first $3,000 per year",
+    "select-merchants here means military commissaries, exchanges and shoppettes on base",
+    "Cash back is paid monthly and there is no annual fee",
+    "The foreign transaction fee dropped to 0% with the refresh"
+   ],
+   "watchOut": [
+    "Each bonus category has its own calendar-year cap; after the cap you earn 1%",
+    "American Express acceptance is narrower than Visa or Mastercard",
+    "Gas at warehouse clubs and supermarkets may not code as a gas station"
+   ],
+   "sourceUrl": "https://www.businesswire.com/news/home/20260715177802/en/USAA-Bank-Launches-New-Rewards-Credit-Cards-Delivering-Higher-Value-for-Everyday-Spending",
+   "sourceUrls": [
+    "https://usaa-newsroom.prgloo.com/news/usaa-bank-credit-cards-july-2026",
+    "https://www.doctorofcredit.com/usaa-cashback-rewards-plus-american-express-review-5-cash-back-on-gas-military-base-spend/",
+    "https://frequentmiler.com/usaacashbackrewardsplus/",
+    "https://www.nerdwallet.com/credit-cards/learn/best-usaa-credit-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "USAA product and terms pages for this card would not render; rates come from USAA's July 15, 2026 press release and the fee and protections from Doctor of Credit and Frequent Miler",
+    "Whether the grocery category excludes warehouse clubs and superstores is assumed from USAA's other 2026 cards and not confirmed for this one"
+   ],
+   "color": "#213E78"
+  },
+  {
+   "id": "usaa-eagle-adapt",
+   "name": "USAA Eagle Adapt Visa",
+   "issuer": "USAA",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "groceries",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter",
+     "excludes": [
+      "warehouse"
+     ]
+    },
+    {
+     "category": "dining",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "gas",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "home-improvement",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "travel",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "transit",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "drugstore",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "fitness",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "entertainment",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    },
+    {
+     "category": "streaming",
+     "rate": 3,
+     "cap": 3000,
+     "capPeriod": "quarter"
+    }
+   ],
+   "benefits": {
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "USAA members who want 3% across most everyday categories with no annual fee",
+   "tips": [
+    "USAA membership is required: current and former military members, their spouses and children qualify",
+    "Launched July 2026; the eight 3% categories are dining, gas and EV charging, groceries, health and wellness (drugstores, pharmacies, gyms and fitness clubs), home improvement and furnishings, live entertainment and streaming, transit, and travel",
+    "The $3,000 cap per calendar quarter is combined across all 3% categories; after that they earn 1% for the rest of the quarter",
+    "Points are worth 1 cent each as cash; Shop with Rewards pays only 0.8 cent",
+    "No foreign transaction fee"
+   ],
+   "watchOut": [
+    "Wholesale clubs such as Costco and Sam's Club and some discount stores such as Dollar General are excluded from groceries",
+    "Home gym equipment and fitness streaming classes do not count as health and wellness; florists and glass stores do not count as home improvement",
+    "Business purchases, tax payments, gift cards and person-to-person transfers earn nothing",
+    "The travel category includes third-party travel sites and the USAA Rewards Center, so there is no separate portal bonus"
+   ],
+   "sourceUrl": "https://usaa.com/banking/terms/eagle-adapt-visa-credit-card-reward-program/",
+   "sourceUrls": [
+    "https://www.businesswire.com/news/home/20260715177802/en/USAA-Bank-Launches-New-Rewards-Credit-Cards-Delivering-Higher-Value-for-Everyday-Spending",
+    "https://doctorofcredit.com/usaa-launches-new-eagle-adapt-card-200-bonus-15-month-0-period-3-cashback",
+    "https://frequentmiler.com/usaaeagleadapt/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Foreign transaction fee of 0% and the protections come from Frequent Miler, not the USAA terms page",
+    "The schema has no health-and-wellness category; drugstore and fitness are the closest ids and the full definition is in the tips"
+   ],
+   "color": "#1B4F79"
+  },
+  {
+   "id": "usaa-eagle-ascend",
+   "name": "USAA Eagle Ascend American Express",
+   "issuer": "USAA",
+   "network": "American Express",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [],
+   "choice": {
+    "slots": 1,
+    "rate": 2,
+    "options": [
+     "gas",
+     "ev-charging",
+     "groceries",
+     "dining",
+     "entertainment",
+     "streaming",
+     "home-improvement",
+     "travel",
+     "transit",
+     "drugstore",
+     "fitness"
+    ],
+    "auto": true
+   },
+   "benefits": {},
+   "credits": [],
+   "bestFor": "USAA members who want 2% on whichever eligible category they spend most in each month, with no tracking",
+   "tips": [
+    "USAA membership is required: current and former military members, their spouses and children qualify",
+    "Launched July 2026; USAA pays 2% on your top eligible spend category each month automatically, so there is nothing to select",
+    "Eligible categories are gas and EV charging, groceries, dining, live entertainment and streaming, home improvement and furnishings, travel, transit, and health and wellness",
+    "Points are worth 1 cent each as cash; no annual fee and no foreign transaction fee",
+    "One late fee is waived every 12 months and there is no penalty APR"
+   ],
+   "watchOut": [
+    "Only one category earns 2% each month; everything else earns 1%",
+    "American Express acceptance is narrower than Visa or Mastercard",
+    "No cap is published, but confirm in your cardholder terms"
+   ],
+   "sourceUrl": "https://www.businesswire.com/news/home/20260715177802/en/USAA-Bank-Launches-New-Rewards-Credit-Cards-Delivering-Higher-Value-for-Everyday-Spending",
+   "sourceUrls": [
+    "https://usaa-newsroom.prgloo.com/news/usaa-bank-credit-cards-july-2026",
+    "https://creditcards.lendingtree.com/credit-card/usaa-eagle-ascend",
+    "https://www.cardrates.com/news/usaa-launches-3-credit-cards-with-up-to-5-percent-cash-back/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The USAA terms page for this card would not render; the full category list comes from LendingTree (September 2026) and matches the Eagle Adapt categories",
+    "The choice object uses a non-schema 'automatic': true flag because USAA picks the category, matching the Citi Custom Cash convention in capitalone-citi.json",
+    "Foreign transaction fee of 0% is from LendingTree; protections are not published"
+   ],
+   "color": "#215478"
+  },
+  {
+   "id": "usaa-eagle-navigator",
+   "name": "USAA Eagle Navigator",
+   "issuer": "USAA",
+   "network": "Visa",
+   "type": "personal",
+   "program": "usaa-rewards",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "category": "travel",
+     "rate": 3
+    },
+    {
+     "category": "flights",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 3
+    },
+    {
+     "category": "rental-car",
+     "rate": 3
+    },
+    {
+     "category": "transit",
+     "rate": 3
+    },
+    {
+     "category": "portal-travel",
+     "rate": 3,
+     "label": "issuer travel site"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true
+   },
+   "credits": [
+    "Up to $120 Global Entry or TSA PreCheck application fee credit every four years",
+    "10,000 bonus points once per calendar year after a hotel or car rental booking of $100 or more through the USAA Rewards Center that redeems at least 100 points"
+   ],
+   "bestFor": "USAA members who want 2x on everything and 3x on travel and transit with points worth 1 cent toward travel",
+   "tips": [
+    "USAA membership is required: current and former military members, their spouses and children qualify",
+    "Travel at 3x covers airlines, hotels, vacation rentals, cruise lines, travel agencies, car rentals and campgrounds; transit at 3x covers taxis, rideshare, buses, ferries, parking, tolls and trains",
+    "Points are worth 1 cent each for travel through the USAA Rewards Center but only 0.7 cent as cash back, so redeem for travel",
+    "The annual 10,000 point booking bonus is worth $100 in travel and covers most of the $95 fee if you book one hotel or car through the Rewards Center each year",
+    "No foreign transaction fee and no cap on points"
+   ],
+   "watchOut": [
+    "Cash redemptions lose 30% of the value; 10,000 points is $100 in travel but $70 in cash",
+    "Business purchases, tax payments, gift cards and person-to-person transfers earn nothing",
+    "Purchases through digital wallets or third-party payment apps may not earn the travel bonus if the merchant is not classified as travel"
+   ],
+   "sourceUrl": "https://usaa.com/banking/terms/usaa-eagle-navigator-visa-credit-card-reward-program/",
+   "sourceUrls": [
+    "https://www.bankrate.com/credit-cards/reviews/usaa-eagle-navigator-visa-signature/",
+    "https://militarymoneymanual.com/usaa-eagle-card/",
+    "https://upgradedpoints.com/credit-cards/usaa-credit-cards-rewards-program"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Protections (cell phone, purchase security, trip cancellation and delay) come from Bankrate (October 2026) and Military Money Manual, not an issuer page; the rental car waiver's primary or secondary status is not stated"
+   ],
+   "color": "#2C5A7D"
+  },
+  {
+   "id": "usaa-preferred-cash-rewards",
+   "name": "USAA Preferred Cash Rewards",
+   "issuer": "USAA",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Flat 1.5% cash back with no foreign transaction fee for USAA members",
+   "tips": [
+    "USAA membership is required: current and former military members, their spouses and children qualify",
+    "1.5% on everything with no categories and no cap; cash back does not expire while the account is open",
+    "Cell phone protection up to $500 per claim when you pay your monthly phone bill with the card",
+    "No foreign transaction fee; 5% fee on balance transfers and cash advances"
+   ],
+   "watchOut": [
+    "Business purchases, tax payments, gift cards, cryptocurrency and person-to-person transfers earn nothing",
+    "If you close the account you have 90 days to redeem or the cash back is forfeited",
+    "USAA's Eagle Adapt card earns 3% in common categories for the same $0 fee if you want more than a flat rate"
+   ],
+   "sourceUrl": "https://usaa.com/banking/terms/preferred-cash-rewards-visa-credit-card-reward-program/",
+   "sourceUrls": [
+    "https://www.bankrate.com/credit-cards/reviews/usaa-preferred-cash-rewards-visa-signature",
+    "https://awardwallet.com/blog/usaa-preferred-cash-rewards/",
+    "https://upgradedpoints.com/credit-cards/usaa-credit-cards-rewards-program"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "USAA product pages require cookies and would not render, so the foreign transaction fee and protections come from the USAA rewards terms page plus Bankrate, AwardWallet and Upgraded Points (all 2026); the rental car waiver's primary or secondary status is not stated by those sources"
+   ],
+   "color": "#203D6F"
+  },
+  {
+   "id": "usaa-rate-advantage",
+   "name": "USAA Rate Advantage Visa Platinum",
+   "issuer": "USAA",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "USAA's low-rate card for carrying a balance; it earns no rewards",
+   "tips": [
+    "USAA membership is required: current and former military members, their spouses and children qualify",
+    "No rewards; the draw is a low variable APR and a 0% intro APR for 15 months on balance transfers and convenience checks posted within 90 days of opening",
+    "No annual fee and no foreign transaction fee",
+    "Keep rewards spending on another card and use this one only for balances you are paying down"
+   ],
+   "watchOut": [
+    "No rewards of any kind",
+    "Balance transfers carry a 5% fee"
+   ],
+   "sourceUrl": "https://upgradedpoints.com/credit-cards/usaa-credit-cards-rewards-program",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/best-usaa-credit-cards",
+    "https://www.cnbc.com/select/best-usaa-credit-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "USAA product pages would not render; fees and the intro offer come from Upgraded Points (August 2026) and NerdWallet (June 2026)"
+   ],
+   "color": "#243A60"
+  },
+  {
+   "id": "upgrade-cash-rewards-visa",
+   "name": "Upgrade Cash Rewards Visa",
+   "issuer": "Upgrade",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1.5,
+   "earn": [],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "A fixed-rate installment card that pays 1.5% back as you repay purchases",
+   "tips": [
+    "Issued by Upgrade's bank partners (historically Cross River Bank); purchases convert to fixed monthly installment plans at 14.99% to 29.99% APR rather than a revolving balance",
+    "Cash back is earned when you make payments toward your balance, not at purchase, and is applied to your next balance",
+    "No annual fee; no cap on the 1.5%",
+    "Upgrade now markets the OneCard Essentials (3% on gas, groceries, streaming and utilities) as its main card; this card is still described in Upgrade's help center"
+   ],
+   "watchOut": [
+    "Foreign transactions cost up to 3%",
+    "Balance transfers carry a fee of up to 5%",
+    "The card cannot be used at ATMs or for PIN transactions",
+    "Not available in some states"
+   ],
+   "sourceUrl": "https://www.upgrade.com/help/upgrade-cards/upgrade-card/upgrade-cash-rewards-card-details/",
+   "sourceUrls": [
+    "https://awardwallet.com/blog/upgrade-cash-rewards-visa-review",
+    "https://www.nerdwallet.com/credit-cards/learn/upgrade-card-which-one-should-you-get"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Upgrade's main card pages (upgrade.com/credit-cards) could not be fetched; whether this card is still open to new applicants is not confirmed, and AwardWallet notes offers are no longer available through its site",
+    "Protections are limited to Visa Signature benefits named generically in reviews"
+   ],
+   "color": "#316A87"
+  },
+  {
+   "id": "upgrade-onecard-essentials",
+   "name": "Upgrade OneCard Essentials",
+   "issuer": "Upgrade",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "category": "gas",
+     "rate": 3,
+     "excludes": [
+      "superstore"
+     ]
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3,
+     "excludes": [
+      "superstore"
+     ]
+    },
+    {
+     "category": "streaming",
+     "rate": 3
+    },
+    {
+     "category": "utilities",
+     "rate": 3
+    },
+    {
+     "category": "phone",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "Uncapped 3% on gas, groceries, streaming and subscriptions, and utility bills with no annual fee",
+   "tips": [
+    "Upgrade's current flagship card as of October 2026; it is offered by invitation and through pre-approval checks on upgrade.com",
+    "3% categories are gas stations and EV charging, groceries (supermarkets, specialty markets and convenience stores), streaming and monthly subscriptions, and utilities (power, phone and internet bills); 1% on everything else",
+    "No cap on the 3% and no annual fee; Visa Signature benefits apply",
+    "Pay Now settles purchases immediately from a linked account; Pay Over Time plans carry a plan fee of up to 1.72% of the amount instead of interest"
+   ],
+   "watchOut": [
+    "Target and Walmart are excluded from the 3% categories",
+    "Foreign transaction fee is not stated on the product page; other Upgrade cards charge up to 3%",
+    "Pay Over Time and Pay in 4 may not be available at account opening"
+   ],
+   "sourceUrl": "https://www.upgrade.com/upgrade-card/",
+   "sourceUrls": [
+    "https://www.upgrade.com/upgrade-card/triple-cash",
+    "https://www.joinkudos.com/blog/upgrade-onecard-essentials-review"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Not in the assignment list; included because it is the card Upgrade currently markets in place of Cash Rewards and Triple Cash",
+    "fxFee of 3 is assumed from Upgrade's other cards; the product page defers to its disclosures",
+    "Whether cash back is earned at purchase or on repayment is not stated for this card"
+   ],
+   "color": "#286380"
+  },
+  {
+   "id": "upgrade-triple-cash-rewards-visa",
+   "name": "Upgrade Triple Cash Rewards Visa",
+   "issuer": "Upgrade",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "category": "home-improvement",
+     "rate": 3
+    },
+    {
+     "category": "select-merchants",
+     "rate": 3,
+     "label": "Auto: dealers, repair and service shops, tire retailers, car washes, towing, vehicle rentals"
+    },
+    {
+     "category": "drugstore",
+     "rate": 3
+    },
+    {
+     "category": "fitness",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "3% back on home, auto and health spending paid off through fixed installments",
+   "tips": [
+    "3% on Home (home improvement, hardware, furniture, appliances, landscaping), Auto (dealers, repair shops, tires, car washes, towing, vehicle rentals) and Health (medical and dental providers, pharmacies, gyms, sporting goods); 1% elsewhere",
+    "select-merchants here stands for the Auto category; drugstore and fitness stand for the Health category",
+    "Cash back is earned when you repay purchases, not at purchase, and is applied to your next balance",
+    "Purchases convert to fixed installment plans at 14.99% to 29.99% APR; no annual fee and no cap on the 3%"
+   ],
+   "watchOut": [
+    "Foreign transactions cost up to 3%",
+    "Merchants set their own category codes, so a purchase may not land in the expected category; Upgrade's examples are guidance only",
+    "Home gym equipment counts only when bought directly from the maker, not from Amazon or Target",
+    "Not available in Georgia, Iowa, Massachusetts, West Virginia, Wisconsin or Washington, D.C."
+   ],
+   "sourceUrl": "https://www.upgrade.com/help/upgrade-cards/upgrade-card/upgrade-triple-cash-rewards-card-details/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/reviews/credit-cards/upgrade-triple-cash-rewards",
+    "https://www.nerdwallet.com/credit-cards/learn/upgrade-card-which-one-should-you-get"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Whether this card is still open to new applicants is not confirmed; NerdWallet (April 2026) lists it as unavailable through its site, and Upgrade's current marketing centers on OneCard Essentials",
+    "The Health category also covers medical and dental providers, which have no schema category"
+   ],
+   "color": "#266192"
+  },
+  {
+   "id": "petal-2-visa",
+   "name": "Petal 2 Cash Back, No Fees Visa",
+   "issuer": "WebBank",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "Petal Offers partner merchants, 2% to 10%"
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "Existing holders building credit with 1% to 1.5% cash back and no fees of any kind",
+   "tips": [
+    "Closed to new applicants; Petal cards were replaced by the Tilt Engage, Tilt Motion and Tilt Essentials cards (also issued by WebBank) in August 2025, and existing Petal 2 accounts were not changed",
+    "Cash back starts at 1%, rises to 1.25% after 6 consecutive on-time payments and to 1.5% after 12 more consecutive on-time payments",
+    "Petal Offers pay 2% to 10% at participating merchants shown in the Tilt app; select-merchants stands for that list",
+    "No annual fee, no foreign transaction fee, no late fee and no other fees; redeem as a statement credit with no minimum"
+   ],
+   "watchOut": [
+    "Missing a minimum payment drops you back to the 1% tier",
+    "Petal Offers may not apply to purchases made through digital wallets or payment apps",
+    "Business purchases, gift cards, cash-like transactions and person-to-person payments earn nothing"
+   ],
+   "sourceUrl": "https://cdn.tilt.com/legal/Petal%202%20Perks%20Program%20Rules.pdf",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/card-details/card-name/Petal-Credit-Card",
+    "https://www.nerdwallet.com/credit-cards/news/tilt-cards-launch-as-replacement-for-petal-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Included as a discontinued but still-held card; the base of 1 is the starting tier and the merge step may want to treat 1.5 as the steady-state rate for long-term holders",
+    "Issuer is recorded as WebBank because the schema enum has no Petal or Tilt value"
+   ],
+   "color": "#22509B"
   }
  ]
 }

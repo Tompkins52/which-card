@@ -1264,9 +1264,6 @@
    "id": "best-western",
    "name": "Best Western",
    "aliases": [
-    "choice hotels",
-    "comfort inn",
-    "quality inn",
     "la quinta",
     "wyndham"
    ],
@@ -1785,6 +1782,91 @@
    "also": [
     "travel"
    ]
+  },
+  {
+   "id": "hawaiian-airlines",
+   "name": "Hawaiian Airlines",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "air-france-klm",
+   "name": "Air France and KLM",
+   "aliases": [
+    "air france",
+    "klm"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "norwegian-cruise-line",
+   "name": "Norwegian Cruise Line",
+   "aliases": [
+    "ncl"
+   ],
+   "category": "travel"
+  },
+  {
+   "id": "royal-caribbean",
+   "name": "Royal Caribbean",
+   "aliases": [],
+   "category": "travel"
+  },
+  {
+   "id": "celebrity-cruises",
+   "name": "Celebrity Cruises",
+   "aliases": [],
+   "category": "travel"
+  },
+  {
+   "id": "silversea",
+   "name": "Silversea",
+   "aliases": [],
+   "category": "travel"
+  },
+  {
+   "id": "choice-hotels",
+   "name": "Choice Hotels",
+   "aliases": [
+    "comfort inn",
+    "quality inn",
+    "sleep inn",
+    "cambria"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "hotels-com",
+   "name": "Hotels.com",
+   "aliases": [],
+   "category": "travel",
+   "online": true
+  },
+  {
+   "id": "korean-air",
+   "name": "Korean Air",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "harley-davidson",
+   "name": "Harley-Davidson",
+   "aliases": [
+    "harley"
+   ],
+   "category": "other"
   }
  ]
 }

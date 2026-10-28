@@ -181,32 +181,8 @@
    "transfer": 1,
    "note": ""
   },
-  "verizon-dollars": {
-   "name": "Verizon Dollars (spend with Verizon)",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "target-circle": {
-   "name": "Target Circle",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "amazon-points": {
-   "name": "Amazon rewards",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "paypal-cashback": {
-   "name": "PayPal cash back",
+  "best-buy-rewards": {
+   "name": "My Best Buy rewards (Best Buy certificates)",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -221,8 +197,24 @@
    "transfer": 1,
    "note": ""
   },
-  "best-buy-rewards": {
-   "name": "My Best Buy rewards (Best Buy certificates)",
+  "discover-cashback": {
+   "name": "Discover cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "amazon-points": {
+   "name": "Amazon rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "target-circle": {
+   "name": "Target Circle",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -237,8 +229,16 @@
    "transfer": 1,
    "note": ""
   },
-  "discover-cashback": {
-   "name": "Discover cash back",
+  "paypal-cashback": {
+   "name": "PayPal cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "verizon-dollars": {
+   "name": "Verizon Dollars (spend with Verizon)",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -260,6 +260,270 @@
    "travel": 1,
    "transfer": 1,
    "note": "Worth $1 each only toward Disney purchases or as a statement credit against Disney, Disney+, Hulu and ESPN charges."
+  },
+  "navy-federal-rewards": {
+   "name": "Navy Federal rewards points",
+   "unit": "points",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each as cash back or travel; no transfer partners."
+  },
+  "usaa-rewards": {
+   "name": "USAA rewards points",
+   "unit": "points",
+   "cash": 0.7,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent toward travel and about 0.7 cent as cash."
+  },
+  "penfed-rewards": {
+   "name": "PenFed points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "No cash option; about 1 cent toward travel and gift cards, more on some travel redemptions."
+  },
+  "flying-blue-miles": {
+   "name": "Flying Blue miles",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.2,
+   "transfer": 1.2,
+   "note": "Air France and KLM awards; watch the monthly Promo Rewards."
+  },
+  "norwegian-points": {
+   "name": "Norwegian Cruise Line points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each as cruise credit only."
+  },
+  "royal-caribbean-points": {
+   "name": "Royal Caribbean points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each as cruise credit, 5,000 point minimum."
+  },
+  "choice-privileges": {
+   "name": "Choice Privileges points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.8,
+   "transfer": 0.8,
+   "note": "Best on cheap Comfort and Quality Inn nights; about 0.8 cent each."
+  },
+  "onekey-cash": {
+   "name": "OneKeyCash",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spends like dollars, but only at Expedia, Hotels.com and Vrbo, and it expires after 18 months idle."
+  },
+  "skypass-miles": {
+   "name": "Korean Air SKYPASS miles",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.3,
+   "transfer": 1.3,
+   "note": "Strong value on Korean Air long-haul awards."
+  },
+  "harley-davidson-points": {
+   "name": "Harley-Davidson points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each as gift cards; they expire after three years."
+  },
+  "hawaiian-miles": {
+   "name": "HawaiianMiles",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.2,
+   "transfer": 1.2,
+   "note": "Now part of the Alaska and Hawaiian program; check the current merger rules."
+  },
+  "frontier-miles": {
+   "name": "Frontier Miles",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Low value; best on Frontier sale fares."
+  },
+  "wyndham-rewards": {
+   "name": "Wyndham Rewards points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.1,
+   "transfer": 1.1,
+   "note": "Fixed award chart; 7,500 points a night at many properties."
+  },
+  "carnival-funpoints": {
+   "name": "Carnival FunPoints",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each toward a Carnival cruise."
+  },
+  "priceline-points": {
+   "name": "Priceline points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each toward Priceline bookings."
+  },
+  "emirates-skywards": {
+   "name": "Emirates Skywards miles",
+   "unit": "miles",
+   "cash": 0,
+   "travel": 1.2,
+   "transfer": 1.2,
+   "note": "Emirates awards; fuel surcharges apply."
+  },
+  "rei-rewards": {
+   "name": "REI Co-op rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Paid once a year as a Co-op Member Reward usable at REI."
+  },
+  "cabelas-club-points": {
+   "name": "CLUB points (Bass Pro and Cabela's)",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable only at Bass Pro Shops and Cabela's."
+  },
+  "kohls-rewards": {
+   "name": "Kohl's Rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Paid as Kohl's Cash, spendable only at Kohl's."
+  },
+  "bjs-rewards": {
+   "name": "BJ's rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at BJ's."
+  },
+  "key-rewards": {
+   "name": "Key Rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at Williams Sonoma, Pottery Barn and West Elm."
+  },
+  "macys-star-rewards": {
+   "name": "Macy's Star Money",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable only at Macy's."
+  },
+  "amtrak-guest-rewards": {
+   "name": "Amtrak Guest Rewards points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 2.5,
+   "transfer": 2.5,
+   "note": "About 2.5 cents each on Amtrak fares."
+  },
+  "best-western-rewards": {
+   "name": "Best Western Rewards points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.6,
+   "transfer": 0.6,
+   "note": "About 0.6 cent each on Best Western nights."
+  },
+  "gm-rewards": {
+   "name": "GM Rewards points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each toward a GM vehicle or service."
+  },
+  "fidelity-rewards": {
+   "name": "Fidelity Rewards points",
+   "unit": "points",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth 1 cent each deposited to a Fidelity account."
+  },
+  "aaa-rewards": {
+   "name": "AAA rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Cash back as a statement credit."
+  },
+  "sephora-rewards": {
+   "name": "Sephora rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable only at Sephora."
+  },
+  "ulta-rewards": {
+   "name": "Ultamate Rewards points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 2,
+   "transfer": 2,
+   "note": "Worth about 2 cents each at Ulta."
+  },
+  "ikea-rewards": {
+   "name": "IKEA rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at IKEA."
+  },
+  "caesars-rewards": {
+   "name": "Caesars Rewards",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Reward Credits spendable at Caesars properties."
+  },
+  "jcpenney-rewards": {
+   "name": "JCPenney Rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable only at JCPenney."
+  },
+  "tjx-rewards": {
+   "name": "TJX Rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at T.J. Maxx, Marshalls, HomeGoods and Sierra."
   },
   "bofa-points": {
    "name": "Bank of America points",

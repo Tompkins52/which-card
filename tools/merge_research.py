@@ -181,6 +181,43 @@ def main(src):
                                                   'note': 'Best on short-haul partner flights and off-peak British Airways awards; Avios move freely between the three programs.'})
     programs.setdefault('disney-rewards', {'name': 'Disney Rewards Dollars', 'unit': 'percent', 'cash': 1, 'travel': 1, 'transfer': 1,
                                            'note': 'Worth $1 each only toward Disney purchases or as a statement credit against Disney, Disney+, Hulu and ESPN charges.'})
+    EXTRA_PROGRAMS = {
+        'navy-federal-rewards': ('Navy Federal rewards points', 'points', 1, 1, 1, 'Worth 1 cent each as cash back or travel; no transfer partners.'),
+        'usaa-rewards': ('USAA rewards points', 'points', 0.7, 1, 1, 'Worth 1 cent toward travel and about 0.7 cent as cash.'),
+        'penfed-rewards': ('PenFed points', 'points', 0, 1, 1, 'No cash option; about 1 cent toward travel and gift cards, more on some travel redemptions.'),
+        'flying-blue-miles': ('Flying Blue miles', 'miles', 0, 1.2, 1.2, 'Air France and KLM awards; watch the monthly Promo Rewards.'),
+        'norwegian-points': ('Norwegian Cruise Line points', 'points', 0, 1, 1, 'Worth 1 cent each as cruise credit only.'),
+        'royal-caribbean-points': ('Royal Caribbean points', 'points', 0, 1, 1, 'Worth 1 cent each as cruise credit, 5,000 point minimum.'),
+        'choice-privileges': ('Choice Privileges points', 'points', 0, 0.8, 0.8, 'Best on cheap Comfort and Quality Inn nights; about 0.8 cent each.'),
+        'onekey-cash': ('OneKeyCash', 'percent', 1, 1, 1, 'Spends like dollars, but only at Expedia, Hotels.com and Vrbo, and it expires after 18 months idle.'),
+        'skypass-miles': ('Korean Air SKYPASS miles', 'miles', 0, 1.3, 1.3, 'Strong value on Korean Air long-haul awards.'),
+        'harley-davidson-points': ('Harley-Davidson points', 'points', 0, 1, 1, 'Worth 1 cent each as gift cards; they expire after three years.'),
+        'hawaiian-miles': ('HawaiianMiles', 'miles', 0, 1.2, 1.2, 'Now part of the Alaska and Hawaiian program; check the current merger rules.'),
+        'frontier-miles': ('Frontier Miles', 'miles', 0, 1, 1, 'Low value; best on Frontier sale fares.'),
+        'wyndham-rewards': ('Wyndham Rewards points', 'points', 0, 1.1, 1.1, 'Fixed award chart; 7,500 points a night at many properties.'),
+        'carnival-funpoints': ('Carnival FunPoints', 'points', 0, 1, 1, 'Worth 1 cent each toward a Carnival cruise.'),
+        'priceline-points': ('Priceline points', 'points', 0, 1, 1, 'Worth 1 cent each toward Priceline bookings.'),
+        'emirates-skywards': ('Emirates Skywards miles', 'miles', 0, 1.2, 1.2, 'Emirates awards; fuel surcharges apply.'),
+        'rei-rewards': ('REI Co-op rewards', 'percent', 1, 1, 1, 'Paid once a year as a Co-op Member Reward usable at REI.'),
+        'cabelas-club-points': ('CLUB points (Bass Pro and Cabela\'s)', 'percent', 1, 1, 1, 'Spendable only at Bass Pro Shops and Cabela\'s.'),
+        'kohls-rewards': ('Kohl\'s Rewards', 'percent', 1, 1, 1, 'Paid as Kohl\'s Cash, spendable only at Kohl\'s.'),
+        'bjs-rewards': ('BJ\'s rewards', 'percent', 1, 1, 1, 'Spendable at BJ\'s.'),
+        'key-rewards': ('Key Rewards', 'percent', 1, 1, 1, 'Spendable at Williams Sonoma, Pottery Barn and West Elm.'),
+        'macys-star-rewards': ('Macy\'s Star Money', 'percent', 1, 1, 1, 'Spendable only at Macy\'s.'),
+        'amtrak-guest-rewards': ('Amtrak Guest Rewards points', 'points', 0, 2.5, 2.5, 'About 2.5 cents each on Amtrak fares.'),
+        'best-western-rewards': ('Best Western Rewards points', 'points', 0, 0.6, 0.6, 'About 0.6 cent each on Best Western nights.'),
+        'gm-rewards': ('GM Rewards points', 'points', 0, 1, 1, 'Worth 1 cent each toward a GM vehicle or service.'),
+        'fidelity-rewards': ('Fidelity Rewards points', 'points', 1, 1, 1, 'Worth 1 cent each deposited to a Fidelity account.'),
+        'aaa-rewards': ('AAA rewards', 'percent', 1, 1, 1, 'Cash back as a statement credit.'),
+        'sephora-rewards': ('Sephora rewards', 'percent', 1, 1, 1, 'Spendable only at Sephora.'),
+        'ulta-rewards': ('Ultamate Rewards points', 'points', 0, 2, 2, 'Worth about 2 cents each at Ulta.'),
+        'ikea-rewards': ('IKEA rewards', 'percent', 1, 1, 1, 'Spendable at IKEA.'),
+        'caesars-rewards': ('Caesars Rewards', 'points', 0, 1, 1, 'Reward Credits spendable at Caesars properties.'),
+        'jcpenney-rewards': ('JCPenney Rewards', 'percent', 1, 1, 1, 'Spendable only at JCPenney.'),
+        'tjx-rewards': ('TJX Rewards', 'percent', 1, 1, 1, 'Spendable at T.J. Maxx, Marshalls, HomeGoods and Sierra.'),
+    }
+    for pid, (name, unit, cash, travel, transfer, note) in EXTRA_PROGRAMS.items():
+        programs.setdefault(pid, {'name': name, 'unit': unit, 'cash': cash, 'travel': travel, 'transfer': transfer, 'note': note})
     programs.setdefault('bofa-points', {'name': 'Bank of America points', 'unit': 'points', 'cash': 1, 'travel': 1, 'transfer': 1,
                                         'note': 'Worth 1 cent each as a statement credit (Travel Rewards points go against travel and dining purchases; Premium Rewards points can be cash).'})
     if 'capital-one-miles' in programs:
@@ -203,6 +240,8 @@ def main(src):
         'amex-delta-skymiles-platinum': 'metal', 'chase-ink-business-preferred': 'metal', 'capital-one-venture-x-business': 'metal', 'chase-united-quest': 'metal',
     }
     for c in cards:
+        if c.get('sourceUrls'):
+            c['sourceUrls'] = [u for u in c['sourceUrls'] if 'cardpointers' not in u.lower() and 'maxrewards' not in u.lower()]
         c['name'] = clean_name(c['name'], c['id'])
         c['color'] = color_for(c)
         if c['id'] in FINISHES:
