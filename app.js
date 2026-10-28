@@ -618,8 +618,10 @@
       h('button', { class: 'btn primary block', onclick: function () { closeSheet(); } }, 'Done'));
     openSheet(intro ? 'Your cards' : 'Add a card', nodes, { noClose: !!intro });
     sheetOnClose = function () {
-      if (intro && state.wallet.length) { openPriority(true); }
-      else { renderAll(); }
+      askMemberships(function () {
+        if (intro && state.wallet.length) { openPriority(true); }
+        else { renderAll(); }
+      });
     };
   }
   function openCustomCard(existing, intro) {
@@ -687,8 +689,26 @@
       var entry = { cardId: c.id, added: new Date().toISOString() };
       if (c.choice && !c.choice.auto) entry.choices = [];
       state.wallet.push(entry);
+      if (c.memberships && c.memberships.length) pendingQuestions.push(c.id);
     }
     saveState();
+  }
+  var pendingQuestions = [];
+  function askMemberships(then) {
+    var cardId = pendingQuestions.shift();
+    if (!cardId) { if (then) then(); return; }
+    var card = E.cardById(data, cardId), entry = walletEntry(cardId);
+    if (!card || !entry || !card.memberships) { askMemberships(then); return; }
+    entry.memberships = entry.memberships || {};
+    var nodes = [cardArt(card, 120), h('p', { class: 'muted' }, 'This card pays different rates depending on a membership. One question so the numbers are right:')];
+    card.memberships.forEach(function (m) {
+      nodes.push(h('div', { class: 'box' }, h('p', null, h('b', null, m.question)),
+        h('div', { class: 'grid2', style: 'margin-top:10px' },
+          h('button', { class: 'btn primary', onclick: function () { entry.memberships[m.id] = true; saveState(); closeSheet(); } }, 'Yes, ' + m.yes.charAt(0).toLowerCase() + m.yes.slice(1)),
+          h('button', { class: 'btn', onclick: function () { entry.memberships[m.id] = false; saveState(); closeSheet(); } }, 'No, ' + m.no.charAt(0).toLowerCase() + m.no.slice(1)))));
+    });
+    openSheet(card.name, nodes, { noClose: true });
+    sheetOnClose = function () { askMemberships(then); };
   }
 
   function openPriority(intro) {
@@ -818,6 +838,8 @@
       if (r.until) sub.push('through ' + fmtLongDate(r.until) + (r.afterRate ? ', then ' + rateText(r.afterRate, unit) : ''));
       if (r.onlineOnly) sub.push('online orders only');
       if (r.walletPayOnly) sub.push('with Apple Pay or Google Pay');
+      if (r.requires && card.memberships) sub.push((card.memberships.filter(function (m) { return m.id === r.requires; })[0] || { yes: 'with membership' }).yes.toLowerCase());
+      if (r.unless && card.memberships) sub.push((card.memberships.filter(function (m) { return m.id === r.unless; })[0] || { no: 'without membership' }).no.toLowerCase());
       if (r.cap) sub.push('up to $' + r.cap.toLocaleString() + ' per ' + r.capPeriod);
       if (r.excludes && r.excludes.length) sub.push('not at ' + r.excludes.map(function (x) { return cat(x).name.toLowerCase(); }).join(' or '));
       if (r.note) sub.push(r.note);
@@ -844,6 +866,18 @@
       } else box.appendChild(h('p', { class: 'muted' }, 'No categories on file for this quarter.'));
       box.appendChild(h('p', { class: 'small muted', style: 'margin-top:10px' }, quarterLabel(nq) + ': ' + (next ? (next.label || (next.categories || []).map(function (c) { return cat(c).name; }).join(', ')) : 'not announced yet')));
       nodes.push(box);
+    }
+
+    // Memberships that change the rates
+    if (inWallet && card.memberships && card.memberships.length) {
+      entry.memberships = entry.memberships || {};
+      var mb = h('div', { class: 'box' }, h('h3', null, 'Membership'));
+      card.memberships.forEach(function (m) {
+        var on = !!entry.memberships[m.id];
+        mb.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, h('span', { class: 't' }, h('b', null, m.question), h('span', null, on ? m.yes + ': the higher rates apply' : m.no + ': the lower rates apply')),
+          h('button', { class: 'switch' + (on ? ' on' : ''), role: 'switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': m.question, onclick: function () { entry.memberships[m.id] = !on; saveState(); openCardDetail(cardId); } })));
+      });
+      nodes.push(mb);
     }
 
     // Choice categories

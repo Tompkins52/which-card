@@ -177,3 +177,14 @@ r = E.evaluateCard(E.cardById(data, 'flex'), { network: 'Visa' }, { merchant: 'c
 assert.strictEqual(r.accepted, true);
 
 console.log('window and network tests passed');
+
+// 17. Membership-dependent rates
+data.cards.push({ id: 'primev', name: 'Prime Visa', issuer: 'Chase', network: 'Visa', type: 'personal', program: 'cashback', annualFee: 0, fxFee: 0, base: 1, color: '#111111',
+  earn: [{ merchant: 'amazon', rate: 5, requires: 'amazon-prime' }, { merchant: 'amazon', rate: 3, unless: 'amazon-prime' }] });
+r = E.evaluateCard(E.cardById(data, 'primev'), { memberships: { 'amazon-prime': true } }, { merchant: 'amazon', amount: 100 }, { priority: 'cash' }, data, Q4);
+assert.strictEqual(r.rate, 5);
+r = E.evaluateCard(E.cardById(data, 'primev'), { memberships: { 'amazon-prime': false } }, { merchant: 'amazon', amount: 100 }, { priority: 'cash' }, data, Q4);
+assert.strictEqual(r.rate, 3);
+r = E.evaluateCard(E.cardById(data, 'primev'), {}, { merchant: 'amazon', amount: 100 }, { priority: 'cash' }, data, Q4);
+assert.strictEqual(r.rate, 3, 'unanswered counts as no membership');
+console.log('membership tests passed');

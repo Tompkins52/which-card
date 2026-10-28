@@ -140,6 +140,8 @@
       if (r.when && !inWindow(r.when, now)) return;
       if (r.walletPayOnly && !cats.all['wallet-pay']) return;
       if (r.onlineOnly && !cats.all.online) return;
+      if (r.requires && !(entry.memberships && entry.memberships[r.requires])) return;
+      if (r.unless && entry.memberships && entry.memberships[r.unless]) return;
       if (r.until && now > new Date(r.until + 'T23:59:59')) { if (r.afterRate) rate = r.afterRate; else return; }
       if (r.merchant && cats.merchant && (cats.merchant.id === r.merchant || cats.merchant.parent === r.merchant)) { hit = true; label = cats.merchant.name; }
       else if (r.category && r.category !== 'rotating' && r.category !== 'choice' && cats.all[r.category]) {

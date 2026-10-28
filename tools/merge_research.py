@@ -380,7 +380,31 @@ def main(src):
                 r['label'] = PORTALS.get(c['issuer'], 'issuer travel site')
         if c['issuer'] == 'Capital One':
             c['name'] = re.sub(r' (Cash )?Rewards$', '', c['name'])
-    cards = [c for c in cards if not c['id'].startswith('barclays-aviator')]
+    cards = [c for c in cards if not c['id'].startswith('barclays-aviator') and c['id'] != 'chase-amazon-visa']
+    MEMBERSHIPS = {
+        'amazon-prime': {'id': 'amazon-prime', 'question': 'Do you have an Amazon Prime membership?', 'yes': 'With Prime', 'no': 'Without Prime'},
+        'sams-club-plus-membership': {'id': 'sams-club-plus-membership', 'question': 'Are you a Sam\'s Club Plus member (not the basic Club membership)?', 'yes': 'Plus member', 'no': 'Club member'},
+    }
+    for c in cards:
+        if c['id'] == 'chase-prime-visa':
+            c['name'] = 'Prime Visa (Amazon Visa)'
+            c['earn'] = [
+                {'merchant': 'amazon', 'rate': 5, 'requires': 'amazon-prime'}, {'merchant': 'whole-foods', 'rate': 5, 'requires': 'amazon-prime'},
+                {'merchant': 'audible', 'rate': 5, 'requires': 'amazon-prime'}, {'category': 'portal-travel', 'rate': 5, 'label': 'Chase Travel', 'requires': 'amazon-prime'},
+                {'merchant': 'amazon', 'rate': 3, 'unless': 'amazon-prime'}, {'merchant': 'whole-foods', 'rate': 3, 'unless': 'amazon-prime'},
+                {'merchant': 'audible', 'rate': 3, 'unless': 'amazon-prime'}, {'category': 'portal-travel', 'rate': 3, 'label': 'Chase Travel', 'unless': 'amazon-prime'},
+                {'category': 'gas', 'rate': 2}, {'category': 'dining', 'rate': 2}, {'category': 'transit', 'rate': 2}]
+            c['tips'] = ['One card, two rates: with an eligible Prime membership it is the Prime Visa and pays 5% at Amazon, Whole Foods, Audible and Chase Travel; without Prime it is the Amazon Visa and pays 3% on the same things',
+                         'Tell the app whether you have Prime on the card page; it switches the rates for you',
+                         'Amazon Fresh orders count as Amazon purchases', 'Gas, restaurants and local transit earn 2% either way']
+            c['bestFor'] = 'Amazon and Whole Foods, 5% with Prime or 3% without'
+        for r in c['earn']:
+            if r.get('requires') == 'sams-club-plus-membership':
+                c['earn'].append({'merchant': 'sams-club', 'rate': 1, 'unless': 'sams-club-plus-membership', 'label': 'Sam\'s Club (Club member)'})
+                break
+        needed = sorted({r['requires'] for r in c['earn'] if r.get('requires')} | {r['unless'] for r in c['earn'] if r.get('unless')})
+        if needed:
+            c['memberships'] = [MEMBERSHIPS[m] for m in needed if m in MEMBERSHIPS]
     cards.sort(key=lambda c: (ISSUER_ORDER.index(c['issuer']) if c['issuer'] in ISSUER_ORDER else 99, c['issuer'], c['type'], c['name']))
 
     with open(os.path.join(DATA, 'cards.json'), 'w', encoding='utf-8') as f:

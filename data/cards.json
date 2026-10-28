@@ -1138,76 +1138,6 @@
    "color": "#B0162B"
   },
   {
-   "id": "chase-amazon-visa",
-   "name": "Amazon Visa",
-   "issuer": "Chase",
-   "network": "Visa",
-   "type": "personal",
-   "program": "amazon-points",
-   "annualFee": 0,
-   "fxFee": 0,
-   "base": 1,
-   "earn": [
-    {
-     "merchant": "amazon",
-     "rate": 3
-    },
-    {
-     "merchant": "whole-foods",
-     "rate": 3
-    },
-    {
-     "merchant": "audible",
-     "rate": 3
-    },
-    {
-     "category": "portal-travel",
-     "rate": 3,
-     "label": "Chase Travel"
-    },
-    {
-     "category": "gas",
-     "rate": 2
-    },
-    {
-     "category": "dining",
-     "rate": 2
-    },
-    {
-     "category": "transit",
-     "rate": 2
-    }
-   ],
-   "benefits": {
-    "purchaseProtection": true,
-    "extendedWarranty": true,
-    "rentalCarCDW": "secondary"
-   },
-   "credits": [],
-   "bestFor": "Amazon and Whole Foods shoppers who do not have a Prime membership",
-   "tips": [
-    "This is the non-Prime version of the Amazon card; adding an eligible Prime membership raises the Amazon, Whole Foods and Chase Travel rate to 5%",
-    "Amazon Fresh orders count as Amazon.com purchases and earn 3%",
-    "Local transit and commuting includes rideshare, taxis, parking, tolls and mass transit",
-    "Each 1% back equals 1 point, worth 1 cent each toward Amazon purchases, cash back or gift cards"
-   ],
-   "watchOut": [
-    "Travel booked directly with airlines, hotels, car rental companies or cruise lines does not earn the Chase Travel rate",
-    "Rental car coverage is secondary to your own auto insurance in the U.S."
-   ],
-   "sourceUrl": "https://creditcards.chase.com/credit-cards/amazon-rewards",
-   "sourceUrls": [
-    "https://creditcards.chase.com/cash-back-credit-cards/amazon-prime-rewards",
-    "https://upgradedpoints.com/credit-cards/reviews/chase-amazon-credit-card/"
-   ],
-   "verified": "2026-10-28",
-   "confidence": "medium",
-   "unsure": [
-    "Protection details (purchase protection, extended warranty, secondary rental coverage) come from the Prime Visa product page and Upgraded Points (December 2025); the Amazon Visa page lists a Travel and Purchase Protection heading without details"
-   ],
-   "color": "#2A5C8A"
-  },
-  {
    "id": "chase-british-airways-visa-signature",
    "name": "British Airways",
    "issuer": "Chase",
@@ -3019,7 +2949,7 @@
   },
   {
    "id": "chase-prime-visa",
-   "name": "Prime Visa",
+   "name": "Prime Visa (Amazon Visa)",
    "issuer": "Chase",
    "network": "Visa",
    "type": "personal",
@@ -3030,20 +2960,45 @@
    "earn": [
     {
      "merchant": "amazon",
-     "rate": 5
+     "rate": 5,
+     "requires": "amazon-prime"
     },
     {
      "merchant": "whole-foods",
-     "rate": 5
+     "rate": 5,
+     "requires": "amazon-prime"
     },
     {
      "merchant": "audible",
-     "rate": 5
+     "rate": 5,
+     "requires": "amazon-prime"
     },
     {
      "category": "portal-travel",
      "rate": 5,
-     "label": "Chase Travel"
+     "label": "Chase Travel",
+     "requires": "amazon-prime"
+    },
+    {
+     "merchant": "amazon",
+     "rate": 3,
+     "unless": "amazon-prime"
+    },
+    {
+     "merchant": "whole-foods",
+     "rate": 3,
+     "unless": "amazon-prime"
+    },
+    {
+     "merchant": "audible",
+     "rate": 3,
+     "unless": "amazon-prime"
+    },
+    {
+     "category": "portal-travel",
+     "rate": 3,
+     "label": "Chase Travel",
+     "unless": "amazon-prime"
     },
     {
      "category": "gas",
@@ -3064,13 +3019,12 @@
     "rentalCarCDW": "secondary"
    },
    "credits": [],
-   "bestFor": "Amazon and Whole Foods shoppers with a Prime membership",
+   "bestFor": "Amazon and Whole Foods, 5% with Prime or 3% without",
    "tips": [
-    "Requires an eligible Prime membership (annual, monthly, Student, Fresh, Family or Household member, or trial); without Prime the card earns 3% at Amazon, Whole Foods and Chase Travel",
-    "Amazon Fresh orders count as Amazon.com purchases and earn 5%",
-    "Local transit and commuting includes rideshare, taxis, parking, tolls and mass transit",
-    "Watch for Prime Card Bonus offers that pay 10% back or more on rotating items and categories on Amazon.com",
-    "Each 1% back equals 1 point, and points are worth 1 cent each toward Amazon purchases, cash back or gift cards"
+    "One card, two rates: with an eligible Prime membership it is the Prime Visa and pays 5% at Amazon, Whole Foods, Audible and Chase Travel; without Prime it is the Amazon Visa and pays 3% on the same things",
+    "Tell the app whether you have Prime on the card page; it switches the rates for you",
+    "Amazon Fresh orders count as Amazon purchases",
+    "Gas, restaurants and local transit earn 2% either way"
    ],
    "watchOut": [
     "Travel booked directly with airlines, hotels, car rental companies or cruise lines does not earn the 5% Chase Travel rate",
@@ -3108,7 +3062,15 @@
      "keep": true
     }
    ],
-   "color": "#0F3D6B"
+   "color": "#0F3D6B",
+   "memberships": [
+    {
+     "id": "amazon-prime",
+     "question": "Do you have an Amazon Prime membership?",
+     "yes": "With Prime",
+     "no": "Without Prime"
+    }
+   ]
   },
   {
    "id": "chase-southwest-rapid-rewards-plus",
@@ -15749,6 +15711,12 @@
      "merchant": "sams-club",
      "rate": 3,
      "requires": "sams-club-plus-membership"
+    },
+    {
+     "merchant": "sams-club",
+     "rate": 1,
+     "unless": "sams-club-plus-membership",
+     "label": "Sam's Club (Club member)"
     }
    ],
    "benefits": {},
@@ -15779,7 +15747,15 @@
     "The Sam's Club credit page shows no card terms; rates come from Nav (February 2026), Frequent Miler and Fit Small Business",
     "Foreign transaction fee: Nav and Fit Small Business say none, Frequent Miler says the card imposes one; recorded as 0 to match the consumer card"
    ],
-   "color": "#274A72"
+   "color": "#274A72",
+   "memberships": [
+    {
+     "id": "sams-club-plus-membership",
+     "question": "Are you a Sam's Club Plus member (not the basic Club membership)?",
+     "yes": "Plus member",
+     "no": "Club member"
+    }
+   ]
   },
   {
    "id": "amazon-secured-card",
@@ -15822,6 +15798,14 @@
    "color": "#20516F",
    "onlyAt": [
     "amazon"
+   ],
+   "memberships": [
+    {
+     "id": "amazon-prime",
+     "question": "Do you have an Amazon Prime membership?",
+     "yes": "With Prime",
+     "no": "Without Prime"
+    }
    ]
   },
   {
@@ -15874,6 +15858,14 @@
    "onlyAt": [
     "amazon",
     "whole-foods"
+   ],
+   "memberships": [
+    {
+     "id": "amazon-prime",
+     "question": "Do you have an Amazon Prime membership?",
+     "yes": "With Prime",
+     "no": "Without Prime"
+    }
    ]
   },
   {
@@ -16084,6 +16076,12 @@
      "merchant": "sams-club",
      "rate": 3,
      "requires": "sams-club-plus-membership"
+    },
+    {
+     "merchant": "sams-club",
+     "rate": 1,
+     "unless": "sams-club-plus-membership",
+     "label": "Sam's Club (Club member)"
     }
    ],
    "benefits": {},
@@ -16114,7 +16112,15 @@
     "Membership prices differ between sources ($50/$110 versus $60/$120)",
     "No purchase or travel protections confirmed; only zero fraud liability is listed"
    ],
-   "color": "#1F6BB0"
+   "color": "#1F6BB0",
+   "memberships": [
+    {
+     "id": "sams-club-plus-membership",
+     "question": "Are you a Sam's Club Plus member (not the basic Club membership)?",
+     "yes": "Plus member",
+     "no": "Club member"
+    }
+   ]
   },
   {
    "id": "synchrony-tjx-rewards-credit-card",
