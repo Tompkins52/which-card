@@ -609,7 +609,7 @@
     var nodes = [];
     if (intro) nodes.push(h('div', { class: 'hero-copy' }, h('div', { class: 'steps' }, h('i', { class: 'on' }), h('i')), h('p', { class: 'muted' }, 'Tap every card you carry. Just the names, never a card number.')));
     nodes.push(search, chips, list,
-      h('div', { class: 'note buddy' }, h('b', null, 'Why do the cards look like that? '), 'Yeah, those are not the real card pictures. Is it because we are cheap a**es? Partially. Mostly it is because every one of those designs is trademarked, and the banks would keep our a**es in court until the sun burns out. That should tell you something, though: the sites with the real pictures have a deal with the bank and get paid every time you click. We get squat. Nobody pays for a spot here, nobody buys your info, and the only thing we want from you is 99 cents and a good pump story.')),
+      h('div', { class: 'note buddy' }, h('b', null, 'Why do the cards look like that? '), 'Yeah, those are not the real card pictures. Is it because we are cheap a**es? Partially. Mostly it is because every one of those designs is trademarked, and the banks would keep our a**es in court until the sun burns out. That should tell you something, though: the sites with the real pictures have a deal with the bank and get paid every time you click. We get squat. Nobody pays for a spot here, nobody buys your info, and the only thing we want from you is 99 cents and a good pump story.'),
       h('button', { class: 'btn primary block', onclick: function () { closeSheet(); } }, 'Done'));
     openSheet(intro ? 'Your cards' : 'Add a card', nodes, { noClose: !!intro });
     sheetOnClose = function () {
