@@ -173,40 +173,8 @@
    "source": "TPG October 2026 valuation 1.5; NerdWallet Oct 2026: 1.1",
    "note": "Distance-based award chart with stopovers for 5,000 points; transfer 1:1 from Chase, Amex, Capital One or Bilt for Star Alliance partner business class."
   },
-  "apple-cash": {
-   "name": "Apple Cash daily cash",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "best-buy-rewards": {
-   "name": "My Best Buy rewards (Best Buy certificates)",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "synchrony-cashback": {
+  "cashback": {
    "name": "Cash back",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "discover-cashback": {
-   "name": "Discover cash back",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "amazon-points": {
-   "name": "Amazon rewards",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -221,8 +189,24 @@
    "transfer": 1,
    "note": ""
   },
-  "cashback": {
+  "synchrony-cashback": {
    "name": "Cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "apple-cash": {
+   "name": "Apple Cash daily cash",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "discover-cashback": {
+   "name": "Discover cash back",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -237,8 +221,24 @@
    "transfer": 1,
    "note": ""
   },
+  "amazon-points": {
+   "name": "Amazon rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
   "verizon-dollars": {
    "name": "Verizon Dollars (spend with Verizon)",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "best-buy-rewards": {
+   "name": "My Best Buy rewards (Best Buy certificates)",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -524,6 +524,86 @@
    "travel": 1,
    "transfer": 1,
    "note": "Spendable at T.J. Maxx, Marshalls, HomeGoods and Sierra."
+  },
+  "incircle-points": {
+   "name": "InCircle points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Neiman Marcus gift cards, about 1 cent each."
+  },
+  "meijer-rewards": {
+   "name": "Meijer rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Paid as Meijer certificates."
+  },
+  "wayfair-rewards": {
+   "name": "Wayfair rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable only at Wayfair."
+  },
+  "mylowes-money": {
+   "name": "MyLowe's Money",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at Lowe's; expires twice a year."
+  },
+  "caesars-reward-credits": {
+   "name": "Caesars Reward Credits",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "About 1 cent each at Caesars properties."
+  },
+  "speedy-rewards": {
+   "name": "Speedy Rewards points",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.1,
+   "transfer": 0.1,
+   "note": "About a tenth of a cent each at Speedway."
+  },
+  "scheels-rewards": {
+   "name": "Scheels rewards",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at Scheels."
+  },
+  "shell-credits": {
+   "name": "Shell fuel credits",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable only against Shell purchases."
+  },
+  "victorias-secret-rewards": {
+   "name": "Victoria's Secret rewards",
+   "unit": "points",
+   "cash": 0,
+   "travel": 0.5,
+   "transfer": 0.5,
+   "note": "Store rewards only."
+  },
+  "navyist-rewards": {
+   "name": "Navyist and Gap Good Rewards",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Spendable at Gap, Old Navy, Banana Republic and Athleta."
   },
   "bofa-points": {
    "name": "Bank of America points",

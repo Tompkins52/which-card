@@ -1867,6 +1867,107 @@
     "harley"
    ],
    "category": "other"
+  },
+  {
+   "id": "rei",
+   "name": "REI",
+   "aliases": [
+    "rei co-op"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "cabelas-bass-pro",
+   "name": "Bass Pro Shops and Cabela's",
+   "aliases": [
+    "cabelas",
+    "cabela's",
+    "bass pro"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "neiman-marcus",
+   "name": "Neiman Marcus",
+   "aliases": [
+    "bergdorf goodman"
+   ],
+   "category": "department-store"
+  },
+  {
+   "id": "exxon-mobil",
+   "name": "Exxon and Mobil",
+   "aliases": [
+    "exxonmobil"
+   ],
+   "category": "gas",
+   "fuel": true
+  },
+  {
+   "id": "aaa",
+   "name": "AAA",
+   "aliases": [
+    "aaa membership"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "sephora",
+   "name": "Sephora",
+   "aliases": [],
+   "category": "other"
+  },
+  {
+   "id": "victorias-secret",
+   "name": "Victoria's Secret",
+   "aliases": [
+    "victorias secret",
+    "pink"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "caesars",
+   "name": "Caesars",
+   "aliases": [
+    "caesars palace",
+    "harrahs",
+    "horseshoe"
+   ],
+   "category": "entertainment",
+   "also": [
+    "travel",
+    "hotels"
+   ]
+  },
+  {
+   "id": "scheels",
+   "name": "Scheels",
+   "aliases": [],
+   "category": "other"
+  },
+  {
+   "id": "gm",
+   "name": "GM dealers and service",
+   "aliases": [
+    "chevrolet",
+    "chevy",
+    "gmc",
+    "buick",
+    "cadillac"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "aadvantage-hotels-cars",
+   "name": "AAdvantage Hotels and Cars",
+   "aliases": [],
+   "category": "portal-travel",
+   "also": [
+    "travel",
+    "hotels"
+   ],
+   "online": true
   }
  ]
 }

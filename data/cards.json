@@ -77,7 +77,17 @@
   "Schema deviations, all additive: (1) 'network': 'store' is used for closed-loop store cards (Target Credit Card, Amazon Store Card, Amazon Secured Card, My Best Buy Credit Card, MyLowe's Rewards Credit Card) because the enum has no store value. (2) choice.optionLabels (Cash+) lists the issuer wording for all 12 options since four (electronics stores, sporting goods stores, furniture stores, select clothing stores) have no category id; Cash+ 'dining' maps only to fast food and 'entertainment' only to movie theaters. (3) choice.merchantOptions (Shopper Cash Rewards) holds merchant ids for the 6% retailer list. (4) secondTier.slots = 1 marks a second tier that is itself a pick-one choice (Cash+ 2% category, Shopper Cash Rewards 3% category); Shopper's second tier has its own cap fields. (5) earn[].walletPayOnly = true (Apple Card) marks merchant rates that require Apple Pay. (6) earn[].requires marks conditional rules: 'sams-club-plus-membership', 'amazon-prime'. (7) capPeriod 'month' on Altitude Reserve means per billing cycle.",
   "New merchant ids used (not in the schema list): duane-reade, ace-hardware, booking-com, chargepoint, exxon-mobil, hertz, nike (Apple Card 3% partners); anthropologie, bed-bath-beyond, chewy, crate-and-barrel, ikea, kohls, lululemon, macys, menards, nordstrom, pottery-barn, qvc, restoration-hardware, wayfair, williams-sonoma (Shopper Cash Rewards retailer list). Existing ids reused: apple, uber, uber-eats, walgreens, paypal, sams-club, amazon, whole-foods, best-buy, lowes, verizon, target, disney, home-depot, walmart.",
   "New program ids used: best-buy-rewards (My Best Buy points, redeemable only as Best Buy certificates, 1 point = 2 cents) and verizon-dollars (Verizon Dollars, $1 each, redeemable only with Verizon). PayPal Cashback uses the existing paypal-cashback id rather than synchrony-cashback because the schema defines it; remap if the merge step prefers one Synchrony program. Amazon Store Card, Amazon Secured, Sam's Club Mastercard and the Lowe's card use synchrony-cashback; note that the Lowe's and Target 5% are checkout discounts rather than earned rewards, and Amazon Store Card rewards are usable only at Amazon or as a statement credit.",
-  "Left out on purpose: Home Depot Consumer Credit Card (financing only, no rewards or standing discount). Uber: the Barclays Uber Visa was discontinued in October 2021 and no consumer Uber credit card exists; the Uber Pro Card is a business debit Mastercard for drivers and couriers (Branch, Evolve Bank & Trust) and is not a credit card. Costco cards are handled by another agent."
+  "Left out on purpose: Home Depot Consumer Credit Card (financing only, no rewards or standing discount). Uber: the Barclays Uber Visa was discontinued in October 2021 and no consumer Uber credit card exists; the Uber Pro Card is a business debit Mastercard for drivers and couriers (Branch, Evolve Bank & Trust) and is not a credit card. Costco cards are handled by another agent.",
+  "Scope changes found while researching: (1) Shell Fuel Rewards Mastercard and store card are no longer Citi products; Citi Shell accounts were converted May 18, 2026 to the Shell Performance Elite World Mastercard issued by First Bank & Trust and managed by Imprint, which is recorded here as shell-performance-elite-world-mastercard. (2) Best Western Rewards cards left FNBO in September 2024 and are now Visa Signature cards from First Bank & Trust managed by Mercury Financial; the FNBO Mastercards are closed, so the two current Visa cards are recorded. (3) GM Rewards is a Barclays product since May 2025 (Goldman Sachs portfolio sold); no separate no-fee non-Mastercard GM Rewards Card exists, so one card is recorded. (4) The Lowe's Business Rewards Card from American Express closed to new applicants April 2026 and Synchrony launched the MyLowe's Pro Rewards American Express Card April 30, 2026; the Synchrony card is recorded. (5) The Citi AAdvantage Executive is now the World Legend Mastercard at $695 (August 23, 2026 refresh). (6) Citi launched the AAdvantage Globe Mastercard ($350) in October 2025; it was not on the assignment list but is in the current lineup, so it is included. (7) Kohl's replaced the Kohl's Charge with the Kohl's Rewards Visa (Capital One) in September 2024; both the Visa and the store-only Kohl's Card are recorded.",
+  "Left out on purpose: Capital One Savor Business (no such card exists; Capital One's business lineup is Spark 1% Classic, Spark 1.5% Cash Select, Spark 2% Cash, Spark 2% Cash Plus, VentureOne Business, Venture Business and Venture X Business). Spark 2% Cash is distinct from Spark 2% Cash Plus (revolving credit card at $95 after year one versus pay-in-full at $150) and is recorded. Home Depot Consumer Credit Card: confirmed no rewards or standing discount (financing only), left out. Discount Tire credit card (Synchrony Car Care): financing only with a $50 discount option on $599 or more, no rewards, left out. CareCredit: financing only, left out per instructions. Sears Mastercard: Citi discontinued the Shop Your Way Mastercard in 2025 and converted holders to a Citi ThankYou Mastercard; no Sears card is issued, left out. Saks Fifth Avenue cards moved from Capital One to Bread Financial (Comenity Capital Bank) in August 2024 and were not in the Bread assignment, left out. Exxon Mobil Smart Card+ is closed to new applicants but recorded for existing holders with medium confidence. IKEA Projekt card is financing only and left out. Caesars Rewards Prestige Visa ($149) is described in the no-fee card's tips rather than recorded separately.",
+  "New merchant ids used in this file: rei, cabelas-bass-pro, kohls (existing), bjs (existing), williams-sonoma (existing), pottery-barn (existing), neiman-marcus, macys (existing), exxon-mobil, wayfair (existing), venmo (existing), jcpenney (existing), tj-maxx (existing), lowes (existing), sams-club (existing), aaa, hertz (existing), sephora, ulta (existing), ikea (existing), victorias-secret, caesars, amtrak, best-western, speedway, scheels, gm, shell (existing), american-airlines (existing), capital-one-travel (existing), costco and costco-gas (existing), aadvantage-hotels-cars (new: AAdvantage Hotels and AAdvantage Cars booking sites).",
+  "New program ids used in this file with estimated values: rei-rewards (REI Co-op Mastercard rewards, $1 per $1 at REI only), cabelas-club-points (CLUB Points, 100 = $1 at Bass Pro and Cabela's), kohls-rewards (converts to Kohl's Cash at $1 per $1, 30 day expiry, Kohl's only), bjs-rewards ($1 per $1 at BJ's only, $10 minimum), key-rewards ($1 per $1 at Williams-Sonoma brands only, certificates expire 180 days), incircle-points (10,000 points = $100 Point Card, about 1 cent, Neiman Marcus and Bergdorf only), macys-star-rewards (1,000 points = $10 Star Money, 1 cent per point, Macy's only, 30 day expiry), meijer-rewards ($10 certificate per $750 spent, Meijer only, 45 to 60 day expiry), wayfair-rewards (Reward Dollars, $1 per $1 at Wayfair brands only), jcpenney-rewards (200 points = $10 CashPass, 5 cents per point, JCPenney only), tjx-rewards (1,000 points = $10 certificate, 1 cent per point, TJX stores only), mylowes-money (100 points = $1 MyLowe's Money, Lowe's only, expires twice yearly), sephora-rewards (125 reward dollars = $5 reward, Sephora only, 90 day expiry on issued rewards), ulta-rewards (sliding scale 100 points = $3 up to 2,000 points = $125, 3 to 6.25 cents per point, Ulta only), ikea-rewards ($15 certificates, $1 per $1 at IKEA only, 90 day expiry), victorias-secret-rewards (2,000 points = $10, 0.5 cents per point, Victoria's Secret and PINK only, 90 day expiry), caesars-reward-credits (100 credits = $1 toward hotels and most redemptions, 200 = $1 for on-property free play, about 1 cent), amtrak-guest-rewards (about 2.5 to 2.9 cents per point toward Amtrak fares; Frequent Miler 2.6 cents), best-western-rewards (about 0.6 to 0.7 cents per point; Pay with Points gives $5 per 1,000 points, 0.5 cents), speedy-rewards (about 0.1 cents per point; 26,000 points = $25 gift card), scheels-rewards (2,500 points = $25 Scheels gift card, 1 cent per point), gm-rewards (1 cent per point toward GM vehicles, GM Financial balances, parts and service only), shell-credits (statement credits at $1 per $1 but only against Shell purchases, 13 month inactivity expiry). Existing program ids reused: capital-one-miles, cashback, american-aadvantage, synchrony-cashback.",
+  "Issuer enum gaps: the schema has no value for Bread Financial (Comenity Bank and Comenity Capital Bank), FNBO (First National Bank of Omaha), First Bank & Trust (Imprint and Mercury Financial programs) or Elan Financial Services, so those cards use issuer 'other' and name the bank in tips. The merge step may want to add bread, fnbo, first-bank-trust and elan values. Synchrony cards use 'Synchrony'; Barclays uses 'Barclays'.",
+  "Schema conventions used: network 'Store' for closed-loop cards (Kohl's Card, Neiman Marcus, Macy's Credit Card, Exxon Mobil Smart Card+, Wayfair Credit Card, JCPenney Credit Card, TJX Rewards Credit Card, Sephora Credit Card, Ulta Beauty Rewards Credit Card); 'label' strings on earn rules for tier conditions and merchant lists; 'requires' on the Sam's Club Business rule (sams-club-plus-membership) matching the consumer card entry. The JCPenney Mastercard's 5% gas and grocery rate for the first 90 days is a per-account new account offer, so it is listed under credits and not as an earn rule (no fixed ISO date for 'until'). Caps on the AAA cards are dollars of cash back earned per calendar year, shared across the listed rules ($500 Daily Advantage across grocery, gas and warehouse; $350 Travel Advantage across gas and EV), not dollars of spend.",
+  "Tiered store rates are recorded at the entry tier with higher tiers in the label and tips: Bass Pro and Cabela's CLUB 2% Classic (3% Silver at $10,000, 5% Black at $25,000 annual spend); Macy's 2 points Silver (3 Gold at $500, 5 Platinum at $1,200); JCPenney 7.5% Insider (10% VIP at $1,000); Neiman Marcus 2 points (5 after $75,000); Lowe's Pro loyalty points 1 per dollar Titanium (1.25 Gold Pro at $10,000, 1.5 Platinum Pro at $25,000); Ulta 2 points at Base level; Caesars 5 credits on the no-fee card includes the 1 base credit.",
+  "Venmo Credit Card: the earn rules reflect the structure for accounts approved after September 24, 2026. Accounts approved earlier keep an automatic two-slot structure (3% top category, 2% second, chosen each statement from grocery, bills and utilities, health and beauty, gas, entertainment, dining and nightlife, transportation, travel) until they can switch in 2027; the merge step could model that as a choice object with automatic: true as the Citi Custom Cash entry does.",
+  "MyLowe's Pro Rewards American Express: the Lowe's rate of 5 represents an instant 5% checkout discount (like the consumer MyLowe's Rewards card), not points; loyalty points at Lowe's are separate and described in tips. The old Amex-issued Lowe's Business Rewards Card (5% off Lowe's, 2X restaurants, office supply and wireless) is closed to new applicants; the Synchrony card keeps the same outside-Lowe's categories.",
+  "Fetch blocks encountered: rei.com credit card page, capitalone.com REI page, williams-sonoma.com Key Rewards page, kohls.com Kohl's Charge page, neimanmarcus.com credit card page, citi.com AAdvantage MileUp and Exxon pages at their old URLs (Citi moved them; the sitemap URLs worked), shell.us, exxon.com (redirected to exxonmobilfuels.com, which worked), jcpenney.com credit card page, tjx.syf.com, synchrony.com TJX partner page, lowes.com business credit center (a different Lowe's URL worked), ulta.com/creditcard (maintenance page; ulta.com/rewards/credit-card worked), victoriassecret.com, amtrak.com guest rewards page and card.fnbo.com Amtrak page (amtrak.com/apply worked), bestwestern.com credit card pages (the offers page worked), card.fnbo.com Evergreen (fnbo.com page worked), scheels.com, barclaycardus.com and gm.com GM card pages, samsclub.com credit page (no terms shown), macys.com Star Rewards pages (redirect only; the Macy's terms article and Citi additional information page worked). Reference sites used to fill gaps are listed per card in sourceUrls: NerdWallet, The Points Guy, Doctor of Credit, Upgraded Points, Frequent Miler, One Mile at a Time, AwardWallet, Nav, Fit Small Business, Rivo, FirstCard, SuperMoney, Hip2Save and Business Initiative."
  ],
  "cards": [
   {
@@ -6036,6 +6046,97 @@
    "finish": "black"
   },
   {
+   "id": "capital-one-spark-classic",
+   "name": "Capital One Spark 1% Classic",
+   "issuer": "Capital One",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "capital-one-travel",
+     "rate": 5,
+     "label": "hotels and rental cars booked through Capital One Business Travel"
+    }
+   ],
+   "benefits": {
+    "extendedWarranty": true
+   },
+   "credits": [],
+   "bestFor": "Business owners with fair credit who want a simple no-fee card that builds business credit",
+   "tips": [
+    "Earns a flat 1% on everything with no caps and no expiration; cash back comes as a statement credit or check",
+    "Hotels and rental cars booked through Capital One Business Travel earn 5%",
+    "Capital One markets this card to applicants with fair credit, so it is mainly a starter business card",
+    "No foreign transaction fees, which is unusual for a starter card"
+   ],
+   "watchOut": [
+    "1% is the lowest base rate in the Spark lineup; Spark Cash Select pays 1.5% with no fee if your credit qualifies",
+    "The purchase APR is high, so carry no balance"
+   ],
+   "sourceUrl": "https://www.capitalone.com/small-business/credit-cards/spark-classic/",
+   "sourceUrls": [
+    "https://www.capitalone.com/small-business/credit-cards/",
+    "https://www.businessinitiative.org/business-credit-cards/capital-one-spark-classic-business/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Network is not stated on the product page; Mastercard is the working assumption used by reference sites",
+    "The 5% Capital One Business Travel rate appears on the Capital One comparison page but not on the Spark Classic product page"
+   ],
+   "color": "#7E303F"
+  },
+  {
+   "id": "capital-one-spark-cash",
+   "name": "Capital One Spark 2% Cash",
+   "issuer": "Capital One",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "capital-one-travel",
+     "rate": 5,
+     "label": "hotels and rental cars booked through Capital One Business Travel"
+    }
+   ],
+   "benefits": {
+    "extendedWarranty": true
+   },
+   "credits": [],
+   "bestFor": "Businesses that want unlimited 2% cash back on a regular credit card rather than a pay-in-full card",
+   "tips": [
+    "The annual fee is $0 the first year, then $95",
+    "Unlimited 2% on every purchase plus 5% on hotels and rental cars booked through Capital One Business Travel",
+    "Unlike Spark 2% Cash Plus, this is a revolving credit card with a set credit limit, so you can carry a balance",
+    "Cash back does not expire while the account is open and redeems as a statement credit or check"
+   ],
+   "watchOut": [
+    "After year one the $95 fee means you need about $19,000 of annual spend to beat the no-fee 1.5% Spark Cash Select",
+    "Spark 2% Cash Plus ($150, refunded at $150,000 of annual spend) is a separate pay-in-full card"
+   ],
+   "sourceUrl": "https://www.capitalone.com/small-business/credit-cards/spark-cash/",
+   "sourceUrls": [
+    "https://www.capitalone.com/small-business/credit-cards/",
+    "https://thepointsguy.com/guide/credit-cards-capital-one-spark-business-cards",
+    "https://thepointsguy.com/guide/capital-one-spark-cash-for-business-review/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Network not stated on the issuer page; recorded as Mastercard following the 2023 Spark network change reported by Doctor of Credit",
+    "No foreign transaction fee confirmed via The Points Guy, not the issuer page"
+   ],
+   "color": "#782B2B"
+  },
+  {
    "id": "capital-one-spark-cash-plus",
    "name": "Capital One Spark Cash Plus",
    "issuer": "Capital One",
@@ -6173,6 +6274,221 @@
     "Protection benefits beyond extended warranty not listed on the issuer page"
    ],
    "color": "#651F24"
+  },
+  {
+   "id": "capital-one-venture-x-business",
+   "name": "Capital One Venture X Business",
+   "issuer": "Capital One",
+   "network": "Visa",
+   "type": "business",
+   "program": "capital-one-miles",
+   "annualFee": 395,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "capital-one-travel",
+     "rate": 10,
+     "label": "hotels and rental cars booked through Capital One Business Travel"
+    },
+    {
+     "merchant": "capital-one-travel",
+     "rate": 5,
+     "label": "flights and vacation rentals booked through Capital One Business Travel"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "$300 annual credit for bookings through Capital One Business Travel",
+    "10,000 bonus miles every account anniversary",
+    "Up to $120 Global Entry or TSA PreCheck fee credit every 4 years",
+    "Capital One Lounge, Capital One Landing and Priority Pass access for the primary cardholder"
+   ],
+   "bestFor": "Businesses that pay in full each month and can use the $300 travel credit and lounge access",
+   "tips": [
+    "This is a pay-in-full card with no preset spending limit; the full statement balance is due every month",
+    "Hotels and rental cars booked through Capital One Business Travel earn 10X; flights and vacation rentals there earn 5X; everything else earns 2X",
+    "The $300 travel credit and 10,000 anniversary miles together roughly cover the $395 fee if you book travel through the portal",
+    "Miles are worth 1 cent toward travel and transfer to Capital One's airline and hotel partners"
+   ],
+   "watchOut": [
+    "Employee cards get no lounge access unless you pay $125 per year per card",
+    "Lounge guests are not free unless the account spends $75,000 or more in a calendar year",
+    "Travel booked directly with airlines or hotels earns only 2X",
+    "The welcome offer requires $30,000 of spend in 3 months"
+   ],
+   "sourceUrl": "https://www.capitalone.com/small-business/credit-cards/venture-x-business/",
+   "sourceUrls": [
+    "https://www.capitalone.com/small-business/credit-cards/",
+    "https://upgradedpoints.com/credit-cards/reviews/capital-one-venture-x-business/",
+    "https://thepointsguy.com/guide/capital-one-venture-x-vs-venture-x-business/",
+    "https://www.nav.com/blog/capital-one-venture-x-business"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Network is not stated on the Capital One page; recorded as Visa because reference sites describe Visa Infinite coverage",
+    "Protection details (primary rental coverage, trip delay after 6 hours, cell phone up to $800) come from Nav's March 2026 review, not the issuer page"
+   ],
+   "color": "#8A221E",
+   "finish": "metal"
+  },
+  {
+   "id": "capital-one-bjs-one-mastercard",
+   "name": "BJ's One Mastercard",
+   "issuer": "Capital One",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "bjs-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [
+    {
+     "merchant": "bjs",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "10 cents off per gallon at BJ's Gas"
+   ],
+   "bestFor": "BJ's Club members who want 3% back at BJ's and 1.5% everywhere else",
+   "tips": [
+    "Issued to BJ's Club ($55 per year) members; Club+ members get the BJ's One+ version instead",
+    "3% back in BJ's rewards on most in-club, BJs.com and app purchases, 1.5% back everywhere else Mastercard is accepted",
+    "Rewards post to your BJ's membership and redeem at checkout in $10 minimum amounts; they never expire while the account is open",
+    "Scan your membership card at BJ's Gas pumps and pay with the card for 10 cents off per gallon"
+   ],
+   "watchOut": [
+    "BJ's Gas, alcohol, tobacco, gift cards, propane, lottery, tax, bottle deposits, membership fees and delivery.BJs.com orders do not earn rewards",
+    "Rewards can only be spent at BJ's, not as cash or statement credit",
+    "You must have at least $10 in rewards to redeem"
+   ],
+   "sourceUrl": "https://www.capitalone.com/credit-cards/bjs/",
+   "sourceUrls": [
+    "https://www.bjs.com/bjsone",
+    "https://www.nerdwallet.com/credit-cards/learn/bjs-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "No foreign transaction fee is from NerdWallet (May 2026), not the issuer page"
+   ],
+   "color": "#7D342C",
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Visa"
+   ]
+  },
+  {
+   "id": "capital-one-bjs-one-plus-mastercard",
+   "name": "BJ's One+ Mastercard",
+   "issuer": "Capital One",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "bjs-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "bjs",
+     "rate": 5
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "15 cents off per gallon at BJ's Gas"
+   ],
+   "bestFor": "BJ's Club+ members who want 5% back at BJ's and a flat 2% everywhere else",
+   "tips": [
+    "Requires a BJ's Club+ membership ($110 per year); upgrading from Club costs $55 prorated",
+    "5% back in BJ's rewards on most BJ's purchases and 2% back everywhere else Mastercard is accepted, with no earning cap",
+    "Rewards load to your membership, redeem at checkout in $10 minimums and do not expire while the account is open",
+    "15 cents off per gallon at BJ's Gas when you scan your membership and pay with the card"
+   ],
+   "watchOut": [
+    "BJ's Gas, alcohol, tobacco, gift cards, propane, lottery, tax, membership fees and delivery.BJs.com orders earn nothing",
+    "The 5% card rate replaces, and does not stack with, the Club+ membership's own 2% back",
+    "Rewards are only usable at BJ's"
+   ],
+   "sourceUrl": "https://www.capitalone.com/credit-cards/bjs/",
+   "sourceUrls": [
+    "https://www.bjs.com/bjsone",
+    "https://www.nerdwallet.com/credit-cards/learn/bjs-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "No foreign transaction fee is from NerdWallet (May 2026), not the issuer page"
+   ],
+   "color": "#6D2E26",
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Visa"
+   ]
+  },
+  {
+   "id": "capital-one-bass-pro-cabelas-club-mastercard",
+   "name": "Bass Pro Shops and Cabela's CLUB Mastercard",
+   "issuer": "Capital One",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "cabelas-club-points",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "cabelas-bass-pro",
+     "rate": 2,
+     "label": "Classic tier; Silver 3% after $10,000 annual spend, Black 5% after $25,000"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Up to $60 in CLUB Points for new accounts ($20 at approval plus $20 after each set of 5 purchases within 30 days)"
+   ],
+   "bestFor": "Regular Bass Pro Shops and Cabela's shoppers who can reach the Silver or Black tier",
+   "tips": [
+    "Earns 2% in CLUB Points at Bass Pro Shops, Cabela's, their websites, Big Cedar Lodge and affiliated restaurants and resorts; Silver (after $10,000 of annual purchases) earns 3% and Black (after $25,000) earns 5%",
+    "All other purchases earn 1% at every tier",
+    "100 CLUB Points equal $1 toward merchandise at Bass Pro Shops and Cabela's with no minimum redemption; points never expire while the account is open",
+    "Bass Pro and Cabela's purchases get a lower 9.99% APR",
+    "The same card is branded either Bass Pro Shops CLUB or Cabela's CLUB; the terms are identical"
+   ],
+   "watchOut": [
+    "CLUB Points are only redeemable at Bass Pro Shops and Cabela's, not for cash",
+    "The tier is based on annual spending and resets each program year",
+    "Gas, dining and other everyday categories earn only 1%"
+   ],
+   "sourceUrl": "https://www.capitalone.com/credit-cards/cabelas",
+   "sourceUrls": [
+    "https://help.basspro.com/club-mastercard-outdoor-rewards-loyalty-programs-5a99132c/howwhere-can-i-earn-club-points-48d67daf",
+    "https://www.rivo.io/blog/cabelas-bass-pro-shops-club-program"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Tier thresholds ($10,000 Silver, $25,000 Black) are from the Capital One Cabela's page and Rivo; the Bass Pro page does not state them",
+    "No protections published; Mastercard benefits not listed"
+   ],
+   "color": "#92263D",
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Visa"
+   ]
   },
   {
    "id": "capital-one-quicksilver",
@@ -6736,6 +7052,617 @@
     "Mastercard",
     "Visa"
    ]
+  },
+  {
+   "id": "capital-one-kohls-card",
+   "name": "Kohl's Card",
+   "issuer": "Capital One",
+   "network": "Store",
+   "type": "personal",
+   "program": "kohls-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "kohls",
+     "rate": 7.5
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Monthly cardholder-only discount offers and an annual anniversary offer",
+    "MVC status with free shipping events after $600 of Kohl's spend in a calendar year"
+   ],
+   "bestFor": "Kohl's shoppers who do not qualify for the Visa version",
+   "tips": [
+    "Usable only at Kohl's stores and Kohls.com; earns 7.5% in Kohl's Rewards versus 5% for non-cardholder Kohl's Rewards members",
+    "Rewards convert to Kohl's Cash in $5 increments on the first day of the next month",
+    "Capital One considers applicants for the Rewards Visa first and offers this store card as the fallback"
+   ],
+   "watchOut": [
+    "Kohl's Cash from rewards expires in 30 days and is not valid at Sephora at Kohl's",
+    "No rewards on gift cards; no earning outside Kohl's",
+    "High purchase APR, so pay in full"
+   ],
+   "sourceUrl": "https://capitalone.com/credit-cards/kohls",
+   "sourceUrls": [
+    "https://www.kohls.com/feature/kohls-rewards-visa.jsp",
+    "https://thepointsguy.com/credit-cards/reviews/credit-cards-reviews-kohls-credit-card-review"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#732137",
+   "onlyAt": [
+    "kohls"
+   ],
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Store",
+    "Visa"
+   ]
+  },
+  {
+   "id": "capital-one-kohls-rewards-visa",
+   "name": "Kohl's Rewards Visa",
+   "issuer": "Capital One",
+   "network": "Visa",
+   "type": "personal",
+   "program": "kohls-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "kohls",
+     "rate": 7.5
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 2,
+     "excludes": [
+      "superstore",
+      "warehouse"
+     ]
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Monthly cardholder-only discount offers and an annual anniversary offer",
+    "Most Valued Customer (MVC) status with free shipping events after $600 of Kohl's spend in a calendar year"
+   ],
+   "bestFor": "Frequent Kohl's shoppers who want 7.5% back at Kohl's plus gas and grocery rewards paid in Kohl's Cash",
+   "tips": [
+    "Launched September 2024 to replace the Kohl's Charge; earns 7.5% in Kohl's Rewards at Kohl's, 3% at gas stations, 2% at grocery stores and 1% everywhere else Visa is accepted",
+    "Rewards convert to Kohl's Cash in $5 increments on the first day of the following month",
+    "Stack the card rewards with regular Kohl's Cash earning events ($10 for every $50 spent) and cardholder coupons",
+    "Applicants not approved for the Visa may be offered the store-only Kohl's Card, which earns the same 7.5% at Kohl's only"
+   ],
+   "watchOut": [
+    "Kohl's Cash from rewards expires 30 days after issue and is not valid at Sephora at Kohl's",
+    "Gift card purchases at Kohl's do not earn the 7.5%",
+    "Grocery purchases at superstores, warehouse clubs and convenience stores earn 1%, not 2%",
+    "Rewards are only useful at Kohl's; there is no cash option"
+   ],
+   "sourceUrl": "https://www.kohls.com/feature/kohls-rewards-visa.jsp",
+   "sourceUrls": [
+    "https://capitalone.com/credit-cards/kohls",
+    "https://capital-one.kpp.kohls.com/api/v1/partners/capital-one/application-disclosures/terms-and-conditions",
+    "https://hip2save.com/news/kohls-rewards-visa/",
+    "https://thepointsguy.com/credit-cards/reviews/credit-cards-reviews-kohls-credit-card-review"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Foreign transaction fee is not listed in the Capital One application terms (only transfer and cash advance fees are); recorded as 0 because Capital One consumer cards do not charge one, but the Kohl's page does not confirm this"
+   ],
+   "color": "#6F2A2C",
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Visa"
+   ]
+  },
+  {
+   "id": "capital-one-neiman-marcus-credit-card",
+   "name": "Neiman Marcus",
+   "issuer": "Capital One",
+   "network": "Store",
+   "type": "personal",
+   "program": "incircle-points",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "neiman-marcus",
+     "rate": 2,
+     "label": "5 points per dollar for the rest of the calendar year after $75,000 of eligible spend"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "InCircle tier perks such as free shipping, Perk Cards, gift packaging and concierge at higher circles"
+   ],
+   "bestFor": "Neiman Marcus and Bergdorf Goodman shoppers who want InCircle points on store purchases",
+   "tips": [
+    "Store card usable only at Neiman Marcus and Bergdorf Goodman; earns 2 InCircle points per dollar, rising to 5 per dollar after $75,000 of eligible purchases in a calendar year",
+    "10,000 points convert to a $100 Point Card, so each point is worth about 1 cent at the store",
+    "InCircle circle levels (Circle One at $1 up to Circle Six at $35,000 and above) are based on annual eligible spend and unlock free two-day shipping and other perks"
+   ],
+   "watchOut": [
+    "Points are redeemable only as Neiman Marcus Point Cards, not cash",
+    "Sale items, gift cards and some categories may be excluded from point earning or promotions",
+    "No earning outside Neiman Marcus and Bergdorf Goodman"
+   ],
+   "sourceUrl": "https://neimanmarcus.capitalone.com/",
+   "sourceUrls": [
+    "https://www.rivo.io/blog/neiman-marcus-incircle-program",
+    "https://www.firstcard.app/learn/neiman-marcus-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "low",
+   "unsure": [
+    "The Neiman Marcus credit card page would not load; earning rates (2 points, 5 after $75,000) and point value come from Rivo (October 2026) and FirstCard (June 2026)",
+    "Whether a Neiman Marcus Mastercard still exists could not be confirmed; only the store card is recorded"
+   ],
+   "color": "#85201E",
+   "onlyAt": [
+    "neiman-marcus"
+   ],
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Store",
+    "Visa"
+   ]
+  },
+  {
+   "id": "capital-one-rei-coop-mastercard",
+   "name": "REI Co-op Mastercard",
+   "issuer": "Capital One",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "rei-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [
+    {
+     "merchant": "rei",
+     "rate": 5
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$50 account credit toward REI classes once per calendar year",
+    "$100 REI gift card after the first non-REI purchase within 60 days of opening"
+   ],
+   "bestFor": "REI members who shop REI often and want 1.5% back everywhere else, redeemable only at REI",
+   "tips": [
+    "5% back on REI store and REI.com purchases including sale items, gift cards and REI Experiences, plus 1.5% on everything else",
+    "Card rewards post within a day or two and stack with the annual Co-op Member Reward (typically 10% on full-price items)",
+    "An REI Co-op membership ($30 one-time) is required to apply",
+    "During REI's annual double rewards event, REI purchases earn an extra 5%"
+   ],
+   "watchOut": [
+    "Rewards can only be spent at REI; there is no cash or statement credit option",
+    "Purchases made on REI promotional financing plans earn no rewards",
+    "Only the primary cardmember can redeem rewards"
+   ],
+   "sourceUrl": "https://www.rei.com/membership/mastercard",
+   "sourceUrls": [
+    "https://www.rei.com/membership/mastercard/faq"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Mastercard World Elite benefits (such as cell phone protection) are referenced but not listed on the REI page"
+   ],
+   "color": "#872722",
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Visa"
+   ]
+  },
+  {
+   "id": "capital-one-key-rewards-visa",
+   "name": "The Key Rewards Visa",
+   "issuer": "Capital One",
+   "network": "Visa",
+   "type": "personal",
+   "program": "key-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "williams-sonoma",
+     "rate": 5,
+     "label": "also Pottery Barn, Pottery Barn Kids, Pottery Barn Teen, West Elm, Williams Sonoma Home, Rejuvenation and Mark and Graham"
+    },
+    {
+     "merchant": "pottery-barn",
+     "rate": 5
+    },
+    {
+     "category": "groceries",
+     "rate": 4,
+     "excludes": [
+      "superstore",
+      "warehouse",
+      "gas"
+     ]
+    },
+    {
+     "category": "dining",
+     "rate": 4
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "10% back at the eight brands for the first 30 days after account opening",
+    "$25 birthday reward certificate each year after a purchase in the prior 12 months",
+    "Free standard shipping at Williams Sonoma in the contiguous 48 states"
+   ],
+   "bestFor": "Shoppers at Williams Sonoma, Pottery Barn and West Elm who also want 4% on groceries and dining",
+   "tips": [
+    "One card sold under Williams Sonoma, Pottery Barn, Pottery Barn Kids, Pottery Barn Teen and West Elm branding; the terms are the same",
+    "5% back in Key Rewards across the eight Williams-Sonoma brands, 4% at grocery stores, restaurants, fast food and food delivery, 1% everywhere else Visa is accepted",
+    "Rewards become reward codes once you reach $10 (NerdWallet reports $10 certificates that expire 180 days after issue)",
+    "On purchases of $750 or more you can choose 12 months of 0% equal-payment financing instead of earning rewards"
+   ],
+   "watchOut": [
+    "Rewards are redeemable only at the Williams-Sonoma brands, not for cash",
+    "Purchases placed on promotional financing earn no rewards",
+    "Grocery purchases at gas stations, convenience stores, warehouse clubs, discount stores and superstores earn 1%",
+    "Store-only Key Rewards Credit Cards (no Visa logo) earn the 5% in-brand rate but nothing elsewhere"
+   ],
+   "sourceUrl": "https://www.capitalone.com/credit-cards/thekeyrewards/",
+   "sourceUrls": [
+    "https://www.potterybarn.com/pages/the-key-rewards/",
+    "https://www.williams-sonoma.com/m/thekeyrewards",
+    "https://www.nerdwallet.com/credit-cards/learn/capital-one-launches-new-store-cards-for-williams-sonoma-pottery-barn-others"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Foreign transaction fee is not stated on any Key Rewards page; recorded as 0 because Capital One consumer cards do not charge one",
+    "Certificate increments ($10) and 180-day expiration are from NerdWallet; the brand pages mention only a $10 reward code threshold"
+   ],
+   "color": "#6A202A",
+   "networkOptions": [
+    "Discover",
+    "Mastercard",
+    "Visa"
+   ]
+  },
+  {
+   "id": "citi-aadvantage-business",
+   "name": "Citi / AAdvantage Business World Elite Mastercard",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "american-aadvantage",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "american-airlines",
+     "rate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 2,
+     "label": "telecommunications merchants and cable and satellite providers"
+    },
+    {
+     "category": "rental-car",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "First checked bag free on domestic American itineraries for the cardmember and up to 4 companions",
+    "Preferred (Group 5) boarding",
+    "25% savings on inflight food, beverages and Wi-Fi",
+    "American Airlines Companion Certificate after $30,000 of purchases in a cardmembership year and renewal"
+   ],
+   "bestFor": "Small businesses that fly American and spend on phone, cable, gas and rental cars",
+   "tips": [
+    "Annual fee is $0 the first year, then $99",
+    "2 AAdvantage miles per dollar on American Airlines purchases, telecommunications, cable and satellite, car rentals and gas stations; 1 mile on everything else",
+    "Each cardmember (primary and employees) earns 1 Loyalty Point per dollar toward AAdvantage status",
+    "Spending $30,000 in a cardmembership year earns a domestic companion certificate ($99 plus taxes and fees to redeem)"
+   ],
+   "watchOut": [
+    "Welcome bonus is unavailable if you received a new account bonus for a Citi AAdvantage Business account in the past 48 months",
+    "Citi lists no purchase or travel protections for this card",
+    "Miles have no cash redemption"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/citi-aadvantage-business-credit-card",
+   "sourceUrls": [
+    "https://creditcards.aa.com/credit-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#225367"
+  },
+  {
+   "id": "citi-costco-anywhere-visa-business",
+   "name": "Costco Anywhere Visa Business Card by Citi",
+   "issuer": "Citi",
+   "network": "Visa",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "costco-gas",
+     "rate": 5,
+     "cap": 7000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "gas",
+     "rate": 4,
+     "cap": 7000,
+     "capPeriod": "year",
+     "excludes": [
+      "superstore",
+      "warehouse",
+      "groceries"
+     ]
+    },
+    {
+     "category": "ev-charging",
+     "rate": 4,
+     "cap": 7000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "travel",
+     "rate": 3
+    },
+    {
+     "merchant": "costco",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Costco business members who buy fuel and travel; same rates as the consumer Costco card",
+   "tips": [
+    "5% on gas at Costco and 4% on other gas and EV charging on a combined $7,000 per year, then 1%; 3% on restaurants and eligible travel including Costco Travel; 2% at Costco and Costco.com; 1% elsewhere",
+    "Cash back arrives once a year as a certificate after the February statement, redeemable for cash or merchandise at a US Costco warehouse",
+    "No annual fee with a paid Costco membership; each employee cardholder needs their own Costco membership",
+    "Citi lists damage and theft purchase protection, worldwide car rental insurance, travel accident insurance and roadside dispatch"
+   ],
+   "watchOut": [
+    "Gas at supermarkets, superstores and other warehouse clubs earns 1%",
+    "Bakeries, department store restaurants, campgrounds, timeshares, bed and breakfasts and train or commuter travel earn 1%",
+    "The annual certificate must be used in one transaction at a US warehouse and expires at year end",
+    "Costco warehouses accept only Visa credit cards"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/costco-anywhere-visa-business-card",
+   "sourceUrls": [
+    "https://www.citi.com/credit-cards/view-all-credit-cards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Extended warranty is not listed on the Citi business card page; left unset"
+   ],
+   "color": "#1A4674"
+  },
+  {
+   "id": "citi-aadvantage-mileup",
+   "name": "American Airlines AAdvantage MileUp",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "american-aadvantage",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "american-airlines",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2,
+     "excludes": [
+      "warehouse",
+      "superstore"
+     ]
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "25% savings on American Airlines inflight food and beverage purchases"
+   ],
+   "bestFor": "Occasional American Airlines flyers who want a no-fee card that earns miles on groceries",
+   "tips": [
+    "2 AAdvantage miles per dollar at grocery stores including grocery delivery and on eligible American Airlines purchases; 1 mile on everything else with no cap",
+    "Every base mile also earns 1 Loyalty Point toward AAdvantage status",
+    "No annual fee, but no free checked bag or priority boarding; those perks need the Platinum Select card",
+    "Welcome offer currently 15,000 miles plus a $100 statement credit after $500 in 3 months"
+   ],
+   "watchOut": [
+    "3% foreign transaction fee, so do not use it abroad",
+    "Warehouse clubs, superstores, cafes, bars and fast food do not count as grocery stores",
+    "Car rentals and hotels booked through AAdvantage sites do not count as American Airlines purchases",
+    "No travel or purchase protections are listed"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/aadvantage-mile-up-credit-card",
+   "sourceUrls": [
+    "https://creditcards.aa.com/credit-cards/mileup_standard/",
+    "https://creditcards.aa.com/credit-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#2C4681"
+  },
+  {
+   "id": "citi-aadvantage-executive",
+   "name": "Citi / AAdvantage Executive World Legend Mastercard",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "american-aadvantage",
+   "annualFee": 695,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "aadvantage-hotels-cars",
+     "rate": 12,
+     "label": "eligible AAdvantage Hotels and AAdvantage Cars bookings"
+    },
+    {
+     "merchant": "american-airlines",
+     "rate": 4,
+     "label": "5X on American Airlines purchases for the rest of the calendar year after $150,000 of purchases"
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "Admirals Club membership for the primary cardmember with guest privileges",
+    "Up to $120 Global Entry or TSA PreCheck fee credit every 4 years",
+    "Up to $180 per year in Lyft credits ($15 per month after 3 rides)",
+    "Up to $120 per calendar year on prepaid Avis or Budget rentals",
+    "Up to $500 per calendar year in American Airlines Vacations credits ($250 per half year)",
+    "Up to $100 per calendar year on inflight and Admirals Club purchases",
+    "First checked bag free on domestic American itineraries, priority check-in and boarding",
+    "Up to 40,000 bonus Loyalty Points per year at spending milestones",
+    "Omni Hotels Champion status and Avis President's Club status"
+   ],
+   "bestFor": "Frequent American Airlines flyers who will use the Admirals Club membership",
+   "tips": [
+    "Refreshed August 23, 2026: annual fee rose from $595 to $695 and the card moved to Mastercard's World Legend tier",
+    "4 miles per dollar on American Airlines purchases, 12 on AAdvantage Hotels and AAdvantage Cars bookings, 1 on everything else",
+    "After $150,000 of purchases in a calendar year, American purchases earn 5 miles for the rest of that year",
+    "Authorized users cost $175 each (up to three, then $175 each additional) but get Admirals Club access",
+    "The Lyft, Avis Budget, Vacations and inflight credits can be worth about $900 a year if you use all of them"
+   ],
+   "watchOut": [
+    "The $120 Grubhub credit and 25% inflight savings were removed in the August 2026 refresh",
+    "Everyday spending earns only 1 mile per dollar",
+    "Credits are split into calendar year and half year windows that do not roll over",
+    "Citi lists travel protections (trip delay, trip cancellation, lost luggage, MasterRental) but no purchase protection or extended warranty"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/citi-aadvantage-executive-world-legend-mastercard",
+   "sourceUrls": [
+    "https://creditcards.aa.com/credit-cards/",
+    "https://onemileatatime.com/news/citi-aadvantage-executive-card-changes/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "MasterRental coverage is listed by Citi without stating primary or secondary; recorded as secondary"
+   ],
+   "color": "#2C457D"
+  },
+  {
+   "id": "citi-aadvantage-globe",
+   "name": "Citi / AAdvantage Globe Mastercard",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "american-aadvantage",
+   "annualFee": 350,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "aadvantage-hotels-cars",
+     "rate": 6,
+     "label": "eligible AAdvantage Hotels bookings"
+    },
+    {
+     "merchant": "american-airlines",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2,
+     "label": "Rides and Rails: taxis, rideshare and public transit"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "4 Admirals Club Globe Passes per calendar year",
+    "Up to $240 per year in Turo credits ($30 per eligible trip)",
+    "Up to $100 per calendar year inflight purchase credit",
+    "Up to $100 per calendar year Splurge Credit across two of 1stDibs, AAdvantage Hotels, Future Personal Training and Live Nation",
+    "Up to $120 Global Entry or TSA PreCheck fee credit every 4 years",
+    "$99 companion certificate each year after renewal",
+    "First checked bag free and Group 5 boarding on domestic American itineraries for the cardmember and up to 8 companions",
+    "Flight Streak bonus of 5,000 Loyalty Points after every 4 qualifying flights, up to 15,000 per status year"
+   ],
+   "bestFor": "American Airlines flyers who want lounge passes and dining and transit earning without the Executive card's fee",
+   "tips": [
+    "Launched October 2025 as the mid-tier AAdvantage card; 3 miles per dollar on American Airlines, 6 on AAdvantage Hotels, 2 on restaurants including takeout and delivery and on taxis, rideshare and transit, 1 elsewhere",
+    "Four Admirals Club day passes a year come as digital passes in the AAdvantage wallet",
+    "Authorized users are free and their purchases earn miles",
+    "Citi lists purchase protection, extended warranty, trip delay, trip cancellation, lost luggage and rental car coverage on this card"
+   ],
+   "watchOut": [
+    "The companion certificate starts in the second cardmember year and is not valid on basic economy, first or business class",
+    "The Splurge Credit covers only four named brands",
+    "Gas and groceries earn only 1 mile per dollar"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/citi-aadvantage-globe-mastercard",
+   "sourceUrls": [
+    "https://creditcards.aa.com/credit-cards/",
+    "https://onemileatatime.com/news/citi-aadvantage-globe-mastercard/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Rental coverage (MasterRental) is listed without primary or secondary; recorded as secondary",
+    "This card was not on the assignment list but is in Citi's current AAdvantage lineup, so it is included"
+   ],
+   "color": "#2B5673"
   },
   {
    "id": "citi-aadvantage-platinum-select",
@@ -7407,6 +8334,210 @@
    "color": "#B52E31"
   },
   {
+   "id": "citi-exxon-mobil-smart-card-plus",
+   "name": "Exxon Mobil Smart Card+",
+   "issuer": "Citi",
+   "network": "Store",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "mobil",
+     "rate": 5,
+     "cap": 1200,
+     "capPeriod": "year",
+     "label": "non-fuel purchases at Exxon and Mobil stations; fuel gets 10 cents per gallon off (12 cents on Supreme+ premium) instead"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "10 cents off per gallon on regular, midgrade and diesel and 12 cents off on Synergy Supreme+ premium, applied at the pump"
+   ],
+   "bestFor": "Existing holders who fill up at Exxon and Mobil; closed to new applicants",
+   "tips": [
+    "Closed to new applications as of October 2026 per ExxonMobil's card pages; existing accounts keep earning",
+    "Store card usable only at participating Exxon and Mobil stations; the fuel discount is an instant price rollback at the pump, or a statement credit within 1 to 2 cycles if the pump cannot apply it",
+    "5% back as a statement credit on the first $1,200 of non-fuel purchases per year ($60 maximum)",
+    "A 10 cent per gallon discount on $4 gas is about 2.5% back, so a general 3% to 5% gas card usually earns more"
+   ],
+   "watchOut": [
+    "Cannot be combined with Exxon Mobil Rewards+ points on the same purchase",
+    "Lottery, money orders and gift cards are excluded from the 5% rebate",
+    "No earning anywhere except Exxon and Mobil"
+   ],
+   "sourceUrl": "https://www.exxonmobilfuels.com/en/smart-card-plus/faqs",
+   "sourceUrls": [
+    "https://www.exxonmobilfuels.com/en/exxon/exxongas/credit-cards",
+    "https://www.nerdwallet.com/credit-cards/learn/exxon-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The Citi product page returns Page Not Found and ExxonMobil's pages say applications are no longer accepted; the closure date and whether Citi plans to convert accounts were not found",
+    "The 5% rebate is modeled as a merchant rate; the per-gallon fuel discount cannot be expressed as a percentage"
+   ],
+   "color": "#306882",
+   "onlyAt": [
+    "mobil"
+   ]
+  },
+  {
+   "id": "citi-macys-american-express",
+   "name": "Macy's American Express",
+   "issuer": "Citi",
+   "network": "American Express",
+   "type": "personal",
+   "program": "macys-star-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "macys",
+     "rate": 2,
+     "label": "Silver status; 3 points at Gold, 5 points at Platinum"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Amex Offers and American Express presale ticket access",
+    "Free standard shipping at Gold and Platinum status",
+    "Star Money Days and Star Pass 25% off day"
+   ],
+   "bestFor": "Macy's shoppers who want to earn Star Rewards on restaurants, gas and groceries too",
+   "tips": [
+    "Issued by Department Stores National Bank (Citi) on the American Express network; currently offered to Macy's Credit Card holders by invitation",
+    "At Macy's it earns the same 2, 3 or 5 points per dollar by status as the store card; outside Macy's it earns 3 points at restaurants including delivery, 2 at gas stations and supermarkets and 1 everywhere else",
+    "1,000 points equal $10 in Star Money, so outside Macy's the card effectively pays 3%, 2% and 1% back, redeemable only at Macy's",
+    "Points earned outside Macy's take up to 2 or 3 billing cycles to post"
+   ],
+   "watchOut": [
+    "3% foreign transaction fee",
+    "Star Money expires 30 days after issuance and cannot be used on gift cards, services or fees",
+    "Cash advances, money orders and cash equivalents earn no points",
+    "Rewards are only useful at Macy's"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/citi-macys-credit-card",
+   "sourceUrls": [
+    "https://www.citi.com/credit-cards/citi-macys-credit-card/additional-information",
+    "https://americanexpress.com/en-us/network/macys/credit-cards/macys-amex-card.html",
+    "https://www.macys.com/customer-service/articles/what-are-my-options-for-upgrading-to-a-macys-american-express-card",
+    "https://upgradedpoints.com/credit-cards/reviews/macys-credit-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Amex network protections (purchase protection, car rental coverage) are referenced generically by Macy's but not listed, so no benefit flags are set"
+   ],
+   "color": "#1E5085"
+  },
+  {
+   "id": "citi-macys-credit-card",
+   "name": "Macy's Credit Card",
+   "issuer": "Citi",
+   "network": "Store",
+   "type": "personal",
+   "program": "macys-star-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "macys",
+     "rate": 2,
+     "label": "Silver status; 3 points at Gold ($500 to $1,199.99 annual spend), 5 points at Platinum ($1,200 or more)"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Star Money Days bonus point events and a Star Pass 25% off day",
+    "Free standard shipping with no minimum at Gold and Platinum status",
+    "Birthday offer"
+   ],
+   "bestFor": "Regular Macy's shoppers who reach Gold or Platinum status",
+   "tips": [
+    "Issued by Citi (Department Stores National Bank); usable only at Macy's, Macy's Backstage and macys.com",
+    "Earns 2 Star Rewards points per dollar at Silver, 3 at Gold and 5 at Platinum; status is set each January from the prior year's net Macy's spend, and new accounts start at Silver",
+    "1,000 points equal $10 in Star Money, so the card pays 2% to 5% back at Macy's depending on status",
+    "Pay with the card at macys.com to earn at your status rate; paying another way earns the 1 point Bronze rate"
+   ],
+   "watchOut": [
+    "Star Money expires 30 days after it is issued",
+    "No points on gift cards, rugs, services such as restaurants and salons, fees, sales tax or departments without a Macy's register",
+    "Paying with a virtual wallet other than Macy's Pay earns no points",
+    "Points and Star Money are forfeited if the account closes or goes 12 months without a qualifying purchase"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/citi-macys-credit-card",
+   "sourceUrls": [
+    "https://www.citi.com/credit-cards/citi-macys-credit-card/additional-information",
+    "https://www.macys.com/customer-service/articles/macys-star-rewards-terms-conditions",
+    "https://upgradedpoints.com/credit-cards/reviews/macys-credit-cards/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#1B3779",
+   "onlyAt": [
+    "macys"
+   ]
+  },
+  {
+   "id": "citi-meijer-mastercard",
+   "name": "Meijer Mastercard",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "meijer-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1.33,
+   "earn": [],
+   "benefits": {},
+   "credits": [
+    "10 cents off per gallon at Meijer gas stations, stackable with mPerks fuel rewards",
+    "$10 off an in-store Meijer purchase within 30 days of opening"
+   ],
+   "bestFor": "Meijer shoppers who want a discount at Meijer gas pumps; the rewards rate itself is low",
+   "tips": [
+    "Earns a $10 Meijer reward for every $750 of net purchases at Meijer, Meijer fuel stations and everywhere else Mastercard is accepted, about 1.33% back in Meijer certificates",
+    "The store-only Meijer Credit Card version earns the same $10 per $750 but only on Meijer purchases",
+    "Pay at Meijer pumps with the card for 10 cents off per gallon, on top of mPerks fuel savings",
+    "Rewards arrive as paper certificates (60 day expiry) or digital rewards (45 day expiry) if you link mPerks"
+   ],
+   "watchOut": [
+    "Rewards cannot be redeemed on alcohol, tobacco, prescriptions, gift cards, lottery, postage, gas stations, store pickup or home delivery",
+    "Unused reward certificates expire quickly and the spend balance toward the next $750 expires after about 12 months",
+    "Rewards are only usable at Meijer; a flat 2% card pays more almost everywhere"
+   ],
+   "sourceUrl": "https://www.meijer.com/services/credit-card.html",
+   "sourceUrls": [
+    "https://www.meijer.com/creditcardbenefits",
+    "https://www.nerdwallet.com/credit-cards/learn/meijer-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Foreign transaction fee is not published on Meijer's pages; recorded as 3% because Citi retail Mastercards (Macy's Amex, Best Buy Visa aside) typically charge 3%",
+    "The $10 per $750 structure is modeled as a 1.33% base rate; rewards are issued only in $10 steps"
+   ],
+   "color": "#1D4C72"
+  },
+  {
    "id": "best-buy-credit-card",
    "name": "My Best Buy",
    "issuer": "Citi",
@@ -7494,6 +8625,109 @@
     "Annual fee is $0 to $59 based on creditworthiness; recorded as 0 for the typical approval"
    ],
    "color": "#1F3C88"
+  },
+  {
+   "id": "citi-wayfair-credit-card",
+   "name": "Wayfair Credit Card",
+   "issuer": "Citi",
+   "network": "Store",
+   "type": "personal",
+   "program": "wayfair-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "wayfair",
+     "rate": 7,
+     "label": "5% if you choose promotional financing on the purchase"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$40 off a first order of $100 or more with a new account (offer ends February 1, 2027)"
+   ],
+   "bestFor": "Wayfair shoppers who were not approved for the Mastercard version",
+   "tips": [
+    "Store card usable only at Wayfair, Joss and Main, AllModern, Birch Lane and Perigold sites, apps and stores",
+    "7% back in Reward Dollars on qualifying items, or 5% back if you take promotional financing on that order",
+    "Reward Dollars do not expire while the account is active and redeem with no minimum"
+   ],
+   "watchOut": [
+    "No earning outside the Wayfair brands",
+    "Reward Dollars are forfeited 90 days after the account closes",
+    "Outlet stores and gift cards are excluded"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/wayfair-credit-cards",
+   "sourceUrls": [
+    "https://www.wayfair.com/wayfaircard?from=pdp"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#273E72",
+   "onlyAt": [
+    "wayfair"
+   ]
+  },
+  {
+   "id": "citi-wayfair-mastercard",
+   "name": "Wayfair Mastercard",
+   "issuer": "Citi",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "wayfair-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "wayfair",
+     "rate": 7,
+     "label": "Wayfair, Joss and Main, AllModern, Birch Lane and Perigold; 5% if you choose promotional financing on the purchase"
+    },
+    {
+     "category": "groceries",
+     "rate": 3,
+     "excludes": [
+      "superstore",
+      "warehouse",
+      "gas"
+     ]
+    },
+    {
+     "category": "online",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$40 off a first order of $100 or more with a new account (offer ends February 1, 2027)"
+   ],
+   "bestFor": "Frequent Wayfair shoppers who also want 3% on groceries and 2% online, paid in Wayfair Reward Dollars",
+   "tips": [
+    "Issued by Citi since 2024 (the old Comenity Wayfair program ended); earns 7% back in Reward Dollars on qualifying items across the Wayfair Family of Brands, 3% at grocery stores, 2% on online purchases and 1% everywhere else",
+    "On qualifying Wayfair orders you can instead take promotional financing (6 to 60 months) and earn 5% rather than 7%",
+    "Reward Dollars post to your Wayfair account, do not expire while the account is active and redeem up to $2,500 per month with no minimum",
+    "The store-only Wayfair Credit Card earns the same 7% at Wayfair brands but nothing elsewhere"
+   ],
+   "watchOut": [
+    "3% foreign transaction fee",
+    "Reward Dollars have no cash value and are forfeited 90 days after the card closes",
+    "Outlet store purchases and gift cards earn no rewards",
+    "Grocery purchases at convenience stores, gas stations, warehouse clubs, supercenters and discount stores earn 1%"
+   ],
+   "sourceUrl": "https://www.citi.com/credit-cards/wayfair-credit-cards",
+   "sourceUrls": [
+    "https://www.wayfair.com/wayfaircard?from=pdp",
+    "https://upgradedpoints.com/credit-cards/reviews/wayfair-mastercard/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The 3% foreign transaction fee is from Upgraded Points (January 2026); the Citi page leaves the percentage blank"
+   ],
+   "color": "#274472"
   },
   {
    "id": "discover-it-cash-back",
@@ -10360,6 +11594,58 @@
    "color": "#285277"
   },
   {
+   "id": "barclays-gm-rewards-mastercard",
+   "name": "GM Rewards Mastercard",
+   "issuer": "Barclays",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "gm-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 3,
+   "earn": [
+    {
+     "merchant": "gm",
+     "rate": 7,
+     "label": "eligible GM purchases: new or certified pre-owned vehicles, parts, accessories, service, GM insurance, OnStar, SiriusXM; GM Rewards members get up to 3 more for 10 total"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "30,000 bonus points after $1,000 of purchases in the first 90 days",
+    "Low intro APR for 9 months on GM purchases over $499 made within 30 days of opening"
+   ],
+   "bestFor": "People planning to buy or lease a GM vehicle who want 3 points per dollar on everything toward it",
+   "tips": [
+    "Barclays took over the GM card from Goldman Sachs and relaunched it May 20, 2025; existing accounts moved in August 2025",
+    "7 points per dollar on eligible GM purchases (up to 10 with GM Rewards membership bonus) and 3 points on everything else, with no earning cap",
+    "Points are worth 1 cent each toward a new GM vehicle purchase or lease, GM Financial balances, parts, accessories, service, OnStar and GM insurance, so everyday spend is effectively 3% back toward GM",
+    "Points can be pooled with other GM Rewards members and stacked with GM employee and Family First discounts",
+    "Points expire 7 years after the last account activity"
+   ],
+   "watchOut": [
+    "No cash back; points only have value through GM (a statement credit option is capped at about $250 per year per one reference site)",
+    "3% foreign transaction fee per reference sites",
+    "The old Goldman Sachs version's 4X everywhere and fuel credits are gone",
+    "A GM Business Mastercard exists separately with different terms"
+   ],
+   "sourceUrl": "https://news.gm.com/home.detail.html/Pages/news/us/en/2025/may/0520-GM-enhances-loyalty-program-unveils-GM-Rewards-Mastercard-Barclays.html",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/gm-credit-card",
+    "https://awardwallet.com/credit-cards/barclays-bank/gm-rewards-mastercard/",
+    "https://www.doctorofcredit.com/?p=238402",
+    "https://www.firstcard.app/learn/gm-rewards-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The Barclays product page would not load; the 3% foreign transaction fee is from FirstCard (September 2026) only",
+    "No separate no-fee non-Mastercard GM Rewards Card was found; the consumer product is the GM Rewards Mastercard",
+    "World Elite Mastercard benefits are referenced but not itemized, so no benefit flags are set"
+   ],
+   "color": "#2B5E78"
+  },
+  {
    "id": "bilt-blue",
    "name": "Bilt Blue",
    "issuer": "Bilt",
@@ -10764,6 +12050,977 @@
    ],
    "color": "#294E85",
    "finish": "silver"
+  },
+  {
+   "id": "bread-aaa-daily-advantage-visa",
+   "name": "AAA Daily Advantage",
+   "issuer": "Bread Financial",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "groceries",
+     "rate": 5,
+     "cap": 500,
+     "capPeriod": "year",
+     "label": "cap is $500 of cash back per calendar year combined across grocery stores, wholesale clubs and gas stations"
+    },
+    {
+     "category": "gas",
+     "rate": 3,
+     "cap": 500,
+     "capPeriod": "year"
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "warehouse",
+     "rate": 3,
+     "cap": 500,
+     "capPeriod": "year"
+    },
+    {
+     "category": "streaming",
+     "rate": 3
+    },
+    {
+     "category": "drugstore",
+     "rate": 3
+    },
+    {
+     "merchant": "aaa",
+     "rate": 3
+    },
+    {
+     "merchant": "hertz",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$100 statement credit after $1,000 of purchases in the first 90 days"
+   ],
+   "bestFor": "Grocery-heavy households that stay under the $500 annual cap",
+   "tips": [
+    "Issued by Comenity Capital Bank (Bread Financial); AAA membership is not required to apply",
+    "5% at grocery stores and 3% at gas stations, EV charging, wholesale clubs, streaming services, pharmacies and AAA purchases; 2% on Hertz; 1% elsewhere",
+    "The cap is on cash back, not spend: once you have earned $500 in a calendar year from grocery stores, wholesale clubs and gas stations combined, those categories pay 1% for the rest of the year (roughly $10,000 of grocery spend)",
+    "Redeem as a statement credit, direct deposit, or toward AAA purchases; NerdWallet reports a $5 minimum and five year expiration"
+   ],
+   "watchOut": [
+    "The $500 combined cap is modeled on the grocery, gas and warehouse rules; the cap field is in dollars of cash back, not spend",
+    "AAA travel, insurance and extended warranty purchases are excluded from the 3% AAA rate",
+    "Category rates depend on merchant codes; Walmart and Target code as superstores, not grocery"
+   ],
+   "sourceUrl": "https://cluballiance.aaa.com/money/clpz/daily-advantage",
+   "sourceUrls": [
+    "https://wa.aaa.com/finance/aaa-visa-credit-card.html",
+    "https://www.nerdwallet.com/credit-cards/learn/aaa-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no Bread Financial or Comenity value",
+    "The cap on the grocery, gas and warehouse rules is a shared $500 cash back pool, not $500 each; the schema has no shared cap field",
+    "Visa Signature protections are not described on the AAA pages, so no benefit flags are set"
+   ],
+   "color": "#2D6486"
+  },
+  {
+   "id": "bread-aaa-travel-advantage-visa",
+   "name": "AAA Travel Advantage",
+   "issuer": "Bread Financial",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "gas",
+     "rate": 5,
+     "cap": 350,
+     "capPeriod": "year",
+     "label": "cap is $350 of cash back per calendar year on the 5% category"
+    },
+    {
+     "category": "ev-charging",
+     "rate": 5,
+     "cap": 350,
+     "capPeriod": "year"
+    },
+    {
+     "merchant": "hertz",
+     "rate": 4
+    },
+    {
+     "category": "travel",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "merchant": "aaa",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$100 statement credit after $1,000 of purchases in the first 90 days"
+   ],
+   "bestFor": "Drivers who want 5% on gas with no annual fee and 3% on travel, dining and groceries",
+   "tips": [
+    "Issued by Comenity Capital Bank (Bread Financial); no AAA membership needed",
+    "5% at gas stations and EV charging until you have earned $350 of cash back in a calendar year (about $7,000 of fuel), then 1%; 3% on travel, restaurants, grocery stores and AAA purchases; 4% on Hertz; 1% elsewhere",
+    "No foreign transaction fee, which makes it usable abroad",
+    "Through October 31, 2026 AAA Member Choice Vacations booked with the card earn 6%"
+   ],
+   "watchOut": [
+    "The $350 cap is on cash back earned, not on spend",
+    "Third party insurance, extended warranties and trip insurance bought through AAA are excluded from the 3%",
+    "No travel protections are described on AAA's pages despite the Visa Signature branding"
+   ],
+   "sourceUrl": "https://wa.aaa.com/finance/aaa-visa-credit-card.html",
+   "sourceUrls": [
+    "https://cluballiance.aaa.com/money/clpz/travel-advantage",
+    "https://www.nerdwallet.com/credit-cards/learn/aaa-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no Bread Financial or Comenity value",
+    "The gas and EV cap is one shared $350 cash back pool"
+   ],
+   "color": "#1E567B"
+  },
+  {
+   "id": "bread-caesars-rewards-visa",
+   "name": "Caesars Rewards",
+   "issuer": "Bread Financial",
+   "network": "Visa",
+   "type": "personal",
+   "program": "caesars-reward-credits",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "caesars",
+     "rate": 5,
+     "label": "Caesars Rewards destinations; includes the 1 base Reward Credit, so the card adds 4"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "travel",
+     "rate": 2
+    },
+    {
+     "category": "entertainment",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "10,000 Reward Credits and 2,500 Tier Credits after $1,000 of purchases outside Caesars destinations in the first 90 days",
+    "Platinum status for the rest of the calendar year after any purchase in the first 90 days",
+    "2,500 Tier Credits each calendar year after $5,000 of purchases"
+   ],
+   "bestFor": "Caesars Rewards members who want Platinum status and Reward Credits on dining, travel and entertainment",
+   "tips": [
+    "Issued by Comenity Bank (Bread Financial); earns 5 Reward Credits per dollar at Caesars Rewards destinations, 2 on dining, travel and entertainment and 1 everywhere else Visa is accepted",
+    "Reward Credits are typically worth 1 cent each toward hotel stays (100 credits = $1) and some dining, and 0.5 cents toward on-property free play",
+    "Reward Credits do not expire as long as you earn at least 1 every 6 months",
+    "The Caesars Rewards Prestige Visa ($149) earns 7 at Caesars, adds annual slot play, dining and hotel night credits, and has no foreign transaction fee"
+   ],
+   "watchOut": [
+    "3% foreign transaction fee on the no-fee card",
+    "Caesars destination earning does not stack with the 2x dining, travel and entertainment rate",
+    "Some restaurants redeem at 150 to 300 credits per dollar, so check the rate before using credits for food",
+    "Applicants under 21 cannot earn Caesars Rewards benefits"
+   ],
+   "sourceUrl": "https://www.caesars.com/myrewards/partners/cr-visa",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/travel/learn/your-guide-to-the-caesars-rewards-program"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other (Comenity Bank)",
+    "Visa Signature rental car privileges are listed by Caesars without coverage detail; recorded as secondary"
+   ],
+   "color": "#304C7E"
+  },
+  {
+   "id": "bread-ikea-visa",
+   "name": "IKEA Visa",
+   "issuer": "Bread Financial",
+   "network": "Visa",
+   "type": "personal",
+   "program": "ikea-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "ikea",
+     "rate": 5,
+     "label": "includes IKEA installation services and TaskRabbit purchases"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "category": "utilities",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$25 off a same-day first purchase of $25 or more"
+   ],
+   "bestFor": "IKEA shoppers who also want 3% on dining, groceries and utilities, paid in IKEA certificates",
+   "tips": [
+    "Issued by Comenity Capital Bank (Bread Financial); earns 5% back in IKEA rewards at IKEA including installation and TaskRabbit, 3% at restaurants, grocery stores and utilities, and 1% everywhere else Visa is accepted",
+    "Rewards are issued automatically as $15 IKEA Reward Certificates on your statement and are valid for 90 days",
+    "The IKEA Projekt card is a separate store-only financing card with no rewards"
+   ],
+   "watchOut": [
+    "Certificates expire 90 days after issue and come automatically in $15 steps, so you cannot save them up",
+    "Reward dollars expire 36 months after posting",
+    "Category rates apply only when the merchant code matches; utilities paid through third party processors may not count"
+   ],
+   "sourceUrl": "https://www.ikea.com/us/en/services/finance-options/ikea-credit-cards-pub9b4272b0/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/card-details/card-name/IKEA-Credit-Card",
+    "https://www.doctorofcredit.com/ikea-visa-credit-card-by-comenity"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other (Comenity Capital Bank)",
+    "The IKEA page does not state the 5%, 3% and 1% rates; they are from NerdWallet (October 2026) and Doctor of Credit",
+    "Foreign transaction fee is not published; 3% is an assumption for a Comenity retail card",
+    "NerdWallet notes the card is currently unavailable on its site; whether Comenity still accepts applications was not confirmed"
+   ],
+   "color": "#25647E"
+  },
+  {
+   "id": "bread-sephora-credit-card",
+   "name": "Sephora Credit Card",
+   "issuer": "Bread Financial",
+   "network": "Store",
+   "type": "personal",
+   "program": "sephora-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "sephora",
+     "rate": 4
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "25% off a first purchase within 30 days of approval",
+    "2x Beauty Insider points on Sephora purchases"
+   ],
+   "bestFor": "Sephora shoppers not approved for the Visa version",
+   "tips": [
+    "Store card usable only at US Sephora stores and sephora.com; earns 4% back in rewards plus double Beauty Insider points",
+    "Rewards are issued in $5 increments with your statement and must be used within 90 days"
+   ],
+   "watchOut": [
+    "Cannot be used at Sephora inside Kohl's or on third party marketplaces",
+    "Rewards must be redeemed in full in one transaction",
+    "High purchase APR"
+   ],
+   "sourceUrl": "https://www.sephora.com/beauty/credit-card",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/sephora-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other (Comenity Capital Bank)"
+   ],
+   "color": "#264269",
+   "onlyAt": [
+    "sephora"
+   ]
+  },
+  {
+   "id": "bread-sephora-visa",
+   "name": "Sephora Visa",
+   "issuer": "Bread Financial",
+   "network": "Visa",
+   "type": "personal",
+   "program": "sephora-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "sephora",
+     "rate": 4
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "25% off a first purchase within 30 days of approval",
+    "$20 in rewards after $500 of purchases outside Sephora in the first 90 days",
+    "2x Beauty Insider points on Sephora purchases"
+   ],
+   "bestFor": "Sephora Beauty Insiders who want 4% back at Sephora and 1% elsewhere in Sephora rewards",
+   "tips": [
+    "Issued by Comenity Capital Bank (Bread Financial); earns 4% back in rewards at US Sephora stores and sephora.com plus double Beauty Insider points, and 1% everywhere else Visa is accepted",
+    "Rewards convert to Sephora Credit Card Rewards in $5 increments (every 125 reward dollars) and are sent with your statement",
+    "Rewards stack with Beauty Insider cash certificates but not with other promotions",
+    "The store-only Sephora Credit Card earns the same 4% at Sephora but nothing elsewhere"
+   ],
+   "watchOut": [
+    "Issued rewards expire 90 days after issue; earned reward dollars expire after 18 months",
+    "Rewards cannot be used at Sephora inside Kohl's or other retailers",
+    "Each reward must be used in full in a single transaction",
+    "No published purchase protections beyond Visa Signature concierge and roadside dispatch"
+   ],
+   "sourceUrl": "https://www.sephora.com/beauty/credit-card",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/sephora-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other (Comenity Capital Bank)",
+    "Foreign transaction fee is not published on the Sephora page; 3% is an assumption for a Comenity retail card",
+    "Reward increment ($5 per 125 reward dollars) and 18 month expiration are from NerdWallet (June 2026)"
+   ],
+   "color": "#275072"
+  },
+  {
+   "id": "bread-ulta-beauty-rewards-credit-card",
+   "name": "Ulta Beauty Rewards",
+   "issuer": "Bread Financial",
+   "network": "Store",
+   "type": "personal",
+   "program": "ulta-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "ulta",
+     "rate": 2,
+     "label": "2 points per dollar at Base member level"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "20% off your first purchase at Ulta Beauty"
+   ],
+   "bestFor": "Ulta shoppers not approved for the Mastercard version",
+   "tips": [
+    "Store card usable only at Ulta Beauty stores and ulta.com; earns 2 Ulta Beauty Rewards points per dollar in addition to regular member earning",
+    "Points redeem on Ulta's sliding scale (100 points = $3 up to 2,000 points = $125)"
+   ],
+   "watchOut": [
+    "Cannot be used on DoorDash, Instacart, Uber Eats, TikTok Shop or in digital wallets",
+    "Points expire a year after the quarter they were earned unless you hold Platinum or Diamond status",
+    "No earning outside Ulta"
+   ],
+   "sourceUrl": "https://www.ulta.com/rewards/credit-card",
+   "sourceUrls": [],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other (Comenity Capital Bank)"
+   ],
+   "color": "#2D6B86",
+   "onlyAt": [
+    "ulta"
+   ]
+  },
+  {
+   "id": "bread-ulta-beauty-rewards-mastercard",
+   "name": "Ulta Beauty Rewards Mastercard",
+   "issuer": "Bread Financial",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "ulta-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 0.33,
+   "earn": [
+    {
+     "merchant": "ulta",
+     "rate": 2,
+     "label": "2 points per dollar at Base member level; Platinum and Diamond members earn more"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "20% off your first purchase at Ulta Beauty",
+    "500 bonus points after $500 of purchases outside Ulta in the first 90 days"
+   ],
+   "bestFor": "Ulta Beauty Rewards members who want extra points at Ulta; the outside-Ulta rate is tiny",
+   "tips": [
+    "Issued by Comenity Capital Bank (Bread Financial); earns 2 Ulta Beauty Rewards points per dollar at Ulta (on top of the base member rate shown for Base level) and 1 point per $3 spent everywhere else Mastercard is accepted",
+    "Points redeem on a sliding scale: 100 points = $3, 250 = $8, 500 = $17.50, 1,000 = $50, 2,000 = $125, so a point is worth 3 to 6.25 cents depending on how many you redeem at once; at 3 cents, Ulta purchases pay about 6% and other purchases about 1%",
+    "Points expire at the end of the quarter one year after they are earned unless you hold Platinum or Diamond status",
+    "The store-only Ulta Beauty Rewards Credit Card earns the same 2 points at Ulta but nothing elsewhere and cannot be added to digital wallets"
+   ],
+   "watchOut": [
+    "1 point per $3 outside Ulta is worth roughly 1% at best and far less if you redeem small amounts",
+    "No points on gift cards, taxes, shipping, donations, marketplace purchases or purchases outside the US",
+    "Points are only redeemable at Ulta Beauty"
+   ],
+   "sourceUrl": "https://www.ulta.com/rewards/credit-card",
+   "sourceUrls": [
+    "https://thepointsguy.com/credit-cards/reviews/ulta-credit-card-review/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other (Comenity Capital Bank)",
+    "Foreign transaction fee is not published; 3% is an assumption for a Comenity retail card",
+    "The base of 0.33 represents 1 point per $3; because point value varies by redemption tier, treat ulta-rewards points as roughly 3 cents each at the minimum tier"
+   ],
+   "color": "#1F4765"
+  },
+  {
+   "id": "bread-victorias-secret-mastercard",
+   "name": "Victoria's Secret Mastercard",
+   "issuer": "Bread Financial",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "victorias-secret-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "victorias-secret",
+     "rate": 10,
+     "label": "Victoria's Secret and PINK; bras earn 30 points per dollar"
+    },
+    {
+     "category": "dining",
+     "rate": 4
+    },
+    {
+     "category": "travel",
+     "rate": 4
+    },
+    {
+     "category": "streaming",
+     "rate": 4
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$25 off a first purchase",
+    "$30 reward after $500 of purchases outside Victoria's Secret and PINK in the first 90 days",
+    "Birthday and half-birthday discounts and an anniversary discount, larger at Gold status"
+   ],
+   "bestFor": "Victoria's Secret and PINK shoppers; rewards are store-only",
+   "tips": [
+    "Issued by Comenity Bank (Bread Financial); earns 10 points per dollar at Victoria's Secret and PINK (30 on bras), 4 points on dining, travel and streaming, 2 points everywhere else Mastercard is accepted",
+    "Every 2,000 points becomes a $10 reward, so a point is worth 0.5 cents: about 5% back at Victoria's Secret, 2% on dining, travel and streaming and 1% elsewhere, all redeemable only at Victoria's Secret and PINK",
+    "Cardholders get Silver status automatically; Gold status (after $750 of annual spend) adds bigger birthday and anniversary discounts",
+    "The store-only Victoria's Secret Credit Card earns the same points at Victoria's Secret and PINK but nothing elsewhere"
+   ],
+   "watchOut": [
+    "Rewards expire 90 days after they are issued",
+    "Rewards have no cash value and work only at Victoria's Secret and PINK",
+    "3% foreign transaction fee",
+    "Very high purchase APR"
+   ],
+   "sourceUrl": "https://www.victoriassecret.com/us/vs/credit-card",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/victorias-secret-credit-card",
+    "https://upgradedpoints.com/credit-cards/reviews/victorias-secret-mastercard-credit-card/",
+    "https://thepointsguy.com/guide/victorias-secret-credit-card-review"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other (Comenity Bank)",
+    "The Victoria's Secret card page would not load; rates are from NerdWallet (May 2026), Upgraded Points (May 2026) and The Points Guy",
+    "Foreign transaction fee is not published; 3% is an assumption for a Comenity retail Mastercard"
+   ],
+   "color": "#266C97"
+  },
+  {
+   "id": "elan-fidelity-rewards-visa-signature",
+   "name": "Fidelity Rewards",
+   "issuer": "Elan",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Up to $100 in reward points toward a Global Entry or TSA PreCheck application"
+   ],
+   "bestFor": "Fidelity customers who want unlimited 2% deposited straight into an investment, IRA, HSA or 529 account",
+   "tips": [
+    "Issued by Elan Financial Services; earns 2 points per dollar on everything with no caps, and points are worth 1 cent each (2%) only when deposited into an eligible Fidelity account",
+    "Set up automatic monthly deposits so points convert to cash in your Fidelity brokerage, IRA, HSA, 529 or charitable account",
+    "No annual fee and no foreign transaction fee; includes auto rental collision damage waiver up to $75,000 and emergency medical and dental coverage when traveling"
+   ],
+   "watchOut": [
+    "Redeeming for travel, merchandise, gift cards or a statement credit pays less than 1 cent per point; only Fidelity deposits get the full 2%",
+    "Closing the account forfeits all unredeemed points",
+    "You need a Fidelity account to get full value, though not to apply"
+   ],
+   "sourceUrl": "https://www.fidelity.com/spend-save/visa-signature-card",
+   "sourceUrls": [
+    "https://www.fidelity.com/rewards/overview"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no Elan value",
+    "Rental coverage is listed by Fidelity without primary or secondary; recorded as secondary",
+    "Fidelity Rewards+ requires Fidelity Wealth Services or Strategic Disciplines managed accounts; tiers are Gold $250,000 to $999,999, Platinum $1,000,000 to $1,999,999, Platinum Plus $2,000,000 or more"
+   ],
+   "color": "#26496D"
+  },
+  {
+   "id": "fnbo-amtrak-guest-rewards-mastercard",
+   "name": "Amtrak Guest Rewards Mastercard",
+   "issuer": "FNBO",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "amtrak-guest-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "amtrak",
+     "rate": 2,
+     "label": "Amtrak travel including onboard purchases"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "10% statement credit rebate on onboard food and beverage",
+    "5% points rebate when redeeming for Amtrak travel"
+   ],
+   "bestFor": "Occasional Amtrak riders who want a no-fee way to earn Amtrak points",
+   "tips": [
+    "Issued by First National Bank of Omaha; 2 points per dollar on Amtrak and at restaurants, 1 point everywhere else, no annual fee and no foreign transaction fee",
+    "Amtrak points are worth roughly 2.5 cents or more each toward fares, so 2X is about 5% back on Amtrak and dining",
+    "Points do not expire while the account is open"
+   ],
+   "watchOut": [
+    "No companion coupon, upgrade or lounge pass; those are on the $99 Preferred card",
+    "Transit and rideshare earn only 1 point on this card",
+    "Points are only useful for Amtrak and partner redemptions"
+   ],
+   "sourceUrl": "https://www.amtrak.com/apply",
+   "sourceUrls": [
+    "https://frequentmiler.com/amkworld/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no FNBO value"
+   ],
+   "color": "#285877"
+  },
+  {
+   "id": "fnbo-amtrak-guest-rewards-preferred-mastercard",
+   "name": "Amtrak Guest Rewards Preferred Mastercard",
+   "issuer": "FNBO",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "amtrak-guest-rewards",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "amtrak",
+     "rate": 3,
+     "label": "Amtrak travel including onboard purchases"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "travel",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2,
+     "label": "transit and rideshare"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Round-trip companion coupon, one-class upgrade coupon and a single-day station lounge pass at account opening and each anniversary",
+    "20% statement credit rebate on onboard food and beverage",
+    "5% points rebate when redeeming for Amtrak travel",
+    "1,000 Tier Qualifying Points per $5,000 of purchases, up to 4,000 per year"
+   ],
+   "bestFor": "Regular Amtrak riders who will use the annual companion coupon and upgrade",
+   "tips": [
+    "Issued by First National Bank of Omaha; 3 points per dollar on Amtrak, 2 on dining, travel, transit and rideshare, 1 everywhere else, and no foreign transaction fee",
+    "Amtrak points are worth about 2.5 to 2.9 cents each toward Amtrak fares (Frequent Miler uses 2.6 cents), so 3X on Amtrak is roughly 8% back",
+    "The companion coupon alone can be worth more than the $99 fee on a long route",
+    "Points do not expire while the account is open; the 5% rebate returns part of every Amtrak redemption"
+   ],
+   "watchOut": [
+    "Points have no cash value outside Amtrak and its partners",
+    "The companion and upgrade coupons have blackout and class restrictions",
+    "Everyday spend earns only 1 point per dollar"
+   ],
+   "sourceUrl": "https://www.amtrak.com/apply",
+   "sourceUrls": [
+    "https://frequentmiler.com/amkworld/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no FNBO value",
+    "Protections are not described on the Amtrak page"
+   ],
+   "color": "#28457B"
+  },
+  {
+   "id": "fnbo-evergreen",
+   "name": "Evergreen by FNBO",
+   "issuer": "FNBO",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 2,
+   "earn": [],
+   "benefits": {},
+   "credits": [
+    "$200 bonus after $1,000 of purchases in the first 3 billing cycles"
+   ],
+   "bestFor": "A simple flat 2% cash back card with no annual fee",
+   "tips": [
+    "Issued by First National Bank of Omaha on the Visa network; unlimited 2% cash back on every purchase with no categories to track",
+    "Redeem as a statement credit, deposit to a bank account or mailed check; rewards do not expire while the account is open",
+    "A business edition with the same 2% exists"
+   ],
+   "watchOut": [
+    "Charges a foreign transaction fee, so it is not a card for travel abroad",
+    "No purchase or travel protections are published on the FNBO page beyond zero liability"
+   ],
+   "sourceUrl": "https://www.fnbo.com/personal-banking/credit-cards/evergreen",
+   "sourceUrls": [
+    "https://frequentmiler.com/FNBOEvergreen/",
+    "https://www.nerdwallet.com/article/credit-cards/evergreen-credit-card",
+    "https://www.joinkudos.com/blog/fnbo-evergreen-credit-card-review-is-this-2-cash-back-card-worth-it"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no FNBO value",
+    "Several sources confirm a foreign transaction fee exists but none state the percentage; 3% is assumed"
+   ],
+   "color": "#20366A"
+  },
+  {
+   "id": "fnbo-scheels-visa",
+   "name": "Scheels Visa",
+   "issuer": "FNBO",
+   "network": "Visa",
+   "type": "personal",
+   "program": "scheels-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "scheels",
+     "rate": 3
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true
+   },
+   "credits": [
+    "1,500 bonus points after the first purchase outside Scheels"
+   ],
+   "bestFor": "Scheels shoppers who want automatic $25 Scheels gift cards",
+   "tips": [
+    "Issued by First National Bank of Omaha; 3 points per dollar at Scheels and scheels.com, 1 point everywhere else Visa is accepted",
+    "Every 2,500 points automatically becomes a $25 Scheels gift card, so points are worth 1 cent each (3% at Scheels, 1% elsewhere)",
+    "Points do not expire; gift cards can take 30 to 60 days to arrive",
+    "Includes purchase security and up to 12 months of extended warranty on eligible items"
+   ],
+   "watchOut": [
+    "Rewards are only redeemable as Scheels gift cards, not cash",
+    "No gas, grocery or dining bonus",
+    "Foreign transaction fee applies"
+   ],
+   "sourceUrl": "https://www.card.fnbo.com/scheels/features-benefits",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/scheels-credit-card",
+    "https://www.supermoney.com/reviews/personal-credit-cards/scheels-visa-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no FNBO value",
+    "Foreign transaction fee of 3% is from SuperMoney (listed as up to 3%); FNBO's page does not state it",
+    "Purchase security and extended warranty are from NerdWallet (June 2026), not the FNBO page"
+   ],
+   "color": "#254688"
+  },
+  {
+   "id": "fnbo-speedy-rewards-mastercard",
+   "name": "Speedy Rewards Mastercard",
+   "issuer": "FNBO",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "speedy-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 10,
+   "earn": [
+    {
+     "merchant": "speedway",
+     "rate": 50,
+     "label": "Speedway fuel and in-store, excluding Speedway Express locations"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "25,000 bonus points after $500 of purchases in the first 3 billing cycles"
+   ],
+   "bestFor": "Speedway regulars who already use Speedy Rewards; the points are worth about a tenth of a cent each",
+   "tips": [
+    "Issued by First National Bank of Omaha; earns 50 Speedy Rewards points per dollar at Speedway (on top of regular member points) and 10 points per dollar everywhere else Mastercard is accepted",
+    "Speedy Rewards points are worth roughly 0.1 cents each (26,000 points for a $25 Speedy Cash gift card), so the card pays about 5% at Speedway and 1% elsewhere",
+    "Points redeem in the Speedway app for fuel discounts, food and gift cards"
+   ],
+   "watchOut": [
+    "Speedway Express locations are excluded from the 50 point rate",
+    "Points expire and are forfeited under the Speedy Rewards program rules, not the card terms",
+    "No published purchase or travel protections beyond zero liability"
+   ],
+   "sourceUrl": "https://www.card.fnbo.com/landing/speedway",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/speedway-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no FNBO value",
+    "Foreign transaction fee is not published on the pages fetched; 3% is an assumption for an FNBO cobrand without a no-fee claim",
+    "Point value of 0.1 cents is derived from redemption examples (26,000 points = $25)"
+   ],
+   "color": "#28457B"
+  },
+  {
+   "id": "best-western-rewards-visa",
+   "name": "Best Western Rewards",
+   "issuer": "First Bank & Trust",
+   "network": "Visa",
+   "type": "personal",
+   "program": "best-western-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "best-western",
+     "rate": 4,
+     "label": "card points only; members also earn 10 base points per dollar on stays for 14 total"
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "tripDelay": true
+   },
+   "credits": [
+    "10,000 bonus points each anniversary after $5,000 of spend in the year",
+    "Automatic Gold Elite status (10% bonus points on stays)",
+    "10,000 to 40,000 bonus points with qualifying spend (offer shown at preapproval)"
+   ],
+   "bestFor": "Occasional Best Western guests who want a no-fee card with 2 points everywhere",
+   "tips": [
+    "Issued by First Bank & Trust and managed by Mercury Financial since the September 2024 relaunch; 4 card points per dollar on Best Western stays (14 with member base points) and 2 points everywhere else",
+    "No annual fee and no foreign transaction fee",
+    "Cell phone protection and trip delay, cancellation and interruption coverage are included"
+   ],
+   "watchOut": [
+    "No gas or grocery bonus; that is on the Premium card",
+    "The anniversary 10,000 points require $5,000 of annual spend",
+    "Points are only worth something at Best Western"
+   ],
+   "sourceUrl": "https://www.bestwestern.com/en_US/offers/hotel-discounts/best-western-rewards-visa.html",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/credit-cards/best-western-credit-cards-relaunch-with-new-benefits",
+    "https://www.doctorofcredit.com/best-western-launches-two-new-credit-cards-with-first-bank-trust-mercury-financial/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other (First Bank & Trust, Mercury Financial)"
+   ],
+   "color": "#2D5C86"
+  },
+  {
+   "id": "best-western-rewards-premium-visa",
+   "name": "Best Western Rewards Premium",
+   "issuer": "First Bank & Trust",
+   "network": "Visa",
+   "type": "personal",
+   "program": "best-western-rewards",
+   "annualFee": 89,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "best-western",
+     "rate": 10,
+     "label": "card points only; members also earn 10 base points per dollar on stays for 20 total"
+    },
+    {
+     "category": "gas",
+     "rate": 4
+    },
+    {
+     "category": "groceries",
+     "rate": 4
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "tripDelay": true
+   },
+   "credits": [
+    "One free night award each cardmember anniversary, plus a second after $10,000 of spend that year",
+    "Automatic Platinum Elite status (15% bonus points on stays, early check-in and late check-out)",
+    "20,000 to 80,000 bonus points with qualifying spend (offer shown at preapproval)"
+   ],
+   "bestFor": "Best Western loyalists who stay enough to use two free nights a year",
+   "tips": [
+    "Relaunched September 2024 with First Bank & Trust as issuer and Mercury Financial as program manager; the former FNBO Best Western Mastercards are closed",
+    "10 card points per dollar on Best Western stays and purchases (20 with member base points), 4 points at gas stations and grocery stores, 2 points everywhere else",
+    "Best Western points are worth about 0.6 to 0.7 cents each; free nights start around 8,000 points",
+    "No foreign transaction fee; cell phone protection applies when you pay your wireless bill with the card"
+   ],
+   "watchOut": [
+    "The second anniversary free night needs $10,000 of spend in the cardmember year",
+    "Points have little value outside Best Western stays",
+    "The welcome bonus amount varies by applicant"
+   ],
+   "sourceUrl": "https://www.bestwestern.com/en_US/offers/hotel-discounts/best-western-rewards-visa.html",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/credit-cards/best-western-credit-cards-relaunch-with-new-benefits",
+    "https://www.doctorofcredit.com/best-western-launches-two-new-credit-cards-with-first-bank-trust-mercury-financial/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no First Bank & Trust or Mercury Financial value; the assignment named FNBO, which no longer issues these cards",
+    "Point value estimate is from general reference sites, not Best Western"
+   ],
+   "color": "#30667E"
+  },
+  {
+   "id": "shell-performance-elite-world-mastercard",
+   "name": "Shell Performance Elite World Mastercard",
+   "issuer": "First Bank & Trust",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "shell-credits",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "shell",
+     "rate": 4,
+     "label": "fuel, EV charging and in-store purchases at participating US Shell stations"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$50 back after $500 of net purchases in the first 60 days",
+    "$5 Lyft credit after 3 rides in a month and $10 off a second Instacart order each month"
+   ],
+   "bestFor": "Shell regulars who buy enough fuel to use statement credits that only apply to Shell purchases",
+   "tips": [
+    "Replaced the Citi Shell Fuel Rewards cards in May 2026; issued by First Bank & Trust and managed by Imprint, and Citi Shell accounts were converted automatically with existing rebates carried over",
+    "4% back at Shell stations on fuel, EV charging and in-store, 3% at restaurants and grocery stores, 2% everywhere else Mastercard is accepted, with no caps",
+    "Rewards post as pending and are applied automatically as a statement credit against Shell purchases at the end of each billing cycle",
+    "Fuel Rewards program savings (up to 10 cents per gallon on 20 gallons for members) still stack at the pump"
+   ],
+   "watchOut": [
+    "Rewards have no cash value and can only offset Shell purchases; if you earn more than you spend at Shell the balance just waits",
+    "Rewards expire after 13 months without any card activity",
+    "3% foreign transaction fee",
+    "Mobile wallet and third party processor purchases may not earn the category rate; a restaurant inside a hotel codes as the hotel"
+   ],
+   "sourceUrl": "https://shell.imprint.co/",
+   "sourceUrls": [
+    "https://shell.imprint.co/upgrade",
+    "https://media-assets.imprint.co/partners/shel/legal/rewards-terms-en",
+    "https://www.nerdwallet.com/credit-cards/learn/shell-credit-card",
+    "https://www.doctorofcredit.com/imprint-launches-shell-performance-elite-world-mastercard/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Issuer recorded as other because the schema enum has no First Bank & Trust or Imprint value; the assignment listed the Shell Fuel Rewards Mastercard under Citi, which no longer issues it",
+    "Mastercard World protections (purchase and travel) are referenced on the Imprint page but not itemized"
+   ],
+   "color": "#243E7A"
   },
   {
    "id": "apple-card",
@@ -11740,6 +13997,137 @@
    "color": "#285277"
   },
   {
+   "id": "synchrony-mylowes-pro-rewards-amex",
+   "name": "MyLowe's Pro Rewards American Express",
+   "issuer": "Synchrony",
+   "network": "American Express",
+   "type": "business",
+   "program": "mylowes-money",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "lowes",
+     "rate": 5,
+     "label": "5% off at checkout, not points; MyLowe's Pro Rewards loyalty points (1 to 1.5 per dollar by status) also accrue"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 2,
+     "label": "wireless telephone service providers"
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "office supply stores"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "5% off eligible Lowe's purchases every day",
+    "3 points per dollar on Lowe's qualifying purchases for the first 6 months after opening",
+    "20% off a first in-store purchase (up to $100) when the 5% is not the better deal",
+    "365-day returns"
+   ],
+   "bestFor": "Contractors and small businesses that buy at Lowe's and want points on dining, phone and office supplies",
+   "tips": [
+    "Launched April 30, 2026 as Synchrony's replacement for the discontinued Lowe's Business Rewards Card from American Express; it runs on the Amex network and works anywhere Amex is accepted",
+    "At Lowe's you get 5% off at checkout (an instant discount, not points) plus MyLowe's Pro Rewards loyalty points at your status rate (1 point per dollar Titanium, 1.25 Gold Pro at $10,000 of annual spend, 1.5 Platinum Pro at $25,000)",
+    "Outside Lowe's it earns 2 points per dollar at restaurants, wireless providers and office supply stores and 1 point everywhere else; 100 points equal $1 of MyLowe's Money",
+    "Points earned January through June expire June 30 and points earned July through December expire December 31, so redeem them on time",
+    "The store-only MyLowe's Pro Rewards Credit Card gives the same 5% off but earns nothing outside Lowe's"
+   ],
+   "watchOut": [
+    "Loyalty points expire twice a year",
+    "The 5% off cannot be combined with other credit promotions, contract or special pricing, ProSupply purchases, services, gift cards, Weber, Kichler, Miele or marketplace items",
+    "Foreign merchant category codes earn 1 point regardless of category",
+    "MyLowe's Money is only usable at Lowe's"
+   ],
+   "sourceUrl": "https://www.lowes.com/businesscredit",
+   "sourceUrls": [
+    "https://synchrony.com/MLPRA-terms",
+    "https://www.synchrony.com/contenthub/newsroom/synchrony-expands-partnership-with-lowes.html",
+    "https://www.lowes.com/pdf/MLPR_Yearly_Benefits_PDF_ENGLISH.pdf",
+    "https://www.nav.com/business-credit-card/reviews/lowes-business-card-review/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Foreign transaction fee is not published; 3% is an assumption for a Synchrony business card and is recorded with low confidence",
+    "The Lowe's rate of 5 represents the checkout discount; loyalty points at Lowe's are separate and described in tips",
+    "The old Amex-issued Lowe's Business Rewards Card closed to new applicants in April 2026; whether existing accounts were converted was not confirmed"
+   ],
+   "color": "#2B5C73"
+  },
+  {
+   "id": "synchrony-sams-club-business-mastercard",
+   "name": "Sam's Club Business Mastercard",
+   "issuer": "Synchrony",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "synchrony-cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "gas",
+     "rate": 5,
+     "cap": 6000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "ev-charging",
+     "rate": 5,
+     "cap": 6000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "merchant": "sams-club",
+     "rate": 3,
+     "requires": "sams-club-plus-membership"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$60 statement credit after $30 of Sam's Club purchases in the first 30 days (offer through December 2, 2026)"
+   ],
+   "bestFor": "Businesses with a Sam's Club membership that buy fuel and eat out",
+   "tips": [
+    "Same earning as the consumer Sam's Club Mastercard: 5% back in Sam's Cash on gas and EV charging worldwide on the first $6,000 per calendar year, 3% on dining and takeout, 3% at Sam's Club for Plus members (1% for Club members), 1% elsewhere",
+    "Sam's Cash loads to your membership monthly, caps at $5,000 per calendar year and can be spent at Sam's Club, used for the membership fee or cashed out at Member Services",
+    "A Sam's Club Business membership is required; the card doubles as your membership card",
+    "Synchrony may report the account to personal credit bureaus"
+   ],
+   "watchOut": [
+    "Fuel, alcohol, tobacco and gift cards bought at Sam's Club do not earn the 3% club rate",
+    "After $6,000 of gas in a year the rate drops to 1%",
+    "Sam's Cash is forfeited if the membership lapses"
+   ],
+   "sourceUrl": "https://www.samsclub.com/content/credit",
+   "sourceUrls": [
+    "https://www.nav.com/blog/sams-club-business-credit-card/",
+    "https://frequentmiler.com/SamsClubBusiness/",
+    "https://fitsmallbusiness.com/sams-club-business-mastercard-review"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The Sam's Club credit page shows no card terms; rates come from Nav (February 2026), Frequent Miler and Fit Small Business",
+    "Foreign transaction fee: Nav and Fit Small Business say none, Frequent Miler says the card imposes one; recorded as 0 to match the consumer card"
+   ],
+   "color": "#274A72"
+  },
+  {
    "id": "amazon-secured-card",
    "name": "Amazon Secured Card",
    "issuer": "Synchrony",
@@ -11833,6 +14221,100 @@
     "amazon",
     "whole-foods"
    ]
+  },
+  {
+   "id": "synchrony-jcpenney-credit-card",
+   "name": "JCPenney Credit Card",
+   "issuer": "Synchrony",
+   "network": "Store",
+   "type": "personal",
+   "program": "jcpenney-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "jcpenney",
+     "rate": 7.5,
+     "label": "Insider and Elite tiers; VIP tier earns 10% after $1,000 of annual spend"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$10 CashPass birthday reward each year",
+    "Cardholder-only Credit Savings Days and special offers"
+   ],
+   "bestFor": "JCPenney shoppers who want 7.5% to 10% back in store coupons",
+   "tips": [
+    "Store card usable only at JCPenney; cardholders start at Insider and earn 1.5 points per dollar (7.5% back), rising to 2 points (10%) at VIP after $1,000 of annual spend",
+    "200 points convert to a $10 CashPass coupon",
+    "Applicants not approved for the Mastercard may receive this card"
+   ],
+   "watchOut": [
+    "Maximum 2,000 points per transaction; no points on gift cards, taxes, services or financed purchases",
+    "CashPass coupons expire on the date printed; points expire after 12 months of inactivity",
+    "High purchase APR"
+   ],
+   "sourceUrl": "https://www.jcpcreditcard.com",
+   "sourceUrls": [
+    "https://www.jcpenney.com/m/rewards-terms-and-conditions"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#306182",
+   "onlyAt": [
+    "jcpenney"
+   ]
+  },
+  {
+   "id": "synchrony-jcpenney-mastercard",
+   "name": "JCPenney Mastercard",
+   "issuer": "Synchrony",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "jcpenney-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "jcpenney",
+     "rate": 7.5,
+     "label": "Insider and Elite tiers (1.5 points per dollar); VIP tier earns 10% (2 points per dollar) after $1,000 of annual spend"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "5% back in points at gas stations and grocery stores for the first 90 days after account opening (new account offer)",
+    "$10 CashPass birthday reward each year",
+    "Free shipping on jcp.com orders of $49 or more (VIP: $25 or more)",
+    "Cardholder-only Credit Savings Days and special offers"
+   ],
+   "bestFor": "JCPenney regulars; the 1% outside JCPenney is weak",
+   "tips": [
+    "Cardholders start at the Insider tier and earn 1.5 JCPenney Rewards points per dollar at JCPenney (7.5% back); spending $1,000 in a calendar year unlocks VIP at 2 points per dollar (10% back)",
+    "Every 200 points becomes a $10 CashPass coupon, so each point is worth 5 cents at JCPenney",
+    "Outside JCPenney the Mastercard earns 1 point per $5 (about 1% back), with a 5% intro rate on gas stations and grocery stores for the first 90 days",
+    "Points expire after 12 months with no earning; each CashPass shows its own expiration date"
+   ],
+   "watchOut": [
+    "3% foreign transaction fee",
+    "Maximum of 2,000 points per transaction at JCPenney",
+    "No points on gift cards, taxes, shipping, protection plans, services, marketplace items or purchases on promotional financing",
+    "Rewards are only usable at JCPenney and Aeropostale"
+   ],
+   "sourceUrl": "https://www.jcpcreditcard.com",
+   "sourceUrls": [
+    "https://www.jcpenney.com/m/rewards-terms-and-conditions",
+    "https://www.nerdwallet.com/credit-cards/learn/jcpenney-credit-card"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The 5% gas and grocery intro offer is from the jcpcreditcard.com application page (terms as of January 1, 2026); it runs 90 days from each account's opening so it is listed under credits rather than as an earn rule with an ISO until date"
+   ],
+   "color": "#225663"
   },
   {
    "id": "lowes-rewards-credit-card",
@@ -11979,6 +14461,169 @@
     "No purchase or travel protections confirmed; only zero fraud liability is listed"
    ],
    "color": "#1F6BB0"
+  },
+  {
+   "id": "synchrony-tjx-rewards-credit-card",
+   "name": "TJX Rewards",
+   "issuer": "Synchrony",
+   "network": "Store",
+   "type": "personal",
+   "program": "tjx-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [
+    {
+     "merchant": "tj-maxx",
+     "rate": 5,
+     "label": "T.J.Maxx, Marshalls, HomeGoods, Sierra and Homesense"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "10% off your first in-store purchase when approved"
+   ],
+   "bestFor": "TJX shoppers who were not approved for the Platinum Mastercard",
+   "tips": [
+    "Usable only at T.J.Maxx, Marshalls, HomeGoods, Sierra and Homesense; earns 5 points per dollar, and every 1,000 points becomes a $10 certificate (5% back)",
+    "Certificates work at any TJX brand in store or online"
+   ],
+   "watchOut": [
+    "No earning outside TJX stores",
+    "Certificates cannot be redeemed for cash or gift cards",
+    "High purchase APR"
+   ],
+   "sourceUrl": "https://apply.syf.com/TJX",
+   "sourceUrls": [
+    "https://www.rivo.io/blog/tj-maxx-rewards-program"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "tjx.syf.com was blocked; details come from Synchrony's application page"
+   ],
+   "color": "#1A4674",
+   "onlyAt": [
+    "tj-maxx"
+   ]
+  },
+  {
+   "id": "synchrony-tjx-rewards-platinum-mastercard",
+   "name": "TJX Rewards Platinum Mastercard",
+   "issuer": "Synchrony",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "tjx-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "tj-maxx",
+     "rate": 5,
+     "label": "T.J.Maxx, Marshalls, HomeGoods, Sierra and Homesense stores and websites"
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "10% off your first in-store purchase when approved"
+   ],
+   "bestFor": "T.J.Maxx, Marshalls and HomeGoods shoppers who want 5% back in store certificates",
+   "tips": [
+    "5 points per dollar at T.J.Maxx, Marshalls, HomeGoods, Sierra and Homesense, 2 points at gas stations, grocery stores and restaurants, 1 point everywhere else Mastercard is accepted",
+    "Every 1,000 points becomes a $10 Rewards Certificate, so each point is worth 1 cent and the card pays 5% at TJX brands",
+    "Certificates can be used in store or online at any TJX brand",
+    "Applicants not approved for the Mastercard may get the store-only TJX Rewards Credit Card, which earns the same 5% at TJX only"
+   ],
+   "watchOut": [
+    "Certificates are only good at TJX stores and cannot be redeemed for cash or gift cards",
+    "3% foreign transaction fee",
+    "Very high purchase APR (about 30%)"
+   ],
+   "sourceUrl": "https://apply.syf.com/TJX",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/tjx-rewards-platinum-mastercard/",
+    "https://www.rivo.io/blog/tj-maxx-rewards-program"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "tjx.syf.com was blocked; the 2 point gas, grocery and restaurant rate is from Synchrony's application page and Rivo (August 2026), while Upgraded Points (March 2026) still lists 1 point everywhere outside TJX",
+    "Foreign transaction fee is not published on the pages fetched; 3% is typical of Synchrony retail cards and is recorded with low confidence",
+    "Certificate expiration: Rivo says 2 years; not confirmed by Synchrony"
+   ],
+   "color": "#26496D"
+  },
+  {
+   "id": "synchrony-venmo-credit-card",
+   "name": "Venmo Credit Card",
+   "issuer": "Synchrony",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "dining",
+     "rate": 3,
+     "label": "dining and nightlife; 4% when you split the purchase in Venmo and friends pay you back within 30 days"
+    },
+    {
+     "category": "entertainment",
+     "rate": 3,
+     "label": "includes streaming, digital goods, gym and golf memberships; 4% when split in Venmo"
+    },
+    {
+     "category": "streaming",
+     "rate": 3
+    },
+    {
+     "merchant": "venmo",
+     "rate": 3,
+     "label": "checking out with Venmo online, in apps or paying businesses on Venmo with the card as the funding source"
+    }
+   ],
+   "benefits": {},
+   "credits": [],
+   "bestFor": "Venmo users who spend on dining, entertainment and streaming and split bills with friends",
+   "tips": [
+    "Accounts approved after September 24, 2026 earn 3% on dining and nightlife, entertainment and streaming, 3% when you pay with Venmo, and 1% on everything else; cash back lands in your Venmo account daily",
+    "Accounts approved before September 24, 2026 keep the old structure: 3% on your top spend category and 2% on your second each statement period, chosen automatically from eight categories (grocery, bills and utilities, health and beauty, gas, entertainment, dining and nightlife, transportation, travel), 1% elsewhere; Venmo says they can switch in 2027",
+    "No annual fee and no foreign transaction fee; cash back can be auto-converted to crypto with no transaction fee"
+   ],
+   "watchOut": [
+    "Groceries, gas, travel, utilities and healthcare earn only 1% on the new structure",
+    "Person-to-person Venmo payments funded by the card earn 1% and carry Venmo's card-funded payment fee",
+    "A Venmo account in good standing is required to apply and receive rewards",
+    "No welcome bonus and no published purchase or travel protections"
+   ],
+   "sourceUrl": "https://venmo.com/about/creditcard/",
+   "sourceUrls": [
+    "https://help.venmo.com/hc/en-us/articles/360048703173-General-Venmo-Credit-Card-Rewards-Program-Info",
+    "https://upgradedpoints.com/news/venmo-credit-card-changes-earning-rates/",
+    "https://www.doctorofcredit.com/venmo-credit-card-changes-3-adds-possible-4-category/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The legacy structure is described in tips only; a tool could model it as a choice object with 2 slots (3 and 2) chosen automatically from the eight categories",
+    "No caps were found for either structure"
+   ],
+   "color": "#265369"
   },
   {
    "id": "verizon-visa",

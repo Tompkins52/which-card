@@ -215,6 +215,16 @@ def main(src):
         'caesars-rewards': ('Caesars Rewards', 'points', 0, 1, 1, 'Reward Credits spendable at Caesars properties.'),
         'jcpenney-rewards': ('JCPenney Rewards', 'percent', 1, 1, 1, 'Spendable only at JCPenney.'),
         'tjx-rewards': ('TJX Rewards', 'percent', 1, 1, 1, 'Spendable at T.J. Maxx, Marshalls, HomeGoods and Sierra.'),
+        'incircle-points': ('InCircle points', 'points', 0, 1, 1, 'Neiman Marcus gift cards, about 1 cent each.'),
+        'meijer-rewards': ('Meijer rewards', 'percent', 1, 1, 1, 'Paid as Meijer certificates.'),
+        'wayfair-rewards': ('Wayfair rewards', 'percent', 1, 1, 1, 'Spendable only at Wayfair.'),
+        'mylowes-money': ('MyLowe\'s Money', 'percent', 1, 1, 1, 'Spendable at Lowe\'s; expires twice a year.'),
+        'caesars-reward-credits': ('Caesars Reward Credits', 'points', 0, 1, 1, 'About 1 cent each at Caesars properties.'),
+        'speedy-rewards': ('Speedy Rewards points', 'points', 0, 0.1, 0.1, 'About a tenth of a cent each at Speedway.'),
+        'scheels-rewards': ('Scheels rewards', 'percent', 1, 1, 1, 'Spendable at Scheels.'),
+        'shell-credits': ('Shell fuel credits', 'percent', 1, 1, 1, 'Spendable only against Shell purchases.'),
+        'victorias-secret-rewards': ('Victoria\'s Secret rewards', 'points', 0, 0.5, 0.5, 'Store rewards only.'),
+        'navyist-rewards': ('Navyist and Gap Good Rewards', 'points', 0, 1, 1, 'Spendable at Gap, Old Navy, Banana Republic and Athleta.'),
     }
     for pid, (name, unit, cash, travel, transfer, note) in EXTRA_PROGRAMS.items():
         programs.setdefault(pid, {'name': name, 'unit': unit, 'cash': cash, 'travel': travel, 'transfer': transfer, 'note': note})
@@ -308,8 +318,18 @@ def main(src):
             c['network'] = 'Store'
         if c['id'] in STORE_ONLY:
             c['onlyAt'] = STORE_ONLY[c['id']]
+        elif c.get('network') == 'Store':
+            ms = [r['merchant'] for r in c['earn'] if r.get('merchant')]
+            if ms:
+                c['onlyAt'] = ms
         if c['id'] in ISSUER_RENAMES:
             c['issuer'] = ISSUER_RENAMES[c['id']]
+        if c.get('issuer') == 'other':
+            for guess, label in (('fnbo-', 'FNBO'), ('barclays-', 'Barclays'), ('elan-', 'Elan'), ('aaa-', 'Bread Financial'), ('sephora', 'Bread Financial'), ('ulta', 'Bread Financial'),
+                                 ('ikea', 'Bread Financial'), ('victorias', 'Bread Financial'), ('caesars', 'Bread Financial'), ('best-western', 'First Bank & Trust'), ('shell-', 'First Bank & Trust')):
+                if c['id'].startswith(guess) or guess in c['id']:
+                    c['issuer'] = label
+                    break
         b = c.get('benefits') or {}
         c['benefits'] = {k: v for k, v in b.items() if v}
         if c['issuer'] == 'Capital One' and c['type'] == 'personal':
