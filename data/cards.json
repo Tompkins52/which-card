@@ -248,7 +248,8 @@
      "keep": true
     }
    ],
-   "color": "#2F4858"
+   "color": "#2F4858",
+   "finish": "metal"
   },
   {
    "id": "chase-ink-business-unlimited",
@@ -958,7 +959,8 @@
      "keep": true
     }
    ],
-   "color": "#1F3F77"
+   "color": "#1F3F77",
+   "finish": "metal"
   },
   {
    "id": "chase-sapphire-reserve",
@@ -1229,7 +1231,8 @@
      "keep": true
     }
    ],
-   "color": "#0B1F33"
+   "color": "#0B1F33",
+   "finish": "metal"
   },
   {
    "id": "chase-slate-edge",
@@ -2427,7 +2430,8 @@
    ],
    "verified": "2026-10-28",
    "confidence": "high",
-   "color": "#B8942A"
+   "color": "#B8942A",
+   "finish": "gold"
   },
   {
    "id": "amex-business-platinum",
@@ -2507,7 +2511,8 @@
    "unsure": [
     "The home-improvement category is this file's mapping for Amex's U.S. construction material and hardware suppliers category; Amex does not publish a merchant list"
    ],
-   "color": "#7E8A96"
+   "color": "#7E8A96",
+   "finish": "silver"
   },
   {
    "id": "amex-blue-cash-everyday",
@@ -3014,7 +3019,8 @@
      "keep": true
     }
    ],
-   "color": "#C9A227"
+   "color": "#C9A227",
+   "finish": "gold"
   },
   {
    "id": "amex-green",
@@ -3369,7 +3375,8 @@
      "keep": true
     }
    ],
-   "color": "#9AA5B1"
+   "color": "#9AA5B1",
+   "finish": "silver"
   },
   {
    "id": "amex-delta-skymiles-blue",
@@ -3481,7 +3488,8 @@
    ],
    "verified": "2026-10-28",
    "confidence": "high",
-   "color": "#254165"
+   "color": "#254165",
+   "finish": "gold"
   },
   {
    "id": "amex-delta-skymiles-platinum",
@@ -3658,7 +3666,8 @@
      "keep": true
     }
    ],
-   "color": "#227796"
+   "color": "#227796",
+   "finish": "metal"
   },
   {
    "id": "amex-delta-skymiles-reserve",
@@ -3819,7 +3828,8 @@
      "keep": true
     }
    ],
-   "color": "#266192"
+   "color": "#266192",
+   "finish": "black"
   },
   {
    "id": "amex-hilton-honors",
@@ -4046,7 +4056,8 @@
      "keep": true
     }
    ],
-   "color": "#254E88"
+   "color": "#254E88",
+   "finish": "black"
   },
   {
    "id": "amex-hilton-honors-surpass",
@@ -4385,7 +4396,8 @@
      "keep": true
     }
    ],
-   "color": "#4A1A2C"
+   "color": "#4A1A2C",
+   "finish": "black"
   },
   {
    "id": "capital-one-spark-cash-plus",
@@ -4579,6 +4591,7 @@
     "Whether new applicants approved on the Discover network get the 3% grocery and gas categories is not confirmed"
    ],
    "color": "#8E9BA8",
+   "finish": "silver",
    "networkOptions": [
     "Discover",
     "Mastercard",
@@ -4847,6 +4860,7 @@
     }
    ],
    "color": "#1F4E79",
+   "finish": "metal",
    "networkOptions": [
     "Discover",
     "Mastercard",
@@ -5032,6 +5046,7 @@
     }
    ],
    "color": "#0D2238",
+   "finish": "metal",
    "networkOptions": [
     "Discover",
     "Mastercard",
@@ -5541,7 +5556,8 @@
      "keep": true
     }
    ],
-   "color": "#1B1B3A"
+   "color": "#1B1B3A",
+   "finish": "black"
   },
   {
    "id": "citi-strata-premier",
@@ -5634,7 +5650,8 @@
      "keep": true
     }
    ],
-   "color": "#3C3B6E"
+   "color": "#3C3B6E",
+   "finish": "metal"
   },
   {
    "id": "citi-costco-anywhere-visa",
@@ -6402,6 +6419,7 @@
     "Purchase protection, extended warranty and rental car coverage details were not shown on the issuer page at check time"
    ],
    "color": "#0F172A",
+   "finish": "black",
    "boostLabel": "BofA Rewards tier (formerly Preferred Rewards)",
    "boostOptions": [
     {
@@ -7110,7 +7128,8 @@
     }
    ],
    "closed": true,
-   "color": "#0B1F3A"
+   "color": "#0B1F3A",
+   "finish": "black"
   },
   {
    "id": "us-bank-cash-plus",
@@ -7565,7 +7584,8 @@
      "keep": true
     }
    ],
-   "color": "#1D3D6D"
+   "color": "#1D3D6D",
+   "finish": "black"
   },
   {
    "id": "bilt-palladium",
@@ -7715,11 +7735,12 @@
      "keep": true
     }
    ],
-   "color": "#294E85"
+   "color": "#294E85",
+   "finish": "silver"
   },
   {
    "id": "apple-card",
-   "name": "Apple",
+   "name": "Apple Card",
    "issuer": "Goldman Sachs",
    "network": "Mastercard",
    "type": "personal",
@@ -7878,11 +7899,12 @@
      "note": "Apple Card has no purchase, extended warranty or travel protections"
     }
    ],
-   "color": "#1C1C1E"
+   "color": "#E9ECEF",
+   "finish": "silver"
   },
   {
    "id": "amazon-secured-card",
-   "name": "Amazon Secured",
+   "name": "Amazon Secured Card",
    "issuer": "Synchrony",
    "network": "Store",
    "type": "personal",
@@ -7925,7 +7947,7 @@
   },
   {
    "id": "amazon-store-card",
-   "name": "Amazon Store",
+   "name": "Amazon Store Card",
    "issuer": "Synchrony",
    "network": "Store",
    "type": "personal",
@@ -8184,7 +8206,7 @@
   },
   {
    "id": "target-circle-card",
-   "name": "Target Circle",
+   "name": "Target Circle Card",
    "issuer": "Target (TD Bank)",
    "network": "Store",
    "type": "personal",

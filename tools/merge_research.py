@@ -80,8 +80,12 @@ def clean_name(n, card_id=None):
     if card_id in AMEX_NAMES:
         return AMEX_NAMES[card_id]
     n = NAME_FIXES.get(n, n)
+    if n in ('Apple Card', 'Target Circle Card', 'Target Circle Mastercard', 'Amazon Store Card', 'Amazon Secured Card'):
+        return n
     n = re.sub(r'\s*\(.*?\)\s*', ' ', n).strip()
-    n = re.sub(r'\s+(Credit Card|Card)$', '', n)
+    stripped = re.sub(r'\s+(Credit Card|Card)$', '', n)
+    if ' ' in stripped:
+        n = stripped
     n = n.replace(' Visa Signature', '').replace(' Rewards Credit', '')
     n = n.replace('\u00ae', '').replace('\u2120', '').replace('\u2122', '')
     return n.strip()
@@ -186,9 +190,21 @@ def main(src):
         if prog not in programs and prog not in PERCENT_PROGRAMS:
             print('program missing from valuations, adding placeholder:', prog)
             programs[prog] = {'name': prog, 'unit': 'points', 'cash': 1, 'travel': 1, 'transfer': 1, 'note': ''}
+    FINISHES = {
+        'amex-platinum': 'silver', 'amex-business-platinum': 'silver', 'apple-card': 'silver', 'bilt-palladium': 'silver', 'capital-one-quicksilver': 'silver',
+        'amex-gold': 'gold', 'amex-business-gold': 'gold', 'amex-delta-skymiles-gold': 'gold',
+        'citi-strata-elite': 'black', 'amex-delta-skymiles-reserve': 'black', 'amex-hilton-honors-aspire': 'black', 'amex-marriott-bonvoy-brilliant': 'black',
+        'bofa-premium-rewards-elite': 'black', 'us-bank-altitude-reserve': 'black', 'bilt-obsidian': 'black', 'chase-united-club': 'black', 'amex-centurion': 'black',
+        'chase-sapphire-reserve': 'metal', 'chase-sapphire-preferred': 'metal', 'capital-one-venture-x': 'metal', 'capital-one-venture': 'metal', 'citi-strata-premier': 'metal',
+        'amex-delta-skymiles-platinum': 'metal', 'chase-ink-business-preferred': 'metal', 'capital-one-venture-x-business': 'metal', 'chase-united-quest': 'metal',
+    }
     for c in cards:
         c['name'] = clean_name(c['name'], c['id'])
         c['color'] = color_for(c)
+        if c['id'] in FINISHES:
+            c['finish'] = FINISHES[c['id']]
+        if c['id'] == 'apple-card':
+            c['color'] = '#E9ECEF'
         c.setdefault('verified', TODAY)
         c.setdefault('earn', [])
         c.setdefault('type', 'personal')

@@ -97,6 +97,57 @@
     var n = parseInt(m[1], 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
     var lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; return lum > 0.6 ? 'dark-text' : 'light-text';
   }
+  // Original card art drawn from the card's own color and finish. No issuer artwork or logos are used.
+  function shade(hex, amt) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex || '#777777'); var n = parseInt(m ? m[1] : '777777', 16);
+    var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    function c(v) { v = Math.round(amt >= 0 ? v + (255 - v) * amt : v * (1 + amt)); return Math.max(0, Math.min(255, v)); }
+    return '#' + [c(r), c(g), c(b)].map(function (v) { return (v < 16 ? '0' : '') + v.toString(16); }).join('');
+  }
+  var artSeq = 0;
+  function cardArt(card, width, opts) {
+    opts = opts || {};
+    var id = 'ca' + (++artSeq);
+    var finish = card.finish || 'plastic';
+    var base = card.color || '#3C4A5A';
+    var c1, c2, c3, ink, chipA = '#E7C56A', chipB = '#B8902F';
+    if (finish === 'silver') { c1 = '#F2F4F6'; c2 = '#C9D0D8'; c3 = '#9AA6B4'; ink = '#1B222B'; }
+    else if (finish === 'gold') { c1 = '#F3E2A6'; c2 = '#D6B459'; c3 = '#A98528'; ink = '#2A2208'; chipA = '#FFF4CC'; chipB = '#C9A14A'; }
+    else if (finish === 'black') { c1 = '#3A3F47'; c2 = '#17191E'; c3 = '#07080A'; ink = '#F3F4F6'; }
+    else if (finish === 'metal') { c1 = shade(base, 0.35); c2 = base; c3 = shade(base, -0.45); ink = textColorFor(base) === 'dark-text' ? '#101418' : '#FFFFFF'; }
+    else { c1 = shade(base, 0.22); c2 = base; c3 = shade(base, -0.3); ink = textColorFor(base) === 'dark-text' ? '#101418' : '#FFFFFF'; }
+    var W = 320, H = 200, big = width >= 120, mid = width >= 60;
+    var name = card.name || '';
+    var lines = [];
+    if (big) {
+      var words = name.split(' '), line = '';
+      words.forEach(function (w) { if ((line + ' ' + w).trim().length > 18 && line) { lines.push(line); line = w; } else line = (line + ' ' + w).trim(); });
+      if (line) lines.push(line);
+      lines = lines.slice(0, 2);
+    }
+    var net = { 'American Express': 'AMEX', 'Mastercard': 'MASTERCARD', 'Visa': 'VISA', 'Discover': 'DISCOVER', 'Store': 'STORE CARD' }[card.network] || (card.network || '').toUpperCase();
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + width + '" height="' + Math.round(width * H / W) + '" role="img" aria-label="' + escapeAttr(name) + '">' +
+      '<defs><linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset=".55" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/></linearGradient>' +
+      '<linearGradient id="' + id + 's" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="' + (finish === 'black' ? '.08' : '.22') + '"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
+      '<linearGradient id="' + id + 'c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + chipA + '"/><stop offset="1" stop-color="' + chipB + '"/></linearGradient>' +
+      '<clipPath id="' + id + 'k"><rect width="' + W + '" height="' + H + '" rx="18"/></clipPath></defs>' +
+      '<g clip-path="url(#' + id + 'k)"><rect width="' + W + '" height="' + H + '" fill="url(#' + id + 'g)"/>' +
+      '<path d="M-40 0 L140 0 L60 200 L-120 200 Z" fill="url(#' + id + 's)"/>' +
+      (finish === 'silver' || finish === 'gold' || finish === 'metal' ? '<path d="M0 120 Q160 60 320 150 L320 200 L0 200 Z" fill="#000" fill-opacity=".07"/>' : '') +
+      '</g>' +
+      '<rect x="28" y="' + (big ? 70 : 62) + '" width="52" height="38" rx="7" fill="url(#' + id + 'c)"/><path d="M28 ' + (big ? 89 : 81) + ' h52 M54 ' + (big ? 70 : 62) + ' v38" stroke="' + chipB + '" stroke-opacity=".7" stroke-width="2" fill="none"/>' +
+      '<g fill="none" stroke="' + ink + '" stroke-opacity=".75" stroke-width="3" stroke-linecap="round" transform="translate(' + (big ? 100 : 92) + ',' + (big ? 89 : 81) + ')"><path d="M0-9a13 13 0 0 1 0 18"/><path d="M8-15a21 21 0 0 1 0 30"/><path d="M16-21a29 29 0 0 1 0 42"/></g>' +
+      (mid ? '<text x="28" y="40" fill="' + ink + '" fill-opacity=".8" font-family="Figtree, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">' + escapeAttr((card.issuer || '').toUpperCase()) + '</text>' : '') +
+      (big ? lines.map(function (l, i) { return '<text x="28" y="' + (142 + i * 24) + '" fill="' + ink + '" font-family="Bricolage Grotesque, Figtree, Helvetica, Arial, sans-serif" font-size="' + (lines.length > 1 ? 22 : 24) + '" font-weight="800">' + escapeAttr(l) + '</text>'; }).join('') : '') +
+      '<text x="' + (W - 28) + '" y="' + (H - 22) + '" text-anchor="end" fill="' + ink + '" fill-opacity=".9" font-family="Figtree, Helvetica, Arial, sans-serif" font-size="' + (mid ? 16 : 26) + '" font-weight="800" font-style="italic" letter-spacing="1">' + net + '</text>' +
+      '</svg>';
+    var wrap = document.createElement('span');
+    wrap.className = 'card-art' + (opts.cls ? ' ' + opts.cls : '');
+    wrap.innerHTML = svg;
+    return wrap;
+  }
+  function escapeAttr(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
   function rateText(r, unit, suffix) {
     var v = Math.round(r * 100) / 100;
     return unit === 'percent' ? v + '%' : v + 'x' + (suffix ? ' ' + unit : '');
@@ -312,6 +363,7 @@
     lastWinner = card.id;
     var winner = h('div', { class: 'winner ' + tone + (changed ? ' reveal' : ''), style: '--card:' + card.color });
     if (changed && interacted && navigator.vibrate) { try { navigator.vibrate(8); } catch (e) { } }
+    winner.appendChild(cardArt(card, 96, { cls: 'winner-art' }));
     winner.appendChild(h('div', { class: 'eyebrow' }, icon('check'), where ? 'Use this card' : 'For everything else, use'));
     winner.appendChild(h('div', { class: 'name' }, best.entry.nickname || card.name));
     var row = h('div', { class: 'wrow' });
@@ -477,7 +529,7 @@
       if (pc.toActivate) badges.push(h('span', { class: 'badge warn' }, pc.toActivate + (pc.toActivate === 1 ? ' perk' : ' perks') + ' to activate'));
       else if (pc.toUse) badges.push(h('span', { class: 'badge' }, pc.toUse + (pc.toUse === 1 ? ' credit' : ' credits') + ' to use'));
       tiles.appendChild(h('button', { class: 'tile', style: '--card:' + card.color, onclick: function () { openCardDetail(card.id); } },
-        h('span', { class: 'art' }),
+        cardArt(card, 64),
         h('span', { class: 't' }, h('b', null, entry.nickname || card.name), h('span', null, E.cardSummary(card, data)), badges.length ? h('span', { style: 'display:flex;gap:6px;margin-top:4px;flex-wrap:wrap' }, badges) : null),
         h('span', { class: 'chev' }, icon('chev'))));
     });
@@ -511,7 +563,7 @@
       shown.forEach(function (c) {
         var inWallet = !!walletEntry(c.id);
         list.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : ''), style: '--card:' + c.color, onclick: function () { toggleCard(c); drawList(); } },
-          h('span', { class: 'art' }),
+          cardArt(c, 56),
           h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ' · $' + c.annualFee + '/yr' : ' · no annual fee'))),
           h('span', { class: 'add' }, inWallet ? 'Added' : 'Add')));
       });
@@ -640,7 +692,8 @@
     var nodes = [];
     var tone = textColorFor(card.color);
     var hero = h('div', { class: 'detail-hero ' + tone, style: '--card:' + card.color },
-      h('div', { class: 'issuer' }, card.issuer + ' · ' + card.network + (card.type === 'business' ? ' · Business' : '')),
+      cardArt(card, 200, { cls: 'hero-art' }),
+      h('div', { class: 'issuer' }, card.issuer + (card.network && card.network !== card.issuer ? ' · ' + card.network : '') + (card.type === 'business' ? ' · Business' : '')),
       h('h2', null, entry.nickname || card.name),
       h('div', { class: 'meta' },
         h('span', { class: 'flag' }, card.annualFee ? '$' + card.annualFee + ' annual fee' : 'No annual fee'),
