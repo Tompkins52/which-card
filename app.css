@@ -349,3 +349,5 @@ a.btn { text-decoration: none; }
 .mascot { display: flex; justify-content: center; padding: 6px 0 0; }
 .mascot svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
 @keyframes bob { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-6px); } }
+
+.note.buddy { background: var(--surface); border: 1px dashed var(--line); color: var(--fg); line-height: 1.5; }
