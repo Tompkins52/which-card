@@ -257,6 +257,16 @@
 
   function renderBanner() {
     var root = document.getElementById('banner'); clear(root); root.hidden = true;
+    if (!state.prefs.location && !state.locationAsked && canLocate()) {
+      root.hidden = false;
+      root.appendChild(h('div', { class: 'note ask' },
+        h('b', null, 'Let it find the store for you?'),
+        h('span', null, 'Turn on location and every time you open the app it shows the store you are standing in and the best card there. Your position is only used to look up the stores around you.'),
+        h('span', { class: 'ask-actions' },
+          h('button', { class: 'btn', onclick: function () { state.locationAsked = true; saveState(); renderBanner(); } }, 'Not now'),
+          h('button', { class: 'btn primary', onclick: function () { state.locationAsked = true; state.prefs.location = true; saveState(); renderBanner(); relocate(); } }, 'Use my location'))));
+      return;
+    }
     var q = E.quarterOf(new Date());
     state.dismissed = state.dismissed || {};
     if (state.dismissed['activate:' + q]) return;
@@ -303,10 +313,18 @@
   function renderWhere() {
     var root = document.getElementById('where'); clear(root);
     var w = currentWhere();
+    if (!w && locating) {
+      root.appendChild(h('div', { class: 'where-chip finding', role: 'status' },
+        h('span', { class: 'ic' }, icon('pin')),
+        h('span', { class: 't' }, h('b', null, 'Finding where you are\u2026'), h('span', null, 'Checking the stores around you')),
+        h('button', { class: 'change', onclick: cancelLocate }, 'Pick it')));
+      return;
+    }
     if (w) {
-      root.appendChild(h('button', { class: 'where-chip', onclick: function () { ctx.merchant = null; ctx.category = null; ctx.customName = ''; renderPay(); } },
+      var found = justFound; justFound = false;
+      root.appendChild(h('button', { class: 'where-chip' + (ctx.located ? ' here' : '') + (found ? ' found' : ''), 'aria-label': (ctx.located ? 'You are at ' : 'Store: ') + w.title + '. Tap to change.', onclick: function () { if (locating) cancelLocate(); ctx.merchant = null; ctx.category = null; ctx.customName = ''; ctx.located = false; renderPay(); } },
         h('span', { class: 'ic', style: '--tint:' + tintFor(ctx.category || (ctx.merchant ? (E.merchantById(data, ctx.merchant) || {}).category : 'other')) }, icon(w.icon)),
-        h('span', { class: 't' }, h('b', null, w.title), h('span', null, w.sub)),
+        h('span', { class: 't' }, ctx.located ? h('span', { class: 'here-label' }, icon('pin'), 'You\u2019re at') : null, h('b', null, w.title), h('span', null, w.sub)),
         h('span', { class: 'change' }, 'Change')));
       if (nearby.length > 1) {
         root.appendChild(h('div', { class: 'nearby', style: 'margin-top:8px' }, nearby.slice(0, 5).map(function (n) {
@@ -366,15 +384,16 @@
     ul.hidden = false;
   }
 
-  function setWhere(merchantId, categoryId, customName) {
-    ctx.merchant = merchantId; ctx.category = categoryId; ctx.customName = customName || '';
-    state.lastWhere = { merchant: merchantId, category: categoryId, customName: ctx.customName, at: Date.now() };
+  function setWhere(merchantId, categoryId, customName, located, quiet) {
+    ctx.merchant = merchantId; ctx.category = categoryId; ctx.customName = customName || ''; ctx.located = !!located;
+    state.lastWhere = { merchant: merchantId, category: categoryId, customName: ctx.customName, located: ctx.located, at: Date.now() };
     saveState();
     renderPay();
     var amt = document.getElementById('amount');
-    if (amt && !ctx.amount) { try { amt.focus({ preventScroll: true }); } catch (e) { amt.focus(); } }
+    if (amt && !ctx.amount && !quiet) { try { amt.focus({ preventScroll: true }); } catch (e) { amt.focus(); } }
   }
-  function applyNearby(n) { setWhere(n.merchant || null, n.merchant ? null : n.category, n.merchant ? '' : n.name); }
+  // A store from the lookup. quiet: found on its own when the app opened, so the keyboard stays down.
+  function applyNearby(n, quiet) { setWhere(n.merchant || null, n.merchant ? null : n.category, n.merchant ? '' : n.name, true, quiet); }
 
   var lastWinner = null, interacted = false;
   document.addEventListener('pointerdown', function () { interacted = true; }, { once: true, passive: true });
@@ -393,6 +412,7 @@
     var root = document.getElementById('answer'); clear(root);
     var amount = parseAmount(ctx.amount);
     var where = currentWhere();
+    if (!where && locating) { root.appendChild(h('div', { class: 'answer-wait', 'aria-hidden': 'true' }, h('span'), h('span'), h('span'))); return; }
     var rc = { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: amount, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad };
     var rec = E.recommend(rc, state, data);
     if (!rec.best) return;
@@ -449,14 +469,7 @@
     }
     if (where && state.prefs.showAnywhere !== false) renderAnywhere(root, rc, amount);
     rec.notes.forEach(function (n) { root.appendChild(h('div', { class: 'note' }, n)); });
-    if (!where) root.appendChild(h('p', { class: 'hint' }, 'Pick the store above to see the best card there.'));
-    if (!PREVIEW && !state.prefs.location && !state.locationAsked && 'geolocation' in navigator) {
-      root.appendChild(h('div', { class: 'note', style: 'display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap' },
-        h('span', null, 'Find the store for you when you open the app?'),
-        h('span', { style: 'display:flex;gap:8px' },
-          h('button', { class: 'btn', onclick: function () { state.locationAsked = true; saveState(); renderAnswer(); } }, 'No'),
-          h('button', { class: 'btn primary', onclick: function () { state.locationAsked = true; state.prefs.location = true; saveState(); renderAnswer(); locate(); } }, 'Yes'))));
-    }
+    if (!where && !locating) root.appendChild(h('p', { class: 'hint' }, 'Pick the store above to see the best card there.'));
   }
 
   /* ---------- Best card anywhere ---------- */
@@ -578,26 +591,62 @@
   }
 
   /* ---------- location ---------- */
-  var locating = false;
+  // With location on, the app looks around every time it opens and every time it comes back after
+  // a minute or more away, names the store you are standing in, and answers for that store. A store
+  // picked by hand in the last few minutes is kept, so a quick switch to pay never moves you.
+  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0;
+  var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
+  function canLocate() { return !PREVIEW && 'geolocation' in navigator; }
+  function pickedJustNow() { var lw = state.lastWhere; return !!(lw && !lw.located && Date.now() - (lw.at || 0) < PICK_HOLD); }
+  function whereKey(w) { return w ? (w.merchant || '') + '|' + (w.merchant ? '' : (w.category || '') + '|' + (w.customName || w.name || '')) : ''; }
   function locate() {
-    if (PREVIEW || !('geolocation' in navigator)) { toast('Location is not available here'); return; }
+    if (!canLocate()) { toast('Location is not available here'); return; }
     if (locating) return;
+    var seq = ++locateSeq;
     locating = true;
     var btn = document.getElementById('btn-locate'); btn.classList.add('busy');
+    if (view === 'pay') { renderWhere(); renderAnswer(); }
+    function finish() { if (seq !== locateSeq) return false; locating = false; btn.classList.remove('busy'); return true; }
+    function putBack() {
+      var prev = locatePrev; locatePrev = null;
+      if (prev && !ctx.merchant && !ctx.category) { ctx.merchant = prev.merchant; ctx.category = prev.category; ctx.customName = prev.customName; ctx.located = prev.located; }
+    }
     navigator.geolocation.getCurrentPosition(function (pos) {
+      if (seq !== locateSeq) return;
       findNearby(pos.coords.latitude, pos.coords.longitude).then(function (list) {
-        locating = false; btn.classList.remove('busy');
+        if (!finish()) return;
         nearby = list;
-        if (!list.length) { toast('No store found at this spot. Pick it below.'); renderPay(); return; }
-        var top = list[0];
-        if (ctx.merchant || ctx.category) { renderPay(); return; }
-        applyNearby(top);
-        toast('Looks like ' + top.name + (list.length > 1 ? '. Not right? Tap another.' : ''));
-      }).catch(function () { locating = false; btn.classList.remove('busy'); toast('Could not look up nearby stores'); });
+        if (!list.length) { putBack(); toast('No store found right here. Pick it above.'); renderPay(); return; }
+        if (ctx.merchant || ctx.category) { locatePrev = null; renderPay(); return; }
+        var top = list[0], prev = locatePrev; locatePrev = null;
+        if (prev && whereKey(prev) !== whereKey({ merchant: top.merchant, category: top.category, name: top.name })) {
+          ctx.amount = ''; var a = document.getElementById('amount'); if (a) a.value = '';
+        }
+        justFound = true;
+        applyNearby(top, true);
+        announce('You\u2019re at ' + top.name + '.');
+      }).catch(function () { if (!finish()) return; putBack(); toast('Could not look up the stores around you'); renderPay(); });
     }, function (err) {
-      locating = false; btn.classList.remove('busy');
+      if (!finish()) return;
+      putBack();
       toast(err && err.code === 1 ? 'Location is off for this app in your phone settings' : 'Could not get your location');
-    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+      renderPay();
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
+  }
+  // Look again: set the store shown now aside (it comes back if the lookup fails) and find where you are.
+  function relocate() {
+    if (!canLocate()) { toast('Location is not available here'); return; }
+    if (locating) return;
+    locatePrev = (ctx.merchant || ctx.category) ? { merchant: ctx.merchant, category: ctx.category, customName: ctx.customName, located: ctx.located } : null;
+    ctx.merchant = null; ctx.category = null; ctx.customName = ''; ctx.located = false;
+    locate();
+  }
+  function announce(text) { var live = document.getElementById('where-live'); if (live) { live.textContent = ''; setTimeout(function () { live.textContent = text; }, 50); } }
+  function cancelLocate() {
+    locateSeq++; locating = false; locatePrev = null;
+    document.getElementById('btn-locate').classList.remove('busy');
+    renderPay();
+    var s = document.getElementById('store-search'); if (s) { try { s.focus({ preventScroll: true }); } catch (e) { s.focus(); } }
   }
 
   var OSM_MAP = [
@@ -1228,7 +1277,7 @@
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I usually pay with my phone'), h('span', null, 'Apple Pay or Google Pay. A few cards pay more this way.')),
       h('button', { class: 'switch' + (state.prefs.payMethod === 'wallet' ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.payMethod === 'wallet' ? 'true' : 'false', 'aria-label': 'Pay with phone by default', onclick: function () { state.prefs.payMethod = state.prefs.payMethod === 'wallet' ? 'card' : 'wallet'; ctx.payMethod = state.prefs.payMethod; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Find my store when I open the app'), h('span', null, PREVIEW ? 'Available in the installed app, not in this preview.' : 'Uses your location once per visit. Nothing is stored.')),
-      h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) locate(); } })));
+      h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) relocate(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
       h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I am outside the US'), h('span', null, 'Counts foreign transaction fees against each card.')),
@@ -1297,7 +1346,7 @@
   function bind() {
     document.querySelectorAll('.tabs button').forEach(function (b) { b.addEventListener('click', function () { showView(b.getAttribute('data-view')); }); });
     document.getElementById('btn-start').addEventListener('click', function () { openAddCards(true); });
-    document.getElementById('btn-locate').addEventListener('click', function () { showView('pay'); if (ctx.merchant || ctx.category) { ctx.merchant = null; ctx.category = null; ctx.customName = ''; } locate(); });
+    document.getElementById('btn-locate').addEventListener('click', function () { showView('pay'); relocate(); });
     var amt = document.getElementById('amount');
     amt.addEventListener('input', function () {
       var v = amt.value.replace(/[^0-9.]/g, ''); var parts = v.split('.'); if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join(''); if (parts[1] && parts[1].length > 2) v = parts[0] + '.' + parts[1].slice(0, 2);
@@ -1307,7 +1356,12 @@
     document.getElementById('pm-card').addEventListener('click', function () { ctx.payMethod = 'card'; renderPay(); });
     document.getElementById('pm-wallet').addEventListener('click', function () { ctx.payMethod = 'wallet'; renderPay(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
-    document.addEventListener('visibilitychange', function () { if (!document.hidden && state.prefs.location && view === 'pay' && !ctx.merchant && !ctx.category) locate(); });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { hiddenAt = Date.now(); return; }
+      if (!state.prefs.location || view !== 'pay' || !state.wallet.length || !state.disclaimed || !canLocate()) return;
+      if (!ctx.merchant && !ctx.category) { locate(); return; }
+      if (hiddenAt && Date.now() - hiddenAt > AWAY && !pickedJustNow()) relocate();
+    });
   }
 
   function applyTheme() {
@@ -1320,14 +1374,17 @@
     bind();
     applyTheme();
     var fromParams = readParams();
-    if (!fromParams && state.lastWhere && Date.now() - (state.lastWhere.at || 0) < 20 * 60 * 1000) {
-      ctx.merchant = state.lastWhere.merchant; ctx.category = state.lastWhere.category; ctx.customName = state.lastWhere.customName || '';
+    var lookFirst = !fromParams && state.prefs.location && canLocate() && !pickedJustNow();
+    var lw = state.lastWhere;
+    if (!fromParams && lw && Date.now() - (lw.at || 0) < 20 * 60 * 1000) {
+      ctx.merchant = lw.merchant; ctx.category = lw.category; ctx.customName = lw.customName || ''; ctx.located = !!lw.located;
+      if (lookFirst) { locatePrev = { merchant: ctx.merchant, category: ctx.category, customName: ctx.customName, located: ctx.located }; ctx.merchant = null; ctx.category = null; ctx.customName = ''; ctx.located = false; }
     }
     document.getElementById('amount').value = ctx.amount || '';
     showView('pay');
     if (!state.wallet.length && !state.onboarded) { onboarding = true; }
     if (!state.disclaimed) openDisclaimer();
-    else if (state.prefs.location && !ctx.merchant && !ctx.category) locate();
+    else if (lookFirst && state.wallet.length && !ctx.merchant && !ctx.category) locate();
     if (!PREVIEW && 'serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
       navigator.serviceWorker.register('sw.js').then(function (reg) {
         reg.addEventListener('updatefound', function () {

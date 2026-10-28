@@ -108,6 +108,24 @@ main { padding-block: 4px 24px; }
 .quick button.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .where-chip .ic { background: color-mix(in srgb, var(--tint, var(--accent)) 14%, transparent); color: var(--tint, var(--accent)); }
 .nearby { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Where you are standing: found by location, being looked up, or the question that turns it on */
+.where-chip .t .here-label { display: flex; align-items: center; gap: 4px; margin-bottom: 1px; color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.where-chip .t .here-label svg { width: 12px; height: 12px; }
+.where-chip.here { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.where-chip.found { animation: found .7s cubic-bezier(.2, .8, .2, 1); }
+@keyframes found { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); transform: scale(.98); } 60% { box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 0%, transparent); transform: none; } 100% { box-shadow: none; } }
+.where-chip.finding .ic { color: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+.where-chip.finding .change { background: none; border: 0; padding: 6px 2px; cursor: pointer; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.answer-wait { display: grid; gap: 10px; }
+.answer-wait span { display: block; height: 18px; border-radius: 10px; background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: wait 1.2s linear infinite; }
+.answer-wait span:first-child { height: 150px; border-radius: 20px; }
+.answer-wait span:last-child { width: 60%; }
+@keyframes wait { to { background-position: -200% 0; } }
+.note.ask { display: grid; gap: 6px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); color: var(--muted); }
+.note.ask b { color: var(--fg); font-size: 1rem; }
+.note.ask .ask-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px; }
+@media (prefers-reduced-motion: reduce) { .where-chip.found, .where-chip.finding .ic, .answer-wait span { animation: none; } }
 .nearby button { padding: 6px 12px; border-radius: 999px; background: var(--surface-2); font-size: .85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
 .nearby button svg { width: 14px; height: 14px; }
 .suggest svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
