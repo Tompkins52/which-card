@@ -1,5 +1,7 @@
 # Which Card
 
+https://which-card.tompkinssoftwaresystems.com
+
 A home-screen web app that tells you which of your credit cards to use at the store you are standing in, before you pay. Open it, confirm the store (or let it find the store from your location), type the amount if you want the dollar figure, and the best card is on screen. No account, no server, nothing leaves the phone except an anonymous nearby-places lookup when location is on.
 
 Built by Tompkins Software Systems.
@@ -51,7 +53,9 @@ python3 -m http.server 8000
 
 then open http://localhost:8000. Location lookup needs HTTPS (or localhost).
 
-Deploy: GitHub Pages through `.github/workflows/pages.yml` (Settings > Pages > Source: GitHub Actions). Custom domain: add a `CNAME` file and point the DNS record at GitHub Pages.
+Live at https://which-card.tompkinssoftwaresystems.com (the old tompkins52.github.io/which-card address forwards there).
+
+Deploy: GitHub Pages through `.github/workflows/pages.yml` (Settings > Pages > Source: GitHub Actions). The custom domain is set in Settings > Pages > Custom domain, with a Cloudflare CNAME record `which-card` pointing at `tompkins52.github.io` (DNS only, gray cloud). No CNAME file is needed because the site deploys through Actions.
 
 Checks before committing data:
 
