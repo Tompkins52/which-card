@@ -186,6 +186,41 @@
   function closeSheet() { clear(document.getElementById('sheet-root')); document.body.style.overflow = ''; if (typeof sheetOnClose === 'function') { var f = sheetOnClose; sheetOnClose = null; f(); } }
   var sheetOnClose = null;
 
+  /* ---------- first-run disclaimer ---------- */
+  function mascotSvg() {
+    return '<svg viewBox="0 0 240 180" width="200" height="150" role="img" aria-label="A goofy cartoon credit card">' +
+      '<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E7D5B"/><stop offset="1" stop-color="#12352B"/></linearGradient></defs>' +
+      '<g transform="rotate(-8 120 95)">' +
+      '<rect x="30" y="40" width="180" height="112" rx="14" fill="url(#mg)"/>' +
+      '<rect x="30" y="62" width="180" height="16" fill="#0B241D" opacity=".9"/>' +
+      '<rect x="46" y="118" width="38" height="24" rx="5" fill="#D4A84B"/><path d="M46 130h38M65 118v24" stroke="#A47E2C" stroke-width="2"/>' +
+      '<circle cx="104" cy="104" r="17" fill="#fff"/><circle cx="150" cy="100" r="22" fill="#fff"/>' +
+      '<circle cx="109" cy="106" r="7" fill="#101418"/><circle cx="144" cy="103" r="10" fill="#101418"/>' +
+      '<circle cx="111" cy="103" r="2.5" fill="#fff"/><circle cx="147" cy="99" r="3" fill="#fff"/>' +
+      '<path d="M90 86 q14 -10 26 -2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="M132 74 q18 -4 32 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>' +
+      '<path d="M104 128 q30 22 60 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>' +
+      '<path d="M128 139 q8 14 2 24 q-10 -6 -2 -24z" fill="#E86A6A"/>' +
+      '<text x="182" y="146" text-anchor="end" fill="#fff" font-family="Figtree, Helvetica, Arial, sans-serif" font-size="11" font-weight="800" font-style="italic" opacity=".8">PAYS IN FULL</text>' +
+      '</g>' +
+      '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="#12352B" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="#12352B"/>' +
+      '<path d="M206 70 q22 -16 26 2" fill="none" stroke="#12352B" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="#12352B"/>' +
+      '</svg>';
+  }
+  function openDisclaimer() {
+    var art = h('div', { class: 'mascot' }); art.innerHTML = mascotSvg();
+    var nodes = [
+      art,
+      h('h2', { style: 'text-align:center' }, 'Quick word before we start'),
+      h('p', { style: 'text-align:center' }, 'This was built for people who pay their statement in full every month so they never pay interest. Rewards are the only reason to pick one card over another.'),
+      h('p', { class: 'muted', style: 'text-align:center' }, 'If you carry a balance and pay interest: no judgment, carry on exactly as you are. The rest of us appreciate you funding these rewards.'),
+      h('button', { class: 'btn primary block', onclick: function () { state.disclaimed = true; saveState(); closeSheet(); } }, 'I pay in full. Let\u2019s go'),
+      h('button', { class: 'btn block', onclick: function () { state.disclaimed = true; saveState(); closeSheet(); toast('Thank you for your service.'); } }, 'I pay interest')
+    ];
+    openSheet('Welcome', nodes, { noClose: true });
+    sheetOnClose = null;
+  }
+
   /* ---------- views ---------- */
   function showView(name) {
     view = name;
@@ -906,7 +941,8 @@
     var root = document.getElementById('view-offers'); clear(root);
     var gaps = E.gaps(state, data);
     if (state.wallet.length) {
-      var gs = h('div', { class: 'section' }, h('div', { class: 'section-head' }, h('h2', null, 'Gaps in your wallet'), null));
+      var gs = h('div', { class: 'section' }, h('div', { class: 'section-head' }, h('h2', null, 'Where your wallet is weak'), null),
+        h('p', { class: 'small muted' }, 'Categories where a card you do not hold would out-earn your best. Nothing here is sponsored or linked for a referral; it is the same arithmetic the Pay screen uses.'));
       if (!gaps.length) gs.appendChild(h('div', { class: 'note good' }, 'Your cards already cover every everyday category well.'));
       else gaps.slice(0, 5).forEach(function (g) {
         gs.appendChild(h('button', { class: 'gap', onclick: function () { openCardDetail(g.card.id); } },
@@ -917,7 +953,7 @@
     }
 
     var offers = (data.bonuses && data.bonuses.offers) || [];
-    var os = h('div', { class: 'section' }, h('div', { class: 'section-head' }, h('h2', null, 'Welcome offers'), h('span', { class: 'small muted' }, 'as of ' + fmtLongDate(data.bonuses && data.bonuses.verified))));
+    var os = h('div', { class: 'section' }, h('div', { class: 'section-head' }, h('h2', null, 'Sign-up bonuses, as the banks publish them'), h('span', { class: 'small muted' }, 'as of ' + fmtLongDate(data.bonuses && data.bonuses.verified))));
     var sorted = offers.slice().sort(function (a, b) { return (valueOf(b)) - (valueOf(a)); });
     sorted.forEach(function (o) {
       var card = E.cardById(data, o.cardId);
@@ -929,8 +965,8 @@
         o.notes ? h('div', { class: 'small muted' }, o.notes) : null,
         h('div', { class: 'foot' }, o.sourceUrl ? h('a', { href: o.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : h('span'), card ? h('button', { class: 'link', style: 'color:var(--accent);font-weight:600', onclick: function () { openCardDetail(card.id); } }, 'How it earns') : null)));
     });
-    if (!offers.length) os.appendChild(h('p', { class: 'hint' }, 'No offers on file.'));
-    os.appendChild(h('p', { class: 'small muted' }, 'Offers change often and some are only on the issuer site. No referral links here; the links go to the issuer.'));
+    if (!offers.length) os.appendChild(h('p', { class: 'hint' }, 'Nothing on file.'));
+    os.appendChild(h('p', { class: 'small muted' }, 'Listed for reference only. Bonuses change often and some show only on the issuer site. Every link goes to the issuer; nobody pays for a spot here.'));
     root.appendChild(os);
 
     var rot = data.cards.filter(function (c) { return c.rotating && c.rotating.calendar; });
@@ -1016,8 +1052,10 @@
       h('div', { class: 'box small' },
         h('p', null, h('b', null, 'Which Card'), ' by Tompkins Software Systems.'),
         h('p', { style: 'margin-top:8px' }, 'Nothing to sign up for. Your card list, purchases and settings stay on this phone. The only thing that leaves it is an anonymous nearby-places lookup when you use location.'),
+        h('p', { style: 'margin-top:8px', class: 'pledge' }, 'Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life.'),
         h('p', { style: 'margin-top:8px' }, 'Independent of every bank and card network. No bank pays for placement, no referral links, no sponsored cards; the ranking is arithmetic on your own cards. Rates and terms change; the issuer’s agreement wins. Point values are estimates.'),
         h('p', { style: 'margin-top:8px' }, 'Questions or a wrong number: ', h('a', { href: 'mailto:' + CONTACT }, CONTACT))));
+    as.appendChild(h('button', { class: 'btn block', onclick: openDisclaimer }, 'See the welcome note again'));
     as.appendChild(h('button', { class: 'btn danger block', onclick: function () { confirmReset(); } }, 'Erase everything on this phone'));
     root.appendChild(as);
   }
@@ -1079,6 +1117,7 @@
     document.getElementById('amount').value = ctx.amount || '';
     showView('pay');
     if (!state.wallet.length && !state.onboarded) { onboarding = true; }
+    if (!state.disclaimed) openDisclaimer();
     else if (state.prefs.location && !ctx.merchant && !ctx.category) locate();
     if (!PREVIEW && 'serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
       navigator.serviceWorker.register('sw.js').then(function (reg) {

@@ -6,9 +6,11 @@ Built by Tompkins Software Systems.
 
 ## How it works
 
+The first open shows a welcome note from a goofy cartoon card: the app is built for people who pay their statement in full and never pay interest; anyone who pays interest is welcome to carry on as they are.
+
 - **Pay** is the whole point: pick the store (search, quick buttons, or location), optionally type the amount, and the top card appears with what it earns, why, and anything to watch (activation, caps, Visa-only stores, foreign fees). Every other card in the wallet is ranked below it. "I used it" logs the purchase so caps and welcome-bonus goals stay current.
 - **Wallet** holds the cards the person carries. Each card has a detail page: a perks checklist (every credit and perk on one screen, with an Activated or Used switch and a link to the issuer page that activates it), how it earns, this quarter's rotating categories with an activation switch and the issuer's activation page, chosen categories for pick-your-own cards, cap progress, spend goals, tips, gotchas, protections, and what a point is worth.
-- **Offers** shows gaps in the wallet (categories where a card in the catalog would beat what they have), current welcome offers, and the rotating calendars.
+- **Compare** shows where the wallet is weak (categories where a card in the catalog would beat what they have), the sign-up bonuses as the banks publish them, listed for reference only, and the rotating calendars.
 - **More** holds the priority (cash back, points and miles, or earning a bonus), redemption overrides per program, location and phone-wallet settings, the data date, a setup code for moving to another phone, and the privacy and contact text.
 
 The recommendation logic lives in `engine.js` and has no DOM dependencies; `tests/engine.test.js` covers caps, rotating quarters, exclusions, network acceptance, valuations and goals.
@@ -63,4 +65,4 @@ The app stores the card names the person picks, their settings, goals and logged
 
 ## Independent
 
-Which Card takes nothing from any bank: no referral links, no paid placement, no sponsored cards. Every card gets the same treatment and the ranking is arithmetic on the person's own cards. It is not affiliated with any bank or card network. Earning rates are copied from issuer pages and can change without notice; the cardholder agreement always wins. Point values are estimates.
+Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life. Which Card takes nothing from any bank: no referral links, no paid placement, no sponsored cards. Every card gets the same treatment and the ranking is arithmetic on the person's own cards. It is not affiliated with any bank or card network. Earning rates are copied from issuer pages and can change without notice; the cardholder agreement always wins. Point values are estimates.

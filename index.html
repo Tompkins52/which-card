@@ -56,6 +56,7 @@
     <symbol id="i-gear" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
     <symbol id="i-trophy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3M12 14v4M8 21h8M9 18h6"/></symbol>
   </defs>
 </svg>
@@ -76,6 +77,7 @@
       </div>
       <h1>Stop guessing at the pump.</h1>
       <p class="muted">Tell it which cards you carry. Then, at any store, it names the card that earns the most, before you tap.</p>
+      <p class="pledge">Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life.</p>
       <ul class="intro-list">
         <li><svg><use href="#i-pin"/></svg>Finds the store from your location, or you pick it in one tap</li>
         <li><svg><use href="#i-trophy"/></svg>Ranks every card you own, with the dollar figure</li>
@@ -102,7 +104,7 @@
   </section>
 
   <section id="view-wallet" class="view" hidden aria-label="Your cards"></section>
-  <section id="view-offers" class="view" hidden aria-label="Offers and gaps"></section>
+  <section id="view-offers" class="view" hidden aria-label="Compare your wallet"></section>
   <section id="view-more" class="view" hidden aria-label="Settings"></section>
 </main>
 
@@ -110,7 +112,7 @@
   <div class="in">
     <button data-view="pay" class="on"><svg><use href="#i-card"/></svg>Pay</button>
     <button data-view="wallet"><svg><use href="#i-wallet"/></svg>Wallet</button>
-    <button data-view="offers"><svg><use href="#i-gift"/></svg>Offers</button>
+    <button data-view="offers"><svg><use href="#i-compare"/></svg>Compare</button>
     <button data-view="more"><svg><use href="#i-gear"/></svg>More</button>
   </div>
 </nav>

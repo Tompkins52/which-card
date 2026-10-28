@@ -343,3 +343,9 @@ label.lbl { display: block; font-size: .85rem; font-weight: 600; color: var(--mu
 .perk-list li.done .perk-toggle { color: var(--good); }
 .perks .section-head { margin-bottom: 6px; }
 a.btn { text-decoration: none; }
+
+/* Pledge and mascot */
+.pledge { font-weight: 700; color: var(--accent); font-size: .95rem; }
+.mascot { display: flex; justify-content: center; padding: 6px 0 0; }
+.mascot svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes bob { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-6px); } }
