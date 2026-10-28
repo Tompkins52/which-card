@@ -1732,6 +1732,59 @@
     "espn plus"
    ],
    "category": "streaming"
+  },
+  {
+   "id": "renowned-hotels",
+   "name": "Renowned Hotels (United cardmembers)",
+   "aliases": [
+    "renowned hotels and resorts"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel",
+    "portal-travel"
+   ],
+   "online": true
+  },
+  {
+   "id": "united-hotels",
+   "name": "United Hotels (prepaid stays)",
+   "aliases": [],
+   "category": "hotels",
+   "also": [
+    "travel",
+    "portal-travel"
+   ],
+   "online": true
+  },
+  {
+   "id": "british-airways",
+   "name": "British Airways",
+   "aliases": [
+    "ba"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "aer-lingus",
+   "name": "Aer Lingus",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "iberia",
+   "name": "Iberia",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
   }
  ]
 }

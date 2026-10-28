@@ -40,6 +40,18 @@
   "Chase pricing and terms pages (sites.chase.com) block automated fetching, so foreign transaction fees that the product pages do not state (Freedom Unlimited 3%, Freedom Rise 3%, Ink Business Cash 3%, Ink Business Unlimited 3%, Disney Premier 3%, Slate Edge 3%) were confirmed from NerdWallet, Bankrate, Doctor of Credit, Thrifty Traveler, The Points Guy or Disney Rewards, as listed in each card's sourceUrls.",
   "Chase Slate Edge is no longer open to new applicants (closed early 2026, replaced by the returning Chase Slate card) but is still widely held; it is included with base 0 as requested.",
   "Lyft promotional rates across Chase cards run through September 30, 2027 (Freedom, Sapphire and Ink cards) or December 31, 2027 (Southwest cards); gift cards, car rentals and vehicle service center charges through Lyft are excluded.",
+  "Aeroplan business card: Chase does not offer an Air Canada Aeroplan business credit card in the U.S. as of October 28, 2026; only the personal Air Canada Aeroplan Card exists (already covered in chase.json), so no entry was written.",
+  "New program id used in this file: british-airways-avios (British Airways Visa Signature, Aer Lingus Visa Signature and Iberia Visa Signature all earn Avios, which move 1:1 between British Airways Club, AerClub and Iberia Club; estimated value 1.5 cents per Avios).",
+  "New merchant ids used in this file: renowned-hotels (prepaid stays through Renowned Hotels and Resorts for United Cardmembers, 5x on United Quest, United Club and United Club Business), united-hotels (prepaid stays through United Hotels, 2x on United Business), british-airways, aer-lingus and iberia (3x on the three Avios cards; LEVEL also earns 3x but has no id). Existing ids reused: united, southwest, marriott, ihg, hyatt, lyft, uber, uber-eats, doordash, instacart.",
+  "Program ids reused from chase.json notes: disney-rewards (Disney Visa Card earns 1% in Disney Rewards Dollars, worth $1 each only toward Disney purchases, not cash). The Instacart Mastercard, DoorDash Rewards Mastercard, Ink Business Premier and Chase Slate use cashback: the Instacart and DoorDash cards earn points worth 1 cent each redeemable for cash with no minimum; Ink Business Premier points are worth 1 cent each and cannot transfer to Ultimate Rewards partners or other Chase cards, so chase-ur transfer valuations should not be applied to it.",
+  "Non-schema fields used: largePurchase on Ink Business Premier ({rate 2.5, minAmount 5000}) for the 2.5% on single purchases of $5,000 or more; automatic: true and label on the World of Hyatt Business choice block because Chase picks the top three categories each quarter automatically (no cap, options dining, select-merchants for shipping and advertising, flights, transit, rental-car, gas, phone for internet/cable/phone). label strings also appear on several earn rules.",
+  "Category mappings without a schema id: office supply stores (United Business 2x, IHG Business 5x through Dec 31, 2026), social media and search engine advertising (IHG Business 5x, Sapphire Reserve for Business 3x, Hyatt Business top-three option) and shipping (Hyatt Business top-three option) are mapped to select-merchants with labels; internet, cable and phone services (Marriott Bold 2x, IHG One Rewards 3x through Dec 31, 2026, Hyatt Business option) are mapped to phone; rideshare on Marriott Bold is mapped to merchant rules for uber and lyft because Chase defines it as the taxicabs and limousines merchant code.",
+  "United cards: every merchant: united rate is the miles the card itself pays on United purchases (Gateway 2x, Quest 4x, Club 5x, Business 2x, Club Business 2x). Chase advertises 5x, 10x, 11x, 8x and 8x totals on United flights because MileagePlus members separately earn 3x (Gateway) or 6x (other cards) on the fare. United Club Business has a 1.5x base and no dining, gas or transit categories. United Explorer is already in chase.json.",
+  "IHG refresh of October 1, 2026: the IHG One Rewards Traveler card is now the IHG One Rewards Credit Card (id chase-ihg-one-rewards) and the IHG One Rewards Premier Business card is now the IHG One Rewards Business Credit Card (id chase-ihg-one-rewards-business, $200 fee). Both are Mastercards per Chase press releases; the existing chase.json IHG Premier entry lists Visa, which the merge step may want to correct to Mastercard. A new IHG One Rewards Premier Select card ($350 fee, 12x IHG, 6x dining and travel, 3x other) launched the same day and is not in this assignment.",
+  "Southwest: the consumer Premier card earns 2x on groceries and restaurants (shared $8,000 cap per anniversary year) with Lyft 3x through Dec 31, 2027; the Premier Business card earns 2x on gas and restaurants (shared $8,000 cap) with no Lyft promotion; the Performance Business card has no caps and earns 2x on hotels booked direct, gas, restaurants and local transit including rideshare. Rental coverage on all Southwest cards is secondary in the U.S. per NerdWallet; Chase product pages list only baggage, luggage, purchase protection and extended warranty.",
+  "Caps in this file: Southwest Premier groceries and dining share $8,000 per anniversary year; Southwest Premier Business gas and dining share $8,000 per anniversary year; Marriott Bountiful groceries and dining share $15,000 per Chase-defined year ending at the December statement; Instacart Mastercard 5% on Instacart is capped at $6,000 per year (same December statement year definition); Sapphire Reserve for Business advertising is capped at $1,000,000 per anniversary year starting November 15, 2026.",
+  "Chase product pages at creditcards.chase.com for several business and cobrand cards return client errors to automated fetching at their canonical paths; working alternates used here are listed as each card's sourceUrl. Protection details that the Chase pages omit were taken from the reference sites named in each card's unsure list (NerdWallet, Bankrate, The Points Guy, Doctor of Credit, Upgraded Points, One Mile at a Time, HelloSafe, Frequent Miler, AwardWallet, Daily Drop, Deals Points, The Vacationer, Ask Mr. Credit Card, CardRates, FinanceBuzz, BestMoney, The Points Party).",
+  "Lyft promotional rates in this file: Southwest Premier 3x total through Dec 31, 2027; Ink Business Premier 5% and Sapphire Reserve for Business 5x through Sept 30, 2027; Marriott Bold 2x on Lyft is a permanent rideshare category rate, not a promotion. Lyft gift cards, car rentals and vehicle service center charges are excluded from the promotions.",
   "Issuer pages were checked first; several blocked fetching (discover.com FAQ and calendar returned errors, paypal.com, samsclub.com credit page, amazon.com, usbank.com Smartly on first try, nerdwallet.com for some BofA reviews). Gaps were filled from NerdWallet, Bankrate, The Points Guy, Doctor of Credit, Frequent Miler, Upgraded Points, AwardWallet, Danny the Deal Guru, CNBC Select, FinanceBuzz, Kiplinger and One Mile at a Time, each named in sourceUrls.",
   "Discover to Capital One: Discover card accounts began moving to Capital One on July 27, 2026 in waves running into 2027 (Student cards from October 19, 2026). Capital One confirmed the 5% rotating program, the $1,500 quarterly cap, Cashback Match, no annual fee and existing card numbers stay the same. Migrated accounts also get 5% on hotels, vacation rentals, rental cars and activities booked through Capital One Travel, 5% on Capital One Entertainment bookings, and Capital One Offers. Discover it Secured, Discover it Balance Transfer and NHL Discover it share the Cash Back card's rotating structure.",
   "Discover Q1 2027 categories were not announced as of October 28, 2026; Discover normally publishes the next year's calendar in mid December. Discover publishes no activation deadline: cardholders can activate any time during the quarter but earn 5% only from the activation date forward, so activateBy is set to the quarter's last day.",
@@ -53,6 +65,106 @@
   "Left out on purpose: Home Depot Consumer Credit Card (financing only, no rewards or standing discount). Uber: the Barclays Uber Visa was discontinued in October 2021 and no consumer Uber credit card exists; the Uber Pro Card is a business debit Mastercard for drivers and couriers (Branch, Evolve Bank & Trust) and is not a credit card. Costco cards are handled by another agent."
  ],
  "cards": [
+  {
+   "id": "chase-ihg-one-rewards-business",
+   "name": "IHG One Rewards Business",
+   "issuer": "Chase",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "ihg-one",
+   "annualFee": 200,
+   "fxFee": 0,
+   "base": 3,
+   "earn": [
+    {
+     "merchant": "ihg",
+     "rate": 10
+    },
+    {
+     "category": "flights",
+     "rate": 5
+    },
+    {
+     "category": "rental-car",
+     "rate": 5
+    },
+    {
+     "category": "gas",
+     "rate": 5
+    },
+    {
+     "category": "dining",
+     "rate": 5
+    },
+    {
+     "category": "select-merchants",
+     "rate": 5,
+     "label": "social media and search engine advertising"
+    },
+    {
+     "category": "travel",
+     "rate": 5,
+     "until": "2026-12-31",
+     "afterRate": 3
+    },
+    {
+     "category": "select-merchants",
+     "rate": 5,
+     "until": "2026-12-31",
+     "afterRate": 3,
+     "label": "office supply stores"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "primary"
+   },
+   "credits": [
+    "Anniversary free night valid at IHG hotels up to 50,000 points (top up with points for pricier hotels)",
+    "A second free night (up to 50,000 points) after $60,000 in purchases in a calendar year",
+    "Up to $100 per year in IHG food and beverage credits ($25 per quarter)",
+    "$100 statement credit on a single airline purchase of $250 or more made directly with the airline, each calendar year through Dec 31, 2027",
+    "Up to $100 per calendar year in statement credits for Expensify purchases",
+    "Automatic Platinum Elite status and 15 Elite Night Credits per year, plus 2 per $5,000 spent",
+    "20,000 bonus points and 5 Elite Night Credits after $25,000 in purchases in a calendar year; Diamond Elite after $50,000 (from 2027)",
+    "Fourth night free on award stays",
+    "Up to $120 Global Entry, TSA PreCheck or NEXUS credit every four years",
+    "One year of DashPass (activate by Dec 31, 2027) and 3 months of Instacart+ with a $10 monthly Instacart credit",
+    "Employee cards at no additional cost"
+   ],
+   "bestFor": "Businesses that stay at IHG and spend on flights, rental cars, gas, dining and online advertising",
+   "tips": [
+    "The card was renamed from IHG One Rewards Premier Business on October 1, 2026; the fee rose from $99 to $200 and Platinum Elite status was kept",
+    "Flights earn 5x only when bought directly from the airline; car rental agencies also earn 5x",
+    "All other travel and office supply stores earn 5x only on purchases that post by December 31, 2026, then 3x",
+    "IHG stays earn 10x from the card plus member and Platinum Elite points, up to 26x total",
+    "Rental car coverage is primary when renting for business purposes, up to $60,000"
+   ],
+   "watchOut": [
+    "The former up to $50 United TravelBank credit was removed in the refresh",
+    "Existing cardmembers pay the $200 fee at their 2027 renewal",
+    "IHG points are worth about half a cent each, so 5x is roughly 2.5% back",
+    "Purchase protection covers 120 days up to $10,000 per item",
+    "No cell phone protection; trip delay coverage is not listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/IHG/business",
+   "sourceUrls": [
+    "https://www.chase.com/personal/credit-cards/ihg/premierbusiness",
+    "https://www.chase.com/personal/credit-cards/ihg/premierbusiness/earn-rewards",
+    "https://media.chase.com/news/ihg-premier-select-card-portfolio-updates",
+    "https://frequentmiler.com/ihgbusiness/",
+    "https://thepointsparty.com/articles/ihg-one-rewards-business-credit-card-review"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Social media and search engine advertising and office supply stores have no category id, so they are mapped to select-merchants with labels",
+    "Trip delay coverage is not listed on the Chase pages, so the tripDelay flag is omitted; extended warranty and primary business rental coverage come from Chase's premierbusiness page",
+    "Network is Mastercard per Chase's IHG press releases"
+   ],
+   "color": "#284277"
+  },
   {
    "id": "chase-ink-business-cash",
    "name": "Ink Business Cash",
@@ -252,6 +364,68 @@
    "finish": "metal"
   },
   {
+   "id": "chase-ink-business-premier",
+   "name": "Ink Business Premier",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 195,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 5,
+     "label": "Chase Travel"
+    },
+    {
+     "merchant": "lyft",
+     "rate": 5,
+     "until": "2027-09-30"
+    }
+   ],
+   "largePurchase": {
+    "rate": 2.5,
+    "minAmount": 5000,
+    "label": "2.5% total on any single purchase of $5,000 or more"
+   },
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true
+   },
+   "credits": [
+    "Employee cards at no additional cost"
+   ],
+   "bestFor": "Businesses with large individual purchases that want flat 2% to 2.5% cash back",
+   "tips": [
+    "Items that ship and bill separately below $5,000 earn only 2% even if the order total was higher",
+    "Rewards are points worth 1 cent each for cash back or Chase Travel, and they cannot be transferred to airline or hotel partners or combined with other Chase cards",
+    "Cell phone protection pays up to $1,000 per claim (3 claims per year, $100 deductible) when the phone bill is paid with the card"
+   ],
+   "watchOut": [
+    "This is a pay-in-full card; only a Flex for Business portion of the credit line can carry a balance, at interest",
+    "Points cannot be moved to Ultimate Rewards travel partners, unlike the Ink Business Preferred",
+    "Rental car coverage is primary only for business rentals or rentals outside the U.S.; personal U.S. rentals are secondary",
+    "Lyft gift cards, car rentals and vehicle service center charges do not earn the 5% Lyft rate"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/ink/premier",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/ink-business-premier/benefits/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The 2.5% on purchases of $5,000 or more does not fit any category, so it is recorded in a non-schema largePurchase field and in tips",
+    "Foreign transaction fee (none), protections (primary business rental coverage, trip cancellation $5,000 per trip, trip delay $500, purchase protection $10,000 per claim, extended warranty, cell phone protection) and the no-transfer rule come from Upgraded Points (August 2026) because the Chase page does not list them",
+    "Program is recorded as cashback rather than chase-ur because the points cannot transfer to partners or other Chase cards"
+   ],
+   "color": "#223963"
+  },
+  {
    "id": "chase-ink-business-unlimited",
    "name": "Ink Business Unlimited",
    "issuer": "Chase",
@@ -300,6 +474,538 @@
     "The 3% foreign transaction fee comes from NerdWallet and Thrifty Traveler"
    ],
    "color": "#4C7FA3"
+  },
+  {
+   "id": "chase-sapphire-reserve-for-business",
+   "name": "Sapphire Reserve for Business",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "chase-ur",
+   "annualFee": 795,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "category": "portal-travel",
+     "rate": 8,
+     "label": "Chase Travel"
+    },
+    {
+     "merchant": "lyft",
+     "rate": 5,
+     "until": "2027-09-30"
+    },
+    {
+     "category": "flights",
+     "rate": 4
+    },
+    {
+     "category": "hotels",
+     "rate": 4
+    },
+    {
+     "category": "select-merchants",
+     "rate": 3,
+     "cap": 1000000,
+     "capPeriod": "year",
+     "label": "social media and search engine advertising (the $1,000,000 per anniversary year cap starts November 15, 2026)"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "$300 annual travel credit applied to travel purchases (those purchases earn no points)",
+    "The Edit by Chase Travel: up to $500 per calendar year ($250 per prepaid booking, two-night minimum), rising to $1,000 per year from January 1, 2027",
+    "$250 Chase Travel hotel credit for prepaid stays of 2+ nights at IHG, Montage, Pendry, Omni, Virgin, Minor and Pan Pacific through Dec 31, 2026",
+    "Up to $400 per calendar year in ZipRecruiter credits ($200 per half year) through Dec 31, 2027",
+    "Up to $200 per calendar year in Google Workspace credits through Dec 31, 2027",
+    "Up to $120 per year in Lyft credits ($10 per month) through Sept 30, 2027",
+    "Complimentary DashPass for 12 months (activate by Dec 31, 2027) plus up to $25 per month in DoorDash promos",
+    "Up to $100 per calendar year at giftcards.com ($50 per half year) through Oct 31, 2028",
+    "Chase Sapphire Lounge and Priority Pass access for the authorizing officer plus two guests, and Air Canada Maple Leaf Lounge access on Star Alliance flights",
+    "IHG One Rewards Platinum Elite status through Dec 31, 2027",
+    "Up to $120 Global Entry, TSA PreCheck or NEXUS credit every four years",
+    "After $120,000 in purchases in a calendar year: IHG Diamond, World of Hyatt Explorist, Southwest A-List, $500 Southwest credit on Chase Travel and $500 at The Shops at Chase",
+    "Employee cards at no additional cost"
+   ],
+   "bestFor": "Business owners who travel heavily, buy online advertising, and can use the large credit package",
+   "tips": [
+    "Flights and hotels booked directly with the airline or hotel earn 4x; the same bookings through Chase Travel earn 8x",
+    "Social media and search engine advertising earns 3x; from November 15, 2026 the 3x applies to the first $1,000,000 per anniversary year, then 1x",
+    "Points transfer 1:1 to Chase airline and hotel partners (Hyatt at 4:3 from October 2026)",
+    "Points are worth 1 cent each through Chase Travel, with Points Boost offers up to 2 cents on select hotels and flights",
+    "Rental car coverage is primary (up to $75,000) for business rentals and all rentals outside the U.S.; trip delay pays up to $500 per traveler after a 6-hour delay"
+   ],
+   "watchOut": [
+    "Dining is not a bonus category on the business version; restaurants earn 1x",
+    "Purchases covered by the $300 travel credit or the Edit credit earn no points",
+    "Travel booked through FROSCH or Valerie Wilson Travel earns 1x, not 8x",
+    "This is a pay-in-full card; only a Flex for Business portion of the credit line can carry a balance",
+    "Employees enter lounges only as guests of the primary cardmember"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/sapphire/reserve",
+   "sourceUrls": [
+    "https://onemileatatime.com/reviews/credit-cards/chase/chase-sapphire-reserve-business/",
+    "https://hellosafe.com/credit-card-insurance/united-states/chase/sapphire-reserve-business",
+    "https://insurance.financebuzz.com/sapphire-reserve-business-review",
+    "https://www.bestmoney.com/credit-cards/reviews/sapphire-reserve-for-business"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The Chase page does not state the foreign transaction fee or protection limits; no foreign transaction fee comes from One Mile at a Time and FinanceBuzz (September to October 2026), and protection details (primary business rental coverage up to $75,000, trip delay $500 after 6 hours, trip cancellation $10,000 per traveler, purchase protection $10,000 per item, extended warranty, cell phone protection $1,000 per claim) come from HelloSafe (October 21, 2026) and FinanceBuzz",
+    "Social media and search engine advertising has no category id, so it is mapped to select-merchants"
+   ],
+   "color": "#213B7D"
+  },
+  {
+   "id": "chase-southwest-rapid-rewards-performance-business",
+   "name": "Southwest Rapid Rewards Performance Business",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "southwest-rr",
+   "annualFee": 299,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "southwest",
+     "rate": 4
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "9,000 bonus points each account anniversary year",
+    "Up to $120 Global Entry, TSA PreCheck or NEXUS credit every four years",
+    "First checked bag free and Group 5 boarding for the cardmember and up to 8 passengers on the same reservation",
+    "Preferred seat selection at booking and Extra Legroom upgrades within 48 hours of departure when available",
+    "25% back on Southwest inflight purchases as a statement credit",
+    "2,500 tier qualifying points per $5,000 spent and 10,000 Companion Pass qualifying points each year",
+    "Employee cards at no additional cost"
+   ],
+   "bestFor": "Businesses that spend heavily on Southwest and want uncapped 2x on hotels, gas, dining and transit",
+   "tips": [
+    "All bonus categories are uncapped: 4x on Southwest and 2x on hotels booked directly with the hotel, gas stations, restaurants and local transit and commuting including rideshare",
+    "Southwest purchases include flights, inflight purchases, gift cards and Southwest Vacations or Getaways packages bought directly from Southwest",
+    "The 9,000 anniversary points alone are worth roughly $120 to $135 in Southwest flights",
+    "Rapid Rewards points do not expire and are worth roughly 1.3 to 1.5 cents each on Southwest flights"
+   ],
+   "watchOut": [
+    "The former 2x on internet, cable, phone, social media and search engine advertising and 3x on Rapid Rewards hotel and car partners ended December 31, 2025",
+    "Southwest Charters and Cargo do not count as Southwest purchases, and Southwest Cruises stopped earning 4x after 2025",
+    "Hotels earn 2x only when booked directly with the hotel",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "No trip cancellation or trip delay coverage is listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/southwest/performance-business",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/credit-cards/southwest-cards-rev-up-bonuses-and-ongoing-rewards",
+    "https://www.nerdwallet.com/article/travel/does-my-southwest-credit-card-have-car-rental-insurance"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Rental car coverage (secondary in the U.S.) is confirmed by NerdWallet rather than the Chase product page, which does not list it"
+   ],
+   "color": "#224391"
+  },
+  {
+   "id": "chase-southwest-rapid-rewards-premier-business",
+   "name": "Southwest Rapid Rewards Premier Business",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "southwest-rr",
+   "annualFee": 149,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "southwest",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 2,
+     "cap": 8000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 2,
+     "cap": 8000,
+     "capPeriod": "year"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "6,000 bonus points each account anniversary year",
+    "15% off promo code each anniversary year for a Southwest flight (excludes Basic fares)",
+    "First checked bag free and Group 5 boarding for the cardmember and up to 8 passengers on the same reservation",
+    "Preferred or standard seat selection within 48 hours of departure when available",
+    "25% back on Southwest inflight purchases as a statement credit, including employee card purchases",
+    "2,000 tier qualifying points per $5,000 spent and 10,000 Companion Pass qualifying points each year",
+    "Employee cards at no additional cost"
+   ],
+   "bestFor": "Small businesses that fly Southwest and spend on gas and restaurants",
+   "tips": [
+    "Gas stations and restaurants share one $8,000 cap per account anniversary year at 2x, then 1x",
+    "Southwest purchases include flights, inflight purchases, gift cards and Getaways by Southwest packages",
+    "Employee card spending earns points for the business owner's Rapid Rewards account",
+    "Rapid Rewards points do not expire and are worth roughly 1.3 to 1.5 cents each on Southwest flights"
+   ],
+   "watchOut": [
+    "Unlike the consumer Premier card, groceries are not a bonus category and there is no Lyft promotion",
+    "Southwest Cruises, Charters and Cargo do not count as Southwest purchases",
+    "Employee cards do not get the free bag, seat and boarding perks",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "No trip cancellation or trip delay coverage is listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/southwest/premier-business",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/travel/does-my-southwest-credit-card-have-car-rental-insurance"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Rental car coverage (secondary in the U.S.) is confirmed by NerdWallet rather than the Chase product page, which does not list it"
+   ],
+   "color": "#224363"
+  },
+  {
+   "id": "chase-united-business",
+   "name": "United Business",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "united-miles",
+   "annualFee": 150,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "united",
+     "rate": 2
+    },
+    {
+     "merchant": "united-hotels",
+     "rate": 2,
+     "label": "prepaid stays booked through United Hotels"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "office supply stores"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true
+   },
+   "credits": [
+    "First checked bag free for the cardmember and one companion on United flights",
+    "Two United Club one-time passes each year (cardmember or authorized user must be present)",
+    "Priority boarding",
+    "$125 United TravelBank cash after five United flight purchases of $100 or more in a calendar year",
+    "Two Economy Plus upgrades after $25,000 in purchases in a calendar year",
+    "$50 back on each of the first two prepaid United Hotels stays per anniversary year (up to $100)",
+    "Up to $100 per calendar year in rideshare credits ($8 per month January to November, $12 in December, opt-in required)",
+    "$25 TravelBank cash on each of the first two Avis or Budget rentals (up to $50 per anniversary year)",
+    "Up to $25 per anniversary year back on United FareLock",
+    "Up to $100 per anniversary year in statement credits for JSX flights",
+    "Up to $120 per calendar year in Instacart credits plus 3 months of Instacart+ (through Dec 31, 2027)",
+    "5,000 bonus miles each anniversary when you also hold a personal Chase United card",
+    "1 PQP per $20 spent, up to 4,000 PQP per calendar year",
+    "25% back on United inflight purchases and United Club premium drinks"
+   ],
+   "bestFor": "Small businesses that fly United and spend on dining, gas, transit and office supplies",
+   "tips": [
+    "The card itself earns 2 miles per dollar on United purchases; the advertised 8x total on United flights adds the 6 miles per dollar MileagePlus members earn on the fare",
+    "The 2x select-merchants category is office supply stores",
+    "Local transit and commuting covers rideshare, taxis, trains, tolls and mass transit; dining includes eligible delivery services",
+    "Prepaid stays booked through United Hotels earn 2x from the card (5x total with the miles United gives on the booking) and count toward the $100 hotel credit",
+    "Rental car coverage is primary when renting for business purposes, up to $60,000"
+   ],
+   "watchOut": [
+    "Basic Economy fares earn miles differently; United tickets bought through some discount sites or third-party packages do not count as United purchases",
+    "No cell phone protection",
+    "Hotels booked anywhere other than United Hotels earn only 1x"
+   ],
+   "sourceUrl": "https://www.chase.com/business/credit-cards/united-business-cards/united-business-card/service",
+   "sourceUrls": [
+    "https://www.chase.com/business/credit-cards/united-business-cards/united-business-card",
+    "https://creditcards.chase.com/travel-credit-cards/united",
+    "https://www.chase.com/personal/credit-cards/education/rewards-benefits/breaking-down-united-credit-card-program-updates",
+    "https://thepointsguy.com/guide/credit-card-showdown-united-business-credit-cards",
+    "https://awardwallet.com/blog/united-card-portfolio-overhaul/",
+    "https://www.dailydrop.com/pages/united-card-overhaul"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "The creditcards.chase.com product page for this card blocks automated fetching; earning rates and protections come from Chase's business card service page, and the $150 annual fee comes from Chase's United cards overview page",
+    "The 2x on prepaid United Hotels stays comes from AwardWallet (March 2025) and Daily Drop (October 2026) and is not stated on the Chase service page; united-hotels is a new merchant id",
+    "Office supply stores have no category id, so they are mapped to select-merchants"
+   ],
+   "color": "#2D528B"
+  },
+  {
+   "id": "chase-united-club-business",
+   "name": "United Club Business",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "united-miles",
+   "annualFee": 695,
+   "fxFee": 0,
+   "base": 1.5,
+   "earn": [
+    {
+     "merchant": "renowned-hotels",
+     "rate": 5,
+     "label": "prepaid stays booked through Renowned Hotels and Resorts for United Cardmembers"
+    },
+    {
+     "merchant": "united",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "United Club membership for the cardmember plus one adult guest and dependent children under 18; All Access membership (Star Alliance lounges, two guests) after Premier Gold status or $50,000 in purchases in a calendar year",
+    "First and second checked bags free for the cardmember and one companion on United-operated flights",
+    "Premier Access priority check-in, security, boarding and baggage handling",
+    "Up to $200 per year in statement credits for prepaid stays through Renowned Hotels and Resorts",
+    "Up to $150 per calendar year in rideshare credits ($12 per month January to November, $18 in December, opt-in required)",
+    "$50 TravelBank cash on each of the first two Avis or Budget rentals (up to $100 per year)",
+    "Up to $240 per calendar year in Instacart credits plus complimentary Instacart+ (through Dec 31, 2027)",
+    "Up to $200 per year in statement credits for JSX flights",
+    "Up to $50 per year back on United FareLock",
+    "Two global Economy Plus upgrades after $40,000 in purchases in a calendar year",
+    "5,000 bonus miles each anniversary when you also hold a personal Chase United card",
+    "1 PQP per $15 spent, up to 28,000 PQP per calendar year",
+    "Avis President's Club and 25% back on United inflight purchases and United Club premium drinks"
+   ],
+   "bestFor": "Business owners who want United Club membership and a flat 1.5x on everyday business spend",
+   "tips": [
+    "Every non-bonus purchase earns 1.5 miles per dollar, which is higher than any other United card",
+    "The card itself earns 2 miles per dollar on United purchases; the advertised 8x total on United flights adds the 6 miles per dollar MileagePlus members earn on the fare",
+    "Prepaid stays through Renowned Hotels and Resorts earn 5x and count toward the $200 hotel credit",
+    "Rental car coverage is primary when renting for business purposes, up to $60,000"
+   ],
+   "watchOut": [
+    "No bonus categories for dining, gas or other travel; those purchases earn the 1.5x base rate",
+    "Standard membership covers United-branded clubs only; partner lounges require All Access",
+    "Basic Economy fares earn miles differently; United tickets bought through some discount sites or third-party packages do not count as United purchases",
+    "No cell phone protection"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/united/united-club-business",
+   "sourceUrls": [
+    "https://thepointsguy.com/credit-cards/reviews/united-club-business-card-review",
+    "https://thepointsguy.com/guide/credit-card-showdown-united-business-credit-cards",
+    "https://frequentmiler.com/?p=262194"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#284877"
+  },
+  {
+   "id": "chase-world-of-hyatt-business",
+   "name": "World of Hyatt Business",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "business",
+   "program": "hyatt-points",
+   "annualFee": 199,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "hyatt",
+     "rate": 4
+    },
+    {
+     "category": "fitness",
+     "rate": 2,
+     "label": "fitness club and gym memberships"
+    }
+   ],
+   "choice": {
+    "slots": 3,
+    "rate": 2,
+    "options": [
+     "dining",
+     "select-merchants",
+     "flights",
+     "transit",
+     "rental-car",
+     "gas",
+     "phone"
+    ],
+    "label": "Top three spend categories each calendar quarter, chosen automatically by Chase from: dining; shipping; airline tickets purchased directly with the airline; local transit and commuting; social media and search engine advertising; car rental agencies; gas stations; internet, cable and phone services",
+    "auto": true
+   },
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "primary"
+   },
+   "credits": [
+    "Up to $100 in Hyatt statement credits per anniversary year ($50 back on each of two Hyatt purchases of $50 or more)",
+    "Automatic Discoverist status for the business owner plus five Discoverist upgrade awards for employees",
+    "5 tier-qualifying night credits per $10,000 spent in a calendar year",
+    "10% of redeemed points back (up to 200,000 points redeemed) for the rest of the year after $50,000 in purchases in a calendar year",
+    "Hyatt Leverage membership with up to 15% off standard rates at participating hotels",
+    "12 months of DashPass (activate by Dec 31, 2027) plus $10 off one non-restaurant DoorDash order each quarter",
+    "Employee cards at no additional cost"
+   ],
+   "bestFor": "Businesses that stay at Hyatt and want automatic 2x in their three biggest spend categories each quarter",
+   "tips": [
+    "Hyatt stays earn 4x from the card plus up to 5 base points per dollar as a World of Hyatt member, up to 9x total",
+    "The 2x top-three bonus is automatic with no enrollment or selection: Chase totals spend in the eight eligible categories at quarter end and pays the extra point on the three highest, with no cap",
+    "Eligible categories are dining, shipping, airline tickets bought direct, local transit and commuting, social media and search engine advertising, car rental agencies, gas stations, and internet, cable and phone services",
+    "Fitness club and gym memberships always earn 2x regardless of the quarterly ranking",
+    "Hyatt points are typically worth about 1.5 to 2 cents each, so 2x is roughly 3 to 4% back"
+   ],
+   "watchOut": [
+    "Bonus points for the top three categories can take one to two statements after the quarter ends to post",
+    "Hotels other than Hyatt earn only 1x",
+    "Rental car coverage is primary only when renting for business purposes",
+    "No cell phone protection; trip delay coverage is not listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/business-credit-cards/world-of-hyatt/hyatt-business-card",
+   "sourceUrls": [
+    "https://www.chase.com/hyattbuscard2X",
+    "https://world.hyatt.com/content/gp/en/rewards/business-card.html",
+    "https://upgradedpoints.com/credit-cards/reviews/world-of-hyatt-business-card/benefits/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The top-three-categories bonus is modeled with the choice block plus a non-schema automatic: true flag because the holder does not pick the categories; shipping and advertising are both mapped to select-merchants and internet, cable and phone services to phone",
+    "Trip delay coverage is not listed on the Chase page, so the tripDelay flag is omitted"
+   ],
+   "color": "#24497A"
+  },
+  {
+   "id": "chase-aer-lingus-visa-signature",
+   "name": "Aer Lingus",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "british-airways-avios",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "aer-lingus",
+     "rate": 3
+    },
+    {
+     "merchant": "british-airways",
+     "rate": 3
+    },
+    {
+     "merchant": "iberia",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Economy companion ticket on Aer Lingus flights between the U.S. and Ireland after $30,000 in purchases in a calendar year",
+    "Priority boarding on Aer Lingus flights between the U.S. and Ireland for the cardmember and authorized users",
+    "2,500 bonus Avios each account anniversary year",
+    "12 months of DashPass (activate by Dec 31, 2027) plus $10 off one non-restaurant DoorDash order each quarter"
+   ],
+   "bestFor": "Flyers who use Aer Lingus between the U.S. and Ireland and want the companion ticket",
+   "tips": [
+    "The 3x rate applies to flights bought directly from Aer Lingus, British Airways, Iberia or LEVEL",
+    "Hotels earn 2x only when booked directly with the hotel",
+    "Avios post to AerClub and can be moved to British Airways or Iberia at 1:1",
+    "The companion ticket is valid 12 months, must be booked by emailing Aer Lingus, and the companion pays no taxes or fees",
+    "Avios are typically worth about 1.5 cents each"
+   ],
+   "watchOut": [
+    "The companion ticket works only on Aer Lingus-operated flights directly between the U.S. and Ireland, not codeshares",
+    "Avios expire after 36 months with no program activity",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item",
+    "No cell phone protection; trip cancellation and trip delay are not covered"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/aer-lingus",
+   "sourceUrls": [
+    "https://creditcards.chase.com/travel-credit-cards/avios/aer-lingus",
+    "https://onemileatatime.com/reviews/credit-cards/chase/aer-lingus-credit-card/",
+    "https://hellosafe.com/credit-card-insurance/united-states/chase/aer-lingus-visa-signature"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Protections (secondary rental coverage, $500 purchase protection, extended warranty, baggage delay, lost luggage, no trip cancellation or delay) come from One Mile at a Time (January 2026) and HelloSafe (October 2026) because the Chase page lists only a heading"
+   ],
+   "color": "#204C6A"
   },
   {
    "id": "chase-aeroplan",
@@ -456,6 +1162,75 @@
     "Protection details (purchase protection, extended warranty, secondary rental coverage) come from the Prime Visa product page and Upgraded Points (December 2025); the Amazon Visa page lists a Travel and Purchase Protection heading without details"
    ],
    "color": "#2A5C8A"
+  },
+  {
+   "id": "chase-british-airways-visa-signature",
+   "name": "British Airways",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "british-airways-avios",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "british-airways",
+     "rate": 3
+    },
+    {
+     "merchant": "aer-lingus",
+     "rate": 3
+    },
+    {
+     "merchant": "iberia",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Reward flight statement credits: $100 per economy or premium economy award booking and $200 per business or first class award booking, up to three bookings and $600 per calendar year, on British Airways-operated transatlantic flights from the U.S.",
+    "10% off British Airways flights from the U.S. booked through ba.com/Chase10",
+    "Travel Together Ticket after $30,000 in purchases in a calendar year (companion flies for taxes and fees, or 50% off the Avios cost of a solo reward flight)",
+    "2,500 bonus Avios each account anniversary year",
+    "12 months of DashPass (activate by Dec 31, 2027) plus $10 off one non-restaurant DoorDash order each quarter"
+   ],
+   "bestFor": "Flyers who redeem Avios on British Airways and want the reward flight statement credits",
+   "tips": [
+    "The 3x rate applies to flights bought directly from British Airways, Aer Lingus, Iberia or LEVEL; tickets bought through travel agencies or other airlines earn 1x",
+    "Hotels earn 2x only when booked directly with the hotel",
+    "Avios earned on this card are the same Avios used by Aer Lingus and Iberia and can be moved between the programs",
+    "The statement credits apply to reward flights paid with Avios, not to cash tickets, and exclude Avios part-payment bookings",
+    "Avios are typically worth about 1.5 cents each, so 3x is roughly 4.5% back on BA flights"
+   ],
+   "watchOut": [
+    "Avios expire after 36 months with no program activity",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item",
+    "No cell phone protection; trip cancellation and trip delay coverage are not listed on the Chase page"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/british-airways",
+   "sourceUrls": [
+    "https://dealspoints.com/chase-british-airways/",
+    "https://thevacationer.com/british-airways-visa-signature-card-benefits/",
+    "https://www.askmrcreditcard.com/chase/british-airways/car-rental-insurance/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Protections (secondary rental coverage, $500 purchase protection, extended warranty, baggage delay, lost luggage) come from Deals Points (June 2026), The Vacationer and Ask Mr. Credit Card because the Chase page lists only a Travel and purchase protection heading",
+    "Merchant ids british-airways, aer-lingus and iberia are new; LEVEL also earns 3x but has no merchant id",
+    "Program id british-airways-avios is new (estimated value 1.5 cents per Avios)"
+   ],
+   "color": "#1A4374"
   },
   {
    "id": "chase-freedom-flex",
@@ -1235,6 +2010,54 @@
    "finish": "metal"
   },
   {
+   "id": "chase-slate",
+   "name": "Chase Slate",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 0,
+   "earn": [],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "6 months of complimentary DashPass (activate by Dec 31, 2029) plus up to $10 off quarterly on non-restaurant DoorDash orders"
+   ],
+   "bestFor": "Paying off a balance or a large purchase at 0% for 21 months; it is not a rewards card",
+   "tips": [
+    "This card earns no rewards on any purchase, so use a different card for spending once the 0% intro period ends",
+    "Chase brought the Slate card back in early 2026 with 0% intro APR for 21 months on purchases and balance transfers, replacing the Slate Edge",
+    "The balance transfer fee is $5 or 5% of each transfer, whichever is greater",
+    "Cardmembers are automatically considered for a credit line increase every 6 months"
+   ],
+   "watchOut": [
+    "Earns nothing: 0% on every purchase",
+    "Charges a 3% foreign transaction fee",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item; no cell phone protection"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/balance-transfer-credit-cards/slate",
+   "sourceUrls": [
+    "https://creditcards.chase.com/a1/slateedge0",
+    "https://www.chase.com/personal/credit-cards/slate/autorental-protection",
+    "https://www.nerdwallet.com/credit-cards/reviews/chase-slate",
+    "https://www.bankrate.com/credit-cards/reviews/chase-slate-card",
+    "https://www.doctorofcredit.com/chase-slate-card-returns-with-21-month-0-apr-offer/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The 3% foreign transaction fee and the $5 or 5% balance transfer fee come from NerdWallet (March 2026) and Bankrate (October 2026) because the Chase page points to a pricing and terms document that blocks automated access",
+    "Network is listed as Visa, which is how Chase has historically issued Slate; the Chase page does not name the network"
+   ],
+   "color": "#24507A"
+  },
+  {
    "id": "chase-slate-edge",
    "name": "Chase Slate Edge",
    "issuer": "Chase",
@@ -1357,10 +2180,213 @@
    "color": "#1E5AA8"
   },
   {
+   "id": "chase-disney-visa",
+   "name": "Disney Visa",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "disney-rewards",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true
+   },
+   "credits": [
+    "10% off select merchandise and dining at Disneyland Resort and Walt Disney World Resort, and 10% off select DisneyStore.com purchases with promo code DRVCMEMBER",
+    "15% off select guided tours at Disney parks",
+    "Cardmember photo opportunities at Disney parks with complimentary downloads",
+    "0% promotional APR for 6 months on select Disney vacation packages",
+    "One year of DashPass (activate by Dec 31, 2027) plus up to $10 off monthly on non-restaurant DoorDash orders"
+   ],
+   "bestFor": "Disney park visitors who want the cardmember discounts and perks without an annual fee",
+   "tips": [
+    "Every purchase earns a flat 1% in Disney Rewards Dollars with no bonus categories and no cap",
+    "Rewards Dollars are worth $1 each toward Disney park tickets, resort stays, dining, shopping and Disney Cruise Line sailings in the U.S.",
+    "The Disney Premier Visa ($49 fee) earns 2% on gas, groceries, restaurants and most Disney purchases and 5% on Disney+, Hulu and ESPN, so heavy spenders may prefer it",
+    "The park discounts and photo perks are the main reason to hold this card; a 2% cash back card out-earns it on spending"
+   ],
+   "watchOut": [
+    "Charges a 3% foreign transaction fee",
+    "Rewards Dollars cannot be redeemed for ordinary cash back",
+    "Purchase protection covers 120 days up to $500 per item; rental car and trip cancellation coverage are not listed on the Chase page",
+    "No cell phone protection"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/rewards-credit-cards/disney-rewards",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/reviews/disney-visa"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "The 3% foreign transaction fee comes from NerdWallet (April 2026) because the Chase page does not state it",
+    "Rental car collision coverage could not be confirmed, so rentalCarCDW is omitted"
+   ],
+   "color": "#284277"
+  },
+  {
+   "id": "chase-doordash-rewards-mastercard",
+   "name": "DoorDash Rewards Mastercard",
+   "issuer": "Chase",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "doordash",
+     "rate": 4,
+     "label": "DoorDash and Caviar orders placed directly on doordash.com, trycaviar.com or the apps"
+    },
+    {
+     "category": "dining",
+     "rate": 3,
+     "label": "dining purchased directly from a restaurant"
+    },
+    {
+     "category": "groceries",
+     "rate": 2,
+     "label": "grocery stores online or in-store"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "12 months of complimentary DashPass for new cardmembers (auto-renews at the annual rate afterward), plus 12 months each anniversary year after $10,000 in purchases",
+    "10% off one DoorDash convenience, grocery, alcohol, retail or DashMart order per month (up to $15) through March 31, 2027"
+   ],
+   "bestFor": "Heavy DoorDash users who want 4% on orders and 3% at restaurants with no annual fee",
+   "tips": [
+    "The 4% applies to every type of DoorDash or Caviar order, including restaurants, groceries, pet supplies and retail, with no cap",
+    "Dining earns 3% only when purchased directly from the restaurant; the same restaurant through DoorDash earns 4%",
+    "Grocery stores earn 2% whether you shop online or in person; DoorDash grocery orders earn 4%",
+    "Rewards post as points worth 1 cent each and can be redeemed for cash, gift cards or DoorDash orders",
+    "Cell phone protection applies when you pay your monthly phone bill with the card"
+   ],
+   "watchOut": [
+    "DashPass subscription fees charged to the card do not earn the 4% rate",
+    "The free DashPass auto-renews at the annual rate unless you cancel or spend $10,000 in the anniversary year",
+    "Purchases through third-party payment accounts or digital wallets may not earn category bonuses if the merchant code does not carry over",
+    "Rental car coverage is secondary to your own auto insurance",
+    "Purchase protection covers 120 days up to $500 per claim"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/cash-back-credit-cards/doordash",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/doordash-rewards-card/",
+    "https://www.nerdwallet.com/reviews/credit-cards/doordash-rewards"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Purchase protection ($500 per claim), extended warranty, secondary rental coverage and trip cancellation ($1,500 per person) come from Upgraded Points (July 2026); the Chase page confirms cell phone protection but lists no other protection details",
+    "Caviar orders also earn 4% but have no merchant id; they are folded into the doordash rule label"
+   ],
+   "color": "#1E4C85"
+  },
+  {
+   "id": "chase-ihg-one-rewards",
+   "name": "IHG One Rewards",
+   "issuer": "Chase",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "ihg-one",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "ihg",
+     "rate": 5
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3
+    },
+    {
+     "category": "utilities",
+     "rate": 3,
+     "until": "2026-12-31",
+     "afterRate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 3,
+     "until": "2026-12-31",
+     "afterRate": 2,
+     "label": "internet, cable and phone services"
+    },
+    {
+     "category": "streaming",
+     "rate": 3,
+     "until": "2026-12-31",
+     "afterRate": 2,
+     "label": "select streaming services"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Automatic Silver Elite status and 5 Elite Night Credits each year",
+    "Gold Elite status and 10,000 bonus points after $15,000 in purchases in a calendar year",
+    "Fourth night free on award stays of 4 or more nights (from January 1, 2027 this requires $5,000 in purchases in the calendar year)",
+    "30% off IHG points purchases made with the card",
+    "12 months of DashPass (activate by Dec 31, 2027) and 3 months of Instacart+ with a $10 monthly Instacart credit"
+   ],
+   "bestFor": "A no-fee card for IHG stays with 3x on dining, gas and groceries and 2x on everything else",
+   "tips": [
+    "This is the former IHG One Rewards Traveler card, renamed in the October 1, 2026 refresh, which also added grocery stores as a 3x category",
+    "IHG stays earn 5x from the card plus up to 10x as a member and 2x for Silver Elite, up to 17x total",
+    "Utilities, internet, cable, phone and select streaming earn 3x only on purchases that post by December 31, 2026, then 2x",
+    "IHG points are typically worth about half a cent each, so 3x is roughly 1.5% back and the 2x base is about 1%",
+    "Dining includes takeout and eligible delivery services"
+   ],
+   "watchOut": [
+    "There is no anniversary free night on this card",
+    "A merchant delay that posts a utility or streaming purchase after December 31, 2026 means it earns 2x instead of 3x",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item",
+    "No cell phone protection and no trip delay coverage"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/traveler",
+   "sourceUrls": [
+    "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/one-rewards",
+    "https://www.chase.com/personal/credit-cards/ihg/traveler/traveler-protection",
+    "https://media.chase.com/news/ihg-premier-select-card-portfolio-updates",
+    "https://frequentmiler.com/all-the-existing-ihg-credit-cards-have-been-refreshed-here-are-the-changes/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Protections come from Chase's IHG Traveler protection page (trip cancellation up to $5,000 per traveler, secondary rental coverage, $500 purchase protection, extended warranty); the main product page lists no details",
+    "Network is Mastercard per Chase's IHG press releases (World Mastercard benefits); note the existing chase.json entry for IHG Premier lists Visa, which looks wrong",
+    "Internet, cable and phone services are mapped to the phone category"
+   ],
+   "color": "#214973"
+  },
+  {
    "id": "chase-ihg-one-rewards-premier",
    "name": "IHG One Rewards Premier",
    "issuer": "Chase",
-   "network": "Visa",
+   "network": "Mastercard",
    "type": "personal",
    "program": "ihg-one",
    "annualFee": 150,
@@ -1541,6 +2567,230 @@
    "color": "#4B2E83"
   },
   {
+   "id": "chase-iberia-visa-signature",
+   "name": "Iberia",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "british-airways-avios",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "iberia",
+     "rate": 3
+    },
+    {
+     "merchant": "british-airways",
+     "rate": 3
+    },
+    {
+     "merchant": "aer-lingus",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true
+   },
+   "credits": [
+    "$1,000 discount voucher toward two tickets on the same Iberia flight after $30,000 in purchases in a calendar year (redeem within 12 months at iberia.com/Chase10)",
+    "10% off Iberia airfare booked through iberia.com/Chase10 (fare only, up to nine passengers, one discount per roundtrip)",
+    "2,500 bonus Avios each account anniversary year",
+    "12 months of DashPass (activate by Dec 31, 2027) plus $10 off one non-restaurant DoorDash order each quarter"
+   ],
+   "bestFor": "Flyers who use Iberia to Spain and beyond and can reach the $30,000 voucher threshold",
+   "tips": [
+    "The 3x rate applies to flights bought directly from Iberia, British Airways, Aer Lingus or LEVEL",
+    "Hotels earn 2x only when booked directly with the hotel",
+    "Avios post to Iberia Club and can be moved to British Airways or Aer Lingus at 1:1",
+    "Avios earned with this card do not count toward Iberia Club elite tier progress",
+    "Avios are typically worth about 1.5 cents each"
+   ],
+   "watchOut": [
+    "The $1,000 voucher is valid only on Iberia-operated flights, has no cash value, and taxes and fees apply to the full ticket value",
+    "Avios expire after 36 months with no program activity",
+    "Purchase protection covers 120 days up to $500 per item",
+    "No cell phone protection; rental car, trip cancellation and trip delay coverage are not listed on the Chase page"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/iberia",
+   "sourceUrls": [],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Rental car collision coverage is not listed on the Chase page, so rentalCarCDW is omitted; the sibling British Airways and Aer Lingus cards have secondary coverage and this card very likely matches",
+    "Purchase protection ($500), extended warranty, baggage delay and lost luggage are confirmed on the Chase page"
+   ],
+   "color": "#265069"
+  },
+  {
+   "id": "chase-instacart-mastercard",
+   "name": "Instacart Mastercard",
+   "issuer": "Chase",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "instacart",
+     "rate": 5,
+     "cap": 6000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "portal-travel",
+     "rate": 5,
+     "label": "Chase Travel"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "streaming",
+     "rate": 2,
+     "label": "select streaming services"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "$50 Instacart credit loaded to your Instacart account on approval"
+   ],
+   "bestFor": "Frequent Instacart shoppers who want 5% on grocery delivery with no annual fee",
+   "tips": [
+    "The 5% Instacart rate covers purchases on Instacart.com and the app, including Instacart+ membership fees, on the first $6,000 per year, then 1%",
+    "Chase defines the cap year as account opening through the first December statement, then each 12 billing cycles after a December statement",
+    "Travel booked through Chase Travel earns 5%; travel booked directly with airlines or hotels earns 1%",
+    "Rewards post as points worth 1 cent each and can be redeemed for cash back with no minimum, or used to pay for Instacart orders",
+    "Restaurants include takeout and eligible delivery services and earn 2%"
+   ],
+   "watchOut": [
+    "Restaurant orders placed on Instacart but powered by Uber Eats earn 2%, not 5%",
+    "Points cannot be used for Instacart+ membership, Instacart gift cards, alcohol or prescriptions",
+    "The complimentary year of Instacart+ that came with the card at launch is no longer shown on Chase's page; only the $50 credit is listed",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per claim; no cell phone protection"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/cash-back-credit-cards/instacart",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/reviews/instacart-mastercard",
+    "https://thepointsguy.com/guide/instacart-mastercard-review",
+    "https://www.cardrates.com/advice/instacart-credit-card-review/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "medium",
+   "unsure": [
+    "Protections (purchase protection $500 per claim, extended warranty, secondary U.S. rental coverage, baggage delay) come from The Points Guy (June 2026), NerdWallet and CardRates because the Chase page does not list them",
+    "The Chase page's fine print still shows an older uncapped 5% Instacart rate that ended April 29, 2025; the capped $6,000 version is current"
+   ],
+   "color": "#1D4272"
+  },
+  {
+   "id": "chase-marriott-bonvoy-bold",
+   "name": "Marriott Bonvoy Bold",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "marriott-bonvoy",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "marriott",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 2,
+     "label": "internet, cable and phone services"
+    },
+    {
+     "category": "streaming",
+     "rate": 2,
+     "label": "select streaming services"
+    },
+    {
+     "merchant": "uber",
+     "rate": 2,
+     "label": "rideshare (taxicabs and limousines merchant category)"
+    },
+    {
+     "merchant": "lyft",
+     "rate": 2,
+     "label": "rideshare (taxicabs and limousines merchant category)"
+    },
+    {
+     "merchant": "doordash",
+     "rate": 2,
+     "label": "select food delivery ordered directly from DoorDash, Caviar, Uber Eats, Postmates, Grubhub, Seamless or Delivery.com"
+    },
+    {
+     "merchant": "uber-eats",
+     "rate": 2,
+     "label": "select food delivery ordered directly from DoorDash, Caviar, Uber Eats, Postmates, Grubhub, Seamless or Delivery.com"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true
+   },
+   "credits": [
+    "Automatic Silver Elite status and 5 Elite Night Credits each year",
+    "Pay Yourself Back: redeem points as statement credits against airline tickets bought directly from airlines and purchases at Marriott hotels, up to $750 per year (12,500 points per $100)",
+    "12 months of DashPass (activate by Dec 31, 2027) plus $10 off one non-restaurant DoorDash order each quarter"
+   ],
+   "bestFor": "A no-fee way to earn Marriott points with 2x on groceries, streaming, phone bills, rideshare and food delivery",
+   "tips": [
+    "Marriott stays earn 3x from the card plus the 10 base points per dollar Marriott gives members (11 with Silver Elite), so up to 14x total at most brands",
+    "Rideshare is defined by Chase as the taxicabs and limousines merchant category, which covers Uber, Lyft and taxis but not parking, tolls or trains",
+    "Food delivery earns 2x only when ordered directly through the DoorDash, Caviar, Uber Eats, Postmates, Grubhub, Seamless or Delivery.com app or website",
+    "There is no general restaurant category; dining at a restaurant earns 1x",
+    "Bonvoy points are worth under a cent each, so 2x here is roughly 1.5% back"
+   ],
+   "watchOut": [
+    "Points expire after 24 months with no qualifying activity, and closing the card forfeits points unless there is other activity within 24 months",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item",
+    "No cell phone protection and no trip cancellation coverage listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy-bold",
+   "sourceUrls": [
+    "https://marriott.chase.com/bold/benefits",
+    "https://marriott.chase.com/bold/earn-redeem"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Rideshare is represented with merchant rules for uber and lyft because Chase defines the category as the taxicabs and limousines merchant code; taxis and limousines also qualify but have no merchant id",
+    "Select food delivery is represented with merchant rules for doordash and uber-eats; Caviar, Postmates, Grubhub, Seamless and Delivery.com also qualify but have no merchant id",
+    "Internet, cable and phone services are mapped to the phone category"
+   ],
+   "color": "#1D3968"
+  },
+  {
    "id": "chase-marriott-bonvoy-boundless",
    "name": "Marriott Bonvoy Boundless",
    "issuer": "Chase",
@@ -1657,6 +2907,71 @@
     }
    ],
    "color": "#7A1F3D"
+  },
+  {
+   "id": "chase-marriott-bonvoy-bountiful",
+   "name": "Marriott Bonvoy Bountiful",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "marriott-bonvoy",
+   "annualFee": 250,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "marriott",
+     "rate": 6
+    },
+    {
+     "category": "groceries",
+     "rate": 4,
+     "cap": 15000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 4,
+     "cap": 15000,
+     "capPeriod": "year"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true
+   },
+   "credits": [
+    "Free Night Award (up to 50,000 points, top up with up to 25,000 points) after $15,000 in purchases in a calendar year",
+    "Automatic Gold Elite status and 15 Elite Night Credits each year",
+    "1,000 bonus points per eligible paid stay booked directly with Marriott and paid with the card",
+    "Free premium Wi-Fi at participating hotels",
+    "12 months of DashPass (activate by Dec 31, 2027) plus $10 off one non-restaurant DoorDash order each quarter"
+   ],
+   "bestFor": "Marriott loyalists who want Gold Elite status and 4x on groceries and dining",
+   "tips": [
+    "Grocery stores and dining share one $15,000 cap per year at 4x, then 2x",
+    "Chase defines the cap year as account opening through the first December statement, then each 12 billing cycles after a December statement",
+    "Marriott stays earn 6x from the card plus the points Marriott gives members, up to 18.5x total with Gold Elite at most brands",
+    "The free night is not automatic each anniversary; it requires $15,000 in purchases in a calendar year",
+    "The 2x base rate is roughly 1.5% back given Bonvoy point values"
+   ],
+   "watchOut": [
+    "The free night award expires 12 months after issue and cannot be combined with cash",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item",
+    "No cell phone protection and no trip cancellation coverage listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/bountiful",
+   "sourceUrls": [
+    "https://marriott.chase.com/bountiful/benefits",
+    "https://marriott.chase.com/bountiful/earn-redeem"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#23466C"
   },
   {
    "id": "chase-prime-visa",
@@ -1822,6 +3137,78 @@
    "color": "#2D6B8F"
   },
   {
+   "id": "chase-southwest-rapid-rewards-premier",
+   "name": "Southwest Rapid Rewards Premier",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "southwest-rr",
+   "annualFee": 149,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "southwest",
+     "rate": 3
+    },
+    {
+     "merchant": "lyft",
+     "rate": 3,
+     "until": "2027-12-31"
+    },
+    {
+     "category": "groceries",
+     "rate": 2,
+     "cap": 8000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 2,
+     "cap": 8000,
+     "capPeriod": "year"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "6,000 bonus points each account anniversary year",
+    "15% off promo code each anniversary year for a Southwest flight (excludes Basic fares)",
+    "First checked bag free and Group 5 boarding for the cardmember and up to 8 passengers on the same reservation",
+    "Preferred seat selection within 48 hours of departure when available",
+    "25% back on Southwest inflight purchases as a statement credit",
+    "1,500 tier qualifying points per $5,000 spent and 10,000 Companion Pass qualifying points each year",
+    "12 months of DashPass (activate by Dec 31, 2027) and 3 months of Instacart+ with a $10 monthly Instacart credit"
+   ],
+   "bestFor": "Southwest flyers who want 3x on Southwest plus 2x on groceries and restaurants for a mid-level fee",
+   "tips": [
+    "Grocery stores and restaurants share one $8,000 cap per account anniversary year at 2x, then 1x",
+    "Southwest purchases include flights, inflight purchases, gift cards and Getaways by Southwest packages",
+    "Lyft rides, bike and scooter rides and Lyft subscriptions earn 3x total through December 31, 2027",
+    "Rapid Rewards points do not expire and are worth roughly 1.3 to 1.5 cents each on Southwest flights"
+   ],
+   "watchOut": [
+    "Gas stations are not a bonus category on this card (the Plus and Priority cards have gas instead of or alongside groceries)",
+    "Southwest Cruises, Charters and Cargo do not count as Southwest purchases",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "Purchase protection covers 120 days up to $500 per item; no trip cancellation or trip delay coverage is listed"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/southwest/premier",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/article/credit-cards/southwest-cards-rev-up-bonuses-and-ongoing-rewards",
+    "https://www.nerdwallet.com/article/travel/does-my-southwest-credit-card-have-car-rental-insurance"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Rental car coverage (secondary in the U.S.) is confirmed by NerdWallet rather than the Chase product page, which does not list it"
+   ],
+   "color": "#245675"
+  },
+  {
    "id": "chase-southwest-rapid-rewards-priority",
    "name": "Southwest Rapid Rewards Priority",
    "issuer": "Chase",
@@ -1976,6 +3363,91 @@
     }
    ],
    "color": "#1E4D8A"
+  },
+  {
+   "id": "chase-united-club",
+   "name": "United Club",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "united-miles",
+   "annualFee": 695,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "united",
+     "rate": 5
+    },
+    {
+     "merchant": "renowned-hotels",
+     "rate": 5,
+     "label": "prepaid stays booked through Renowned Hotels and Resorts for United Cardmembers"
+    },
+    {
+     "category": "travel",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    },
+    {
+     "category": "rental-car",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "United Club membership for the cardmember plus one adult guest and dependent children under 18; All Access membership (Star Alliance lounges, two guests) after Premier Gold status or $50,000 in purchases in a calendar year",
+    "First and second checked bags free for the cardmember and one companion on United-operated flights",
+    "Premier Access priority check-in, security, boarding and baggage handling",
+    "10,000-mile award flight discount after $20,000 in purchases in a calendar year, up to two per year",
+    "Up to $200 per year in statement credits for prepaid stays through Renowned Hotels and Resorts",
+    "Up to $150 per calendar year in rideshare credits ($12 per month January to November, $18 in December, opt-in required)",
+    "$50 TravelBank cash on each of the first two Avis or Budget rentals through MileagePlus Travel (up to $100 per year)",
+    "Up to $240 per calendar year in Instacart credits plus complimentary Instacart+ (through Dec 31, 2027)",
+    "Up to $200 per year in statement credits for JSX flights",
+    "1,500 Premier qualifying points each year plus 1 PQP per $15 spent (up to 28,000 PQP per year)",
+    "IHG One Rewards Platinum Elite status and Avis President's Club",
+    "Up to $120 Global Entry, TSA PreCheck or NEXUS credit every four years",
+    "25% back on United inflight purchases and United Club premium drinks"
+   ],
+   "bestFor": "Frequent United flyers who want full United Club membership and 5x on United purchases",
+   "tips": [
+    "The card itself earns 5 miles per dollar on United purchases; the advertised 11x total on United flights adds the 6 miles per dollar MileagePlus members earn on the fare",
+    "All other travel earns 2x, including other airlines, hotels booked direct, cruises, rental cars, trains, transit, rideshare and tolls",
+    "Dining earns 2x including eligible delivery services",
+    "Prepaid stays through Renowned Hotels and Resorts earn 5x and count toward the $200 hotel credit",
+    "Rental car coverage is primary (up to $60,000) except for New York residents, for whom U.S. rentals are secondary"
+   ],
+   "watchOut": [
+    "Standard membership covers United-branded clubs only; Star Alliance partner lounges require All Access, earned with Premier Gold status or $50,000 in calendar-year spend",
+    "Basic Economy fares earn miles differently; United Cruises, MileagePlus X, DIRECTV and Merchandise Awards do not count as United purchases",
+    "Travel booked through FROSCH or Valerie Wilson Travel does not earn the 5x Renowned Hotels rate",
+    "No cell phone protection"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-club",
+   "sourceUrls": [
+    "https://onemileatatime.com/reviews/credit-cards/chase/united-club-card/",
+    "https://www.chase.com/personal/credit-cards/education/rewards-benefits/breaking-down-united-credit-card-program-updates",
+    "https://www.dailydrop.com/pages/united-card-overhaul"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#2C507D",
+   "finish": "black"
   },
   {
    "id": "chase-united-explorer",
@@ -2155,6 +3627,155 @@
     }
    ],
    "color": "#1C3F95"
+  },
+  {
+   "id": "chase-united-gateway",
+   "name": "United Gateway",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "united-miles",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "united",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "25% back as a statement credit on United inflight food, beverages and Wi-Fi and on United Club premium drinks",
+    "Two first checked bag certificates after $10,000 in purchases in a calendar year",
+    "Award flights cost at least 10% fewer miles (15% for Premier members) after $10,000 in purchases in a calendar year"
+   ],
+   "bestFor": "Occasional United flyers who want a no-fee card with no foreign transaction fees",
+   "tips": [
+    "The card itself earns 2 miles per dollar on United purchases; the advertised 5x total on United flights adds the 3 miles per dollar MileagePlus members earn on the fare",
+    "Local transit and commuting covers rideshare, taxis, train tickets, tolls and mass transit",
+    "Gas stations earn 2x with no cap",
+    "Spending $10,000 in a calendar year unlocks two checked bag certificates and discounted award pricing for the rest of that year and the next"
+   ],
+   "watchOut": [
+    "Dining is not a bonus category on this card",
+    "Basic Economy fares earn miles differently, and United tickets bought through some discount sites or third-party packages do not count as United purchases",
+    "United Cruises, MileagePlus X, DIRECTV and Merchandise Awards do not count as United purchases",
+    "Rental car coverage is secondary to your own auto insurance in the U.S.",
+    "No cell phone protection and no trip delay coverage"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-gateway",
+   "sourceUrls": [
+    "https://www.chase.com/personal/credit-cards/education/rewards-benefits/breaking-down-united-credit-card-program-updates",
+    "https://awardwallet.com/blog/united-card-portfolio-overhaul/"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [],
+   "color": "#223363"
+  },
+  {
+   "id": "chase-united-quest",
+   "name": "United Quest",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "united-miles",
+   "annualFee": 350,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "renowned-hotels",
+     "rate": 5,
+     "label": "prepaid stays booked through Renowned Hotels and Resorts for United Cardmembers"
+    },
+    {
+     "merchant": "united",
+     "rate": 4
+    },
+    {
+     "category": "travel",
+     "rate": 2
+    },
+    {
+     "category": "transit",
+     "rate": 2
+    },
+    {
+     "category": "rental-car",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "streaming",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "primary",
+    "tripDelay": true
+   },
+   "credits": [
+    "$200 United TravelBank cash after account opening and each anniversary",
+    "10,000-mile award flight discount each anniversary, plus another after $20,000 in purchases in a calendar year",
+    "First and second checked bags free for the cardmember and one companion on United-operated flights",
+    "Group 2 priority boarding",
+    "Up to $150 per year in statement credits for prepaid stays through Renowned Hotels and Resorts",
+    "Up to $100 per calendar year in rideshare credits ($8 per month January to November, $12 in December, opt-in required)",
+    "$40 TravelBank cash on each of the first two Avis or Budget rentals booked through MileagePlus Travel (up to $80 per year)",
+    "Up to $180 per calendar year in Instacart credits plus 3 months of Instacart+ (through Dec 31, 2027)",
+    "Up to $150 per year in statement credits for JSX flights",
+    "Two global Economy Plus upgrades after $40,000 in purchases in a calendar year",
+    "1,000 Premier qualifying points each year plus 1 PQP per $20 spent (up to 18,000 PQP per year)",
+    "Up to $120 Global Entry, TSA PreCheck or NEXUS credit every four years",
+    "25% back on United inflight purchases and United Club premium drinks"
+   ],
+   "bestFor": "Regular United flyers who check bags and can use the TravelBank and partner credits",
+   "tips": [
+    "The card itself earns 4 miles per dollar on United purchases; the advertised 10x total on United flights adds the 6 miles per dollar MileagePlus members earn on the fare",
+    "All other travel earns 2x, including airfare on other airlines, hotels, cruises, rental cars, trains, taxis, rideshare and tolls",
+    "Dining includes takeout and eligible delivery services; select streaming services also earn 2x",
+    "Prepaid stays through Renowned Hotels and Resorts earn 5x and count toward the $150 hotel credit",
+    "Rental car coverage is primary (up to $60,000) except for New York residents, for whom U.S. rentals are secondary"
+   ],
+   "watchOut": [
+    "Basic Economy fares earn miles differently; United Cruises, MileagePlus X, DIRECTV and Merchandise Awards do not count as United purchases",
+    "Travel booked through FROSCH or Valerie Wilson Travel does not earn the 5x Renowned Hotels rate",
+    "Flights paid with Money + Miles do not qualify for the TravelBank credit or award discount benefits",
+    "No cell phone protection",
+    "Purchase protection covers 120 days up to $10,000 per item (90 days for New York residents)"
+   ],
+   "sourceUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-quest",
+   "sourceUrls": [
+    "https://www.chase.com/personal/credit-cards/education/rewards-benefits/breaking-down-united-credit-card-program-updates",
+    "https://awardwallet.com/blog/united-card-portfolio-overhaul/",
+    "https://www.dailydrop.com/pages/united-card-overhaul"
+   ],
+   "verified": "2026-10-28",
+   "confidence": "high",
+   "unsure": [
+    "Renowned Hotels and Resorts is a new merchant id (renowned-hotels); it is United's luxury hotel program booked through Chase Travel"
+   ],
+   "color": "#1E568A",
+   "finish": "metal"
   },
   {
    "id": "chase-world-of-hyatt",

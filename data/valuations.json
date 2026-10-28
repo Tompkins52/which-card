@@ -173,16 +173,16 @@
    "source": "TPG October 2026 valuation 1.5; NerdWallet Oct 2026: 1.1",
    "note": "Distance-based award chart with stopovers for 5,000 points; transfer 1:1 from Chase, Amex, Capital One or Bilt for Star Alliance partner business class."
   },
-  "verizon-dollars": {
-   "name": "Verizon Dollars (spend with Verizon)",
+  "apple-cash": {
+   "name": "Apple Cash daily cash",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
    "transfer": 1,
    "note": ""
   },
-  "synchrony-cashback": {
-   "name": "Cash back",
+  "verizon-dollars": {
+   "name": "Verizon Dollars (spend with Verizon)",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -197,8 +197,8 @@
    "transfer": 1,
    "note": ""
   },
-  "best-buy-rewards": {
-   "name": "My Best Buy rewards (Best Buy certificates)",
+  "amazon-points": {
+   "name": "Amazon rewards",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -213,16 +213,16 @@
    "transfer": 1,
    "note": ""
   },
-  "amazon-points": {
-   "name": "Amazon rewards",
+  "synchrony-cashback": {
+   "name": "Cash back",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
    "transfer": 1,
    "note": ""
   },
-  "discover-cashback": {
-   "name": "Discover cash back",
+  "best-buy-rewards": {
+   "name": "My Best Buy rewards (Best Buy certificates)",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -237,13 +237,29 @@
    "transfer": 1,
    "note": ""
   },
-  "apple-cash": {
-   "name": "Apple Cash daily cash",
+  "discover-cashback": {
+   "name": "Discover cash back",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
    "transfer": 1,
    "note": ""
+  },
+  "british-airways-avios": {
+   "name": "Avios (British Airways, Aer Lingus, Iberia)",
+   "unit": "points",
+   "cash": 0,
+   "travel": 1.5,
+   "transfer": 1.5,
+   "note": "Best on short-haul partner flights and off-peak British Airways awards; Avios move freely between the three programs."
+  },
+  "disney-rewards": {
+   "name": "Disney Rewards Dollars",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": "Worth $1 each only toward Disney purchases or as a statement credit against Disney, Disney+, Hulu and ESPN charges."
   },
   "bofa-points": {
    "name": "Bank of America points",
@@ -252,14 +268,6 @@
    "travel": 1,
    "transfer": 1,
    "note": "Worth 1 cent each as a statement credit (Travel Rewards points go against travel and dining purchases; Premium Rewards points can be cash)."
-  },
-  "disney-rewards": {
-   "name": "disney-rewards",
-   "unit": "points",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
   }
  }
 }

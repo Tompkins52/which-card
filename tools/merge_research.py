@@ -177,6 +177,10 @@ def main(src):
     for c in cards:
         if c['id'] in CLOSED:
             c['closed'] = True
+    programs.setdefault('british-airways-avios', {'name': 'Avios (British Airways, Aer Lingus, Iberia)', 'unit': 'points', 'cash': 0, 'travel': 1.5, 'transfer': 1.5,
+                                                  'note': 'Best on short-haul partner flights and off-peak British Airways awards; Avios move freely between the three programs.'})
+    programs.setdefault('disney-rewards', {'name': 'Disney Rewards Dollars', 'unit': 'percent', 'cash': 1, 'travel': 1, 'transfer': 1,
+                                           'note': 'Worth $1 each only toward Disney purchases or as a statement credit against Disney, Disney+, Hulu and ESPN charges.'})
     programs.setdefault('bofa-points', {'name': 'Bank of America points', 'unit': 'points', 'cash': 1, 'travel': 1, 'transfer': 1,
                                         'note': 'Worth 1 cent each as a statement credit (Travel Rewards points go against travel and dining purchases; Premium Rewards points can be cash).'})
     if 'capital-one-miles' in programs:
@@ -205,6 +209,8 @@ def main(src):
             c['finish'] = FINISHES[c['id']]
         if c['id'] == 'apple-card':
             c['color'] = '#E9ECEF'
+        if c['id'].startswith('chase-ihg'):
+            c['network'] = 'Mastercard'
         c.setdefault('verified', TODAY)
         c.setdefault('earn', [])
         c.setdefault('type', 'personal')

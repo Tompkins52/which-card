@@ -130,8 +130,9 @@
   }
 
   // Candidate earning rules for this card in this context.
-  function candidates(card, entry, cats, now, data) {
+  function candidates(card, entry, cats, now, data, ctx) {
     var list = [];
+    ctx = ctx || {};
     var q = quarterOf(now);
     (card.earn || []).forEach(function (r, idx) {
       var hit = false, label = '';
@@ -149,6 +150,9 @@
       if (!hit || excluded(r, cats)) return;
       list.push({ rate: rate, source: 'earn', label: label, cap: r.cap || 0, capPeriod: r.capPeriod || '', pool: r.capGroup || ('earn:' + idx), activation: !!r.activation, note: r.note || '' });
     });
+    if (card.largePurchase && card.largePurchase.minAmount && Number(ctx.amount) >= card.largePurchase.minAmount) {
+      list.push({ rate: card.largePurchase.rate, source: 'earn', label: 'purchases of $' + card.largePurchase.minAmount.toLocaleString() + ' or more', cap: 0, capPeriod: '', pool: 'large', activation: false, note: '' });
+    }
     if (card.choice) {
       var ch = card.choice;
       var picks = entry.choices || [];
@@ -196,7 +200,7 @@
       if (!here) { accepted = false; warnings.push('Store card: works only at ' + (merchantById(data, card.onlyAt[0]) || { name: card.onlyAt[0] }).name); }
     }
 
-    var list = candidates(card, entry, cats, now, data);
+    var list = candidates(card, entry, cats, now, data, ctx);
     var best = null;
     list.forEach(function (c) { if (!best || c.rate > best.rate) best = c; });
 
