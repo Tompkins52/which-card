@@ -2,6 +2,25 @@
  "version": "2026-10-28",
  "verified": "2026-10-28",
  "notes": [
+  "Issuer pages first: americanexpress.com product and benefit policy pages, delta.com, hilton.com, marriott.com, cards.barclaycardus.com, wyndhamrewardscreditcard.com and emirates.com rendered; many Barclays product pages (Earner Plus, Carnival Rewards, Old Navy, Gap, Priceline, Breeze, Hawaiian landing pages), lowes.com, usbank.com, priceline.com, flyfrontier.com, flybreeze.com, boh.com and aa.com would not render. Gaps were filled from NerdWallet, The Points Guy, Doctor of Credit, Upgraded Points, Frequent Miler, AwardWallet, Bankrate, Danny the Deal Guru, Miles to Memories, View from the Wing, Your Mileage May Vary, Platinum Flyer, The Point Calculator, CardStack, Rivo, Kudos, Nav, FinanceBuzz, HelloSafe and press releases on PR Newswire, Business Wire, Synchrony, Gap Inc., JetBlue and Amazon, each named in the card's sourceUrls.",
+  "New merchant ids used: hawaiian-airlines (Hawaiian card 3X), frontier-airlines (flyfrontier.com 5X), wyndham (Hotels by Wyndham), carnival (Carnival Cruise Line purchases), old-navy and gap (Gap Inc. brands; Banana Republic and Athleta purchases also earn the same 25 points per dollar), priceline (Priceline bookings), emirates (Emirates purchases), breeze-airways (Breeze bundles). Existing ids reused: delta, hilton, marriott, amazon, whole-foods, lowes, jetblue, american-airlines, alaska-airlines.",
+  "New program ids: frontier-miles (Frontier Miles, about 1.0 cent per mile on award flights, no cash option, no transfer partners); wyndham-rewards (Wyndham Rewards points, about 0.7 cents per point on free nights per NerdWallet October 2026, cash option only through Points Payback on fee cards at about 0.33 cents); carnival-rewards (Carnival Rewards points, 1.0 cent each toward Carnival fares and onboard purchases, no cash option; replaced FunPoints 1 to 1 in September 2026, so the suggested carnival-funpoints id is not needed); gap-encore-points (Gap Inc. Encore points, 0.2 cents each, 500 points = $1 redeemable only at Gap Inc. brands or the Encore Market, no cash option; replaced Navyist Rewards and Good Rewards in February 2026); priceline-points (Priceline VIP Rewards points, 1.0 cent each as statement credits against Priceline purchases, gift cards or merchandise, so effectively cash with a 1.0 cent cash option); emirates-skywards (Emirates Skywards Miles, about 1.0 cent per mile per NerdWallet October 2026, no cash option); breeze-points (BreezePoints, fixed 1.0 cent toward Breeze fares and fees, no cash option). The Hawaiian card uses the existing alaska-miles id because HawaiianMiles merged into Alaska Atmos Rewards on October 1, 2025 (TPG October 2026: 1.55 cents, NerdWallet 1.4 cents); hawaiian-miles is not needed.",
+  "Existing program valuations for reference: delta-skymiles 1.2 cents, hilton-honors 0.4, marriott-bonvoy 0.75, jetblue-trueblue 1.35 to 1.4, american-aadvantage 1.45 to 1.7 (TPG and NerdWallet October 2026).",
+  "Amex business category mapping: select-merchants stands for U.S. shipping providers, U.S. advertising in select media, U.S. office supply stores and single purchases of $5,000 or more; phone stands for wireless telephone services purchased directly from U.S. providers; transit stands for Amex's transit category (taxicabs, rideshare, trains, tolls, parking). Delta Gold Business has two separate $50,000 caps (shipping, advertising); Delta Platinum Business has one $100,000 cap shared across transit, shipping and large purchases. Labels on earn rules carry the issuer wording.",
+  "Amex base caps the schema cannot model: Hilton Honors Business base 5 drops to 3 after $100,000 of purchases per calendar year; Delta Reserve Business base rises to 1.5 on all purchases after $150,000 in a calendar year.",
+  "Amex Plum Card: discontinued for new applicants in April 2026 (Doctor of Credit, April 10, 2026) when the Graphite Business Cash Unlimited launched. It earns no points or cash back; base is 0 and the 1.5% early pay discount is described in tips. Included for existing holders with medium confidence.",
+  "Amazon Business Prime American Express Card: closed to new applicants in spring 2026; Amazon moved both business cards to U.S. Bank (Mastercard) on May 13, 2026 for new applicants and replaced Amex accounts from August 14, 2026. The Amex entry records the legacy Amex earning (5% or 90-day terms on Amazon, AWS and Whole Foods up to $120,000, 2% dining, gas and wireless) with program amazon-points at 1 cent per point. The U.S. Bank Prime Business Card terms (5% Amazon up to $150,000, 5% U.S. Bank Travel Center, 2% on the top three eligible categories each cycle up to $150,000, 1% elsewhere, no fees) are described in tips so the merge step can add a us-bank card if wanted.",
+  "Lowe's Business Rewards Card from American Express: Amex still hosts the product and member pages, but Nav reports it stopped taking applications in April 2026, the same month Synchrony launched the MyLowe's Pro Rewards American Express Card (April 30, 2026, Amex network, Synchrony issuer, no annual fee, 2 points per dollar at dining, office supply and wireless merchants, 1 point elsewhere, Lowe's points by Pro status tier). Included for existing holders with medium confidence; program is cashback because Lowe's Business Rewards points redeem at 1 cent as statement credits.",
+  "Barclays AAdvantage Aviator Red, Silver and Business: closed to new applicants October 1, 2025 and transferred to Citi on April 24, 2026 (Red to Citi AAdvantage Platinum Select, Silver to Citi AAdvantage Globe, Business to Citi AAdvantage Business World Elite, Blue to Citi AAdvantage Gold, base Aviator to AAdvantage MileUp). Barclays no longer issues or services any AAdvantage card. The three entries are kept as historical records with their pre-conversion earning so a tool can explain the conversion; the merge step may drop them or point holders at the Citi entries. Aviator Business is low confidence because no issuer page could be read.",
+  "Hawaiian Airlines World Elite Mastercard: Barclays removed it from its own site on October 1, 2025 but still issues it as the Hawaiian Airlines Bank of Hawaii World Elite Mastercard through Bank of Hawaii and inflight applications (Frequent Miler July 2026, Your Mileage May Vary October 1, 2026). It now earns Alaska Atmos Rewards points. Alaska and Bank of America announced on April 20, 2026 that Bank of America will become the sole Atmos card issuer, with no conversion date or target card published. A Hawaiian Airlines Business World Elite Mastercard ($99) also exists and was not modeled.",
+  "Wyndham: Barclays and Wyndham refreshed the lineup on June 17, 2026 (Earner $0 with 3X dining, groceries, gas and EV; Earner Plus $95 with 4X dining, groceries and travel; Earner Business $149 with 5X gas, EV, marketing, advertising, office supply and shipping and a 20% award discount; new Earner Premier $395 with 8X Wyndham, 4X dining, groceries and travel, 25% award discount, 30,000 anniversary points and about $400 in credits). Existing holders keep the old fees and earning until they upgrade; both versions are described in each card's watchOut. The Earner Premier was outside the assignment and is not modeled. Barclays' own product pages still show the pre-refresh wording. Travel on the Plus is expanded into travel, gas, ev-charging, transit and rental-car rules at the same rate for matching; hotels other than Wyndham earn 1X.",
+  "Carnival: the Carnival World Mastercard (2X Carnival, 1X elsewhere, FunPoints) was replaced on September 1, 2026 by the Carnival Rewards Mastercard (3X Carnival, 2X restaurants and grocery stores, 1X elsewhere, 1 Status Qualifying Star per dollar); existing accounts migrated in September 2026 and FunPoints converted 1 to 1. The entry models the new card under id barclays-carnival-rewards-mastercard.",
+  "Old Navy and Gap: Gap Inc. replaced Navyist Rewards and Good Rewards with Encore on February 24, 2026. The Barclays cards are now the Old Navy Encore Mastercard and Gap Encore Mastercard (Barclays' list still says Gap Good Rewards Mastercard; the Athleta Rewards Mastercard and Banana Republic card are the same product). Store-only Encore Credit Cards earn only at Gap Inc. brands and are described in tips rather than modeled. Rates are recorded in points (25, 15, 5 per dollar at 0.2 cents each) so base is 5, not 1; a tool should convert with the program value. World and World Elite accounts earn 10 points per dollar on the base.",
+  "Priceline VIP Rewards Visa: still offered through Priceline (Frequent Miler shows a 20,000 point offer and an expired September 2026 offer) but absent from Barclays' public list; the grandfathered Priceline Rewards Visa was converted into it on July 2, 2025. Medium confidence.",
+  "Breeze Easy Visa exists and is on Barclays' card list ($89, Visa Signature); modeled with program breeze-points. Emirates Skywards Rewards World Elite Mastercard ($99, same earning, Silver status) exists alongside the Premium and is described in the Premium entry's tips rather than modeled.",
+  "Barclays protections: Barclays removed extended warranty, purchase protection, price protection, return protection and trip delay from all its cards on November 1, 2019, so purchaseProtection, extendedWarranty and tripDelay are false on every Barclays card. Cell phone protection and secondary rental car coverage are confirmed for the JetBlue Plus (World Elite guide via HelloSafe and Upgraded Points) and set on the Premier and Aviator World Elite cards; where no source names them for a card the keys are omitted. Barclays does not publish card-specific guides to benefits on its public pages.",
+  "Non-schema fields used: label (issuer wording on earn rules) and unsure. Duplicate select-merchants rules on one card (Delta Gold Business) carry separate caps and are distinguished by label.",
+  "Welcome offers in tips are current as of October 28, 2026 and change often: Delta business offers end November 4, 2026; Hilton Business ends January 13, 2027; Marriott Business ends November 4, 2026; Emirates runs through January 5, 2027.",
   "Membership Rewards values: statement credit cash-out is about 0.6 cents per point; flights booked through Amex Travel redeem at 1 cent per point; other Amex Travel bookings run about 0.7 cents; transfer partners (airline and hotel programs) are where the value is, with typical estimates of 1.3 to 2 cents per point depending on the redemption",
   "Blue Cash cards and Cash Magnet pay cash back as Reward Dollars; 1 Reward Dollar equals $1 as a statement credit or at Amazon checkout, so cash back rates are plain percentages",
   "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com; the warehouse category never applies to these cards at Costco",
@@ -3921,6 +3940,79 @@
    "color": "#2A2A5A"
   },
   {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-amazon-business-prime",
+   "name": "Amazon Business Prime American Express",
+   "type": "business",
+   "program": "amazon-points",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "amazon",
+     "rate": 5,
+     "cap": 120000,
+     "capPeriod": "year",
+     "label": "U.S. purchases at Amazon Business, Amazon.com, AWS and Whole Foods Market (shared cap), or choose 90-day terms instead of 5%"
+    },
+    {
+     "merchant": "whole-foods",
+     "rate": 5,
+     "cap": 120000,
+     "capPeriod": "year"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 2,
+     "label": "wireless telephone services purchased directly from U.S. providers"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Legacy holders only; the product moved to U.S. Bank in August 2026",
+   "tips": [
+    "Closed to new applicants in spring 2026; American Express accounts were replaced by U.S. Bank Prime Business Mastercards starting August 14, 2026, with rewards balances carried over",
+    "On the Amex version, each eligible Amazon purchase could earn 5% back or take 90-day no-interest terms, chosen per purchase at checkout or in card settings; the 5% applied to the first $120,000 per calendar year, then 1%",
+    "Rewards were Amazon points worth 1 cent each, usable at Amazon checkout or as a statement credit",
+    "The U.S. Bank replacement earns 5% on Amazon, AWS and Whole Foods up to $150,000 per year, 5% on U.S. Bank Travel Center bookings, 2% on the top three eligible categories each cycle up to $150,000, and 1% elsewhere, with no annual or foreign transaction fee"
+   ],
+   "watchOut": [
+    "Choosing 90-day terms on a purchase forfeits the 5% back on that purchase",
+    "Requires an eligible Prime or Business Prime membership; without one the Amazon Business American Express Card earned 3% or 60-day terms",
+    "After the U.S. Bank conversion the card number, network (Mastercard) and benefits changed; Amex-specific protections do not carry over",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://creditcard.americanexpress.com/amazon/business-prime-card/",
+   "sourceUrls": [
+    "https://press.aboutamazon.com/2026/5/amazons-new-prime-business-and-amazon-business-credit-cards-powered-by-u-s-bank-and-mastercard-are-now-available-with-enhanced-rewards-and-flexible-financing",
+    "https://www.nerdwallet.com/reviews/small-business/amazon-business-prime-amex",
+    "https://upgradedpoints.com/news/amazon-business-amex-us-bank-transition/",
+    "https://www.doctorofcredit.com/amazon-business-card-changes-issuers-from-american-express-to-u-s-bank/",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/purchase-protection-terms.html"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Whether any American Express Amazon Business Prime accounts remain unconverted as of October 28, 2026; the merge step may prefer to model the U.S. Bank Prime Business Card instead"
+   ],
+   "color": "#25557E"
+  },
+  {
    "id": "amex-blue-business-cash",
    "name": "Amex Blue Business Cash",
    "issuer": "American Express",
@@ -4159,6 +4251,465 @@
    ],
    "color": "#7E8A96",
    "finish": "silver"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-delta-skymiles-gold-business",
+   "name": "Delta SkyMiles Gold Business American Express",
+   "type": "business",
+   "program": "delta-skymiles",
+   "annualFee": 150,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "delta",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "cap": 50000,
+     "capPeriod": "year",
+     "label": "U.S. shipping providers (separate $50,000 cap)"
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "cap": 50000,
+     "capPeriod": "year",
+     "label": "U.S. advertising in select media: online, TV and radio (separate $50,000 cap)"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "$200 Delta flight credit after $10,000 in purchases in a calendar year",
+    "Up to $150 per year Delta Stays credit on prepaid hotels or vacation rentals booked on delta.com",
+    "Up to $10 per month ($120 per year) U.S. rideshare credit with select providers, available after the first card renewal, enrollment required",
+    "20% back as a statement credit on Delta in-flight purchases"
+   ],
+   "bestFor": "Small businesses that fly Delta and spend on shipping or online advertising",
+   "tips": [
+    "2X at restaurants worldwide plus U.S. takeout and delivery, 2X directly with Delta, and 2X at U.S. shipping providers and U.S. advertising providers up to $50,000 per category per year",
+    "First checked bag free worldwide and second bag free on domestic Delta flights, plus Zone 5 priority boarding",
+    "15% off award flights booked with miles on delta.com and the Fly Delta app",
+    "The $150 fee is $0 the first year on the current offer",
+    "Employee cards earn miles toward the same account and the shipping and advertising caps"
+   ],
+   "watchOut": [
+    "Unlike the personal Gold, this card earns only 1X at supermarkets",
+    "Shipping costs added to a retail order, moving services and trash removal are not shipping providers; direct mail and lead generation are not advertising",
+    "The rideshare credit starts only after your first card anniversary",
+    "No trip delay insurance, no cell phone protection and no lounge access",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/delta-gold-card-skymiles-credit-card",
+   "sourceUrls": [
+    "https://www.delta.com/us/en/skymiles/airline-credit-cards/american-express-business-cards",
+    "https://www.americanexpress.com/us/content/rewards-info/business.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/cell-phone-protection.html"
+   ],
+   "confidence": "high",
+   "color": "#284B77"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-delta-skymiles-platinum-business",
+   "name": "Delta SkyMiles Platinum Business American Express",
+   "type": "business",
+   "program": "delta-skymiles",
+   "annualFee": 350,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "delta",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 3
+    },
+    {
+     "category": "transit",
+     "rate": 1.5,
+     "cap": 100000,
+     "capPeriod": "year",
+     "label": "transit including taxicabs and rideshare (shared $100,000 cap)"
+    },
+    {
+     "category": "select-merchants",
+     "rate": 1.5,
+     "cap": 100000,
+     "capPeriod": "year",
+     "label": "U.S. shipping providers and single purchases of $5,000 or more (shared $100,000 cap)"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true
+   },
+   "credits": [
+    "Annual Delta Main cabin companion certificate after renewal for the U.S., Caribbean and Central America ($22 to $250 in taxes and fees)",
+    "Up to $200 per year Delta Stays credit on prepaid hotels or vacation rentals booked on delta.com",
+    "Up to $10 per month ($120 per year) U.S. rideshare credit with select providers, enrollment required",
+    "Up to $10 per month ($120 per year) at U.S. Resy restaurants, enrollment required",
+    "$120 Global Entry or up to $85 TSA PreCheck fee credit every 4 years",
+    "20% back as a statement credit on Delta in-flight purchases",
+    "$2,500 MQD Headstart each Medallion year plus $1 MQD per $20 spent"
+   ],
+   "bestFor": "Delta business travelers who want a companion certificate, hotel earning and MQD help",
+   "tips": [
+    "3X directly with Delta and 3X on purchases made directly with hotels",
+    "1.5X on transit, U.S. shipping and any single purchase of $5,000 or more, on up to $100,000 of combined purchases per year, then 1X",
+    "When a purchase fits two bonus categories only the higher rate applies",
+    "First checked bag free worldwide, second bag free on domestic Delta flights, Zone 5 boarding and Hertz Five Star status with enrollment",
+    "Trip delay pays up to $300 per trip after a 6 hour delay (2 claims per 12 months); cell phone protection covers up to $800 per claim with a $50 deductible"
+   ],
+   "watchOut": [
+    "No dining or supermarket bonus: restaurants earn 1X on this card, unlike the personal Platinum",
+    "Hotels booked through online travel agencies or in packages do not earn 3X; pay the hotel directly",
+    "No Sky Club access; lounge visits start with the Reserve Business",
+    "The companion certificate excludes Delta Basic fares and requires paying taxes and fees",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/delta-platinum-credit-card/",
+   "sourceUrls": [
+    "https://www.delta.com/us/en/skymiles/airline-credit-cards/american-express-business-cards",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/cell-phone-protection.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/trip-delay.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html"
+   ],
+   "confidence": "high",
+   "color": "#1A4C70"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-delta-skymiles-reserve-business",
+   "name": "Delta SkyMiles Reserve Business American Express",
+   "type": "business",
+   "program": "delta-skymiles",
+   "annualFee": 650,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "delta",
+     "rate": 3
+    },
+    {
+     "category": "transit",
+     "rate": 1.5,
+     "label": "transit including taxicabs and rideshare"
+    },
+    {
+     "category": "select-merchants",
+     "rate": 1.5,
+     "label": "U.S. shipping providers and U.S. office supply stores"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary",
+    "tripDelay": true,
+    "loungeAccess": true
+   },
+   "credits": [
+    "Annual companion certificate after renewal for Delta First, Comfort or Main cabin within the U.S., Caribbean and Central America ($22 to $250 in taxes and fees)",
+    "Up to $250 per year Delta Stays credit on prepaid hotels or vacation rentals booked on delta.com",
+    "Up to $10 per month ($120 per year) U.S. rideshare credit with select providers, enrollment required",
+    "Up to $20 per month ($240 per year) at U.S. Resy restaurants, enrollment required",
+    "$120 Global Entry or up to $85 TSA PreCheck fee credit every 4 years",
+    "20% back as a statement credit on Delta in-flight purchases",
+    "$2,500 MQD Headstart each Medallion year plus $1 MQD per $10 spent"
+   ],
+   "bestFor": "Heavy Delta flyers who want Sky Club access on a business card",
+   "tips": [
+    "3X directly with Delta; 1.5X on transit, U.S. shipping and U.S. office supply stores with no cap",
+    "After $150,000 in purchases in a calendar year every purchase earns 1.5X for the rest of that year",
+    "15 Delta Sky Club visits per Medallion year when flying Delta, unlimited after $75,000 in purchases in a calendar year, plus 4 one-time guest passes",
+    "Centurion Lounge, Sidecar and Escape Lounge access when flying Delta on a ticket bought with this card",
+    "Trip delay pays up to $500 per trip after 6 hours, trip cancellation covers up to $10,000 per trip, purchase protection covers up to $10,000 per item"
+   ],
+   "watchOut": [
+    "Weak everyday earning: dining, groceries and gas all earn 1X",
+    "Sky Club access is capped at 15 visits unless you spend $75,000 in a calendar year",
+    "Office supplies bought at pharmacies, supermarkets, warehouse clubs or superstores do not count as office supply stores",
+    "The companion certificate excludes Delta Basic fares and requires paying taxes and fees",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/delta-reserve-credit-card/",
+   "sourceUrls": [
+    "https://www.delta.com/us/en/skymiles/airline-credit-cards/american-express-business-cards",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/cell-phone-protection.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/trip-delay.html",
+    "https://www.americanexpress.com/us/content/rewards-info/business.html"
+   ],
+   "confidence": "high",
+   "color": "#243F60"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-hilton-honors-business",
+   "name": "Hilton Honors American Express Business",
+   "type": "business",
+   "program": "hilton-honors",
+   "annualFee": 195,
+   "fxFee": 0,
+   "base": 5,
+   "earn": [
+    {
+     "merchant": "hilton",
+     "rate": 12
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Up to $60 per quarter ($240 per year) on purchases made directly with Hilton hotels and resorts",
+    "Complimentary Hilton Honors Gold status; Diamond status after $40,000 in purchases in a calendar year",
+    "National Car Rental Emerald Club Executive status, enrollment required"
+   ],
+   "bestFor": "Businesses that want a high flat rate on all spending in Hilton points",
+   "tips": [
+    "12X on purchases made directly with Hilton; 5X on everything else up to $100,000 of purchases per calendar year, then 3X",
+    "The base of 5 drops to 3 after $100,000 in a calendar year; the schema has no base cap field, so this is noted here",
+    "The $60 quarterly credit works on room rates and incidentals paid directly to a Hilton property; unused amounts do not roll over",
+    "Gold status adds an 80% bonus on base points and a daily food and beverage credit or breakfast at many brands",
+    "Current welcome offer: 150,000 points plus a Free Night Reward after $8,000 in 6 months, through January 13, 2027"
+   ],
+   "watchOut": [
+    "No annual free night and no spend-based free night since the 2024 refresh; the only free night is in the welcome offer",
+    "Priority Pass lounge access was removed in 2024",
+    "Hilton points are worth about 0.4 cents each, so 5X is roughly 2% back in value",
+    "No trip delay insurance and no cell phone protection",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://creditcard.americanexpress.com/d/hilton-honors-american-express-business-credit-card/",
+   "sourceUrls": [
+    "https://www.hilton.com/en/hilton-honors/credit-cards/",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/purchase-protection-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/extended-warranty-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/trip-delay.html",
+    "https://thepointsguy.com/guide/credit-card-review-hilton-honors-american-express-business-card/"
+   ],
+   "confidence": "high",
+   "color": "#2B5E78"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-lowes-business-rewards",
+   "name": "Lowe's Business Rewards Card",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 0,
+   "fxFee": 2.7,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "lowes",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "phone",
+     "rate": 2,
+     "label": "wireless telephone services purchased directly from U.S. providers"
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "U.S. office supply stores"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "5% off eligible Lowe's purchases every day at checkout, not combinable with other discounts"
+   ],
+   "bestFor": "Existing holders who shop at Lowe's; new pros should look at the Synchrony MyLowe's Pro Rewards American Express Card",
+   "tips": [
+    "Closed to new applicants around April 2026 after Synchrony became Lowe's commercial co-brand issuer on April 30, 2026; existing Amex accounts still show the earning rules on the Amex member page",
+    "2% at Lowe's, U.S. restaurants, U.S. office supply stores and U.S. wireless providers, 1% elsewhere; cash back is paid as Lowe's Business Rewards points worth 1 cent for statement credits and most gift cards",
+    "The everyday 5% off is a checkout discount separate from the 2% earning and cannot be stacked with other Lowe's promotions",
+    "New accounts used to get 5% back at Lowe's for the first 6 months, then 2%"
+   ],
+   "watchOut": [
+    "2.7% foreign transaction fee",
+    "Points redeem only as statement credits or select gift cards; Amex gift cards pay less than 1 cent per point",
+    "The 5% discount excludes many items, services, gift cards and sale pricing",
+    "The replacement MyLowe's Pro Rewards American Express Card (Synchrony) earns MyLowe's Pro points by status tier at Lowe's, 2 points per dollar at dining, office supply and wireless merchants, and 1 point elsewhere",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://creditcard.americanexpress.com/d/lowes-business-rewards-card/",
+   "sourceUrls": [
+    "https://americanexpress.com/en-us/business/credit-cards/lowes-business-rewards-card/member",
+    "https://www.synchrony.com/contenthub/newsroom/synchrony-expands-partnership-with-lowes.html",
+    "https://synchrony.com/MLPRA-terms",
+    "https://www.nav.com/blog/lowes-business-card-review/",
+    "https://financebuzz.com/lowes-business-rewards-card-from-american-express-review",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/purchase-protection-terms.html"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Exact date applications closed (Nav says April 2026); whether existing Amex Lowe's accounts will be transferred to Synchrony; the 2.7% fx fee comes from FinanceBuzz, not an Amex page"
+   ],
+   "color": "#315C87"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-marriott-bonvoy-business",
+   "name": "Marriott Bonvoy Business American Express",
+   "type": "business",
+   "program": "marriott-bonvoy",
+   "annualFee": 125,
+   "fxFee": 0,
+   "base": 2,
+   "earn": [
+    {
+     "merchant": "marriott",
+     "rate": 6
+    },
+    {
+     "category": "dining",
+     "rate": 4
+    },
+    {
+     "category": "gas",
+     "rate": 4,
+     "excludes": [
+      "superstore",
+      "warehouse"
+     ]
+    },
+    {
+     "category": "phone",
+     "rate": 4,
+     "label": "wireless telephone services purchased directly from U.S. providers"
+    },
+    {
+     "category": "select-merchants",
+     "rate": 4,
+     "label": "U.S. shipping providers"
+    }
+   ],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Free Night Award (up to 35,000 points) every year after the card renewal month, plus a second one after $60,000 in purchases in a calendar year",
+    "Complimentary Marriott Bonvoy Gold Elite status and 15 Elite Night Credits per calendar year",
+    "7% off eligible bookings at the Amex Business Card Rate when booked directly with Marriott",
+    "Free premium in-room internet at participating hotels"
+   ],
+   "bestFor": "Marriott guests with gas, dining, wireless and shipping spend who want an annual free night",
+   "tips": [
+    "6X at hotels participating in Marriott Bonvoy; 4X at restaurants worldwide, U.S. gas stations, U.S. wireless providers and U.S. shipping; 2X on everything else, with no caps",
+    "The annual Free Night Award covers hotels up to 35,000 points and can be topped up with up to 15,000 of your own points",
+    "The 15 Elite Night Credits stack with credits from a personal Marriott card, up to 40 nights total",
+    "Baggage insurance covers carry-ons up to $1,250 and checked bags up to $500 when the fare is on the card"
+   ],
+   "watchOut": [
+    "Wireless purchases through authorized retailers, resellers, Google Fi, or bundled TV and internet plans do not earn 4X",
+    "Gas sold by supermarkets, superstores and warehouse clubs is not a U.S. gas station",
+    "No trip delay insurance and no cell phone protection on this card",
+    "Marriott points are worth about 0.75 cents each",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/amex-marriott-bonvoy-business-credit-card/65147/",
+   "sourceUrls": [
+    "https://www.marriott.com/credit-cards.mi",
+    "https://www.americanexpress.com/us/content/rewards-info/business.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/trip-delay.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/cell-phone-protection.html"
+   ],
+   "confidence": "high",
+   "color": "#295E89"
+  },
+  {
+   "issuer": "American Express",
+   "network": "American Express",
+   "verified": "2026-10-28",
+   "id": "amex-plum-card",
+   "name": "The Plum Card",
+   "type": "business",
+   "program": "cashback",
+   "annualFee": 250,
+   "fxFee": 0,
+   "base": 0,
+   "earn": [],
+   "benefits": {
+    "purchaseProtection": true,
+    "extendedWarranty": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [],
+   "bestFor": "Existing holders who value a 1.5% early pay discount or 60 days to pay with no interest",
+   "tips": [
+    "This is a charge card that earns no points or cash back; the reward is a 1.5% discount on the balance when you pay within 10 days of the statement closing date",
+    "Instead of the discount you can take up to 60 days to pay without interest when you pay the minimum due on time",
+    "The discount is uncapped and posts as a credit on the next statement",
+    "Closed to new applicants since April 2026; existing accounts keep these terms"
+   ],
+   "watchOut": [
+    "Base is recorded as 0 because the card earns no rewards; a tool should treat the early pay discount as a separate 1.5% rebate on paid balances",
+    "$250 annual fee with no credits to offset it",
+    "No trip delay or cell phone protection",
+    "American Express is not accepted at Costco warehouses, Costco gas stations or Costco.com"
+   ],
+   "sourceUrl": "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/purchase-protection-terms.html",
+   "sourceUrls": [
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/extended-warranty-terms.html",
+    "https://www.americanexpress.com/us/credit-cards/features-benefits/policies/car-rental-loss-and-damage-insurance-terms.html",
+    "https://www.doctorofcredit.com/tag/american-express-plum/",
+    "https://dannydealguru.com/plum-card-discontinued/",
+    "https://frequentmiler.com/amxplum/"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Amex removed the Plum product page in April 2026, so the fee, discount terms and fx fee come from Doctor of Credit, Danny the Deal Guru and Frequent Miler rather than an Amex page"
+   ],
+   "color": "#1F4D65"
   },
   {
    "id": "amex-blue-cash-everyday",
@@ -11594,6 +12145,516 @@
    "color": "#285277"
   },
   {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-aadvantage-aviator-business",
+   "name": "AAdvantage Aviator World Elite Business Mastercard",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "american-aadvantage",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "american-airlines",
+     "rate": 2
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "office supply, telecom and car rental merchants"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$99 companion certificate after $30,000 in purchases in a calendar year",
+    "5% AAdvantage mileage bonus after the account anniversary"
+   ],
+   "bestFor": "Historical reference only; converted to the Citi AAdvantage Business World Elite Mastercard in April 2026",
+   "tips": [
+    "Closed to new applicants October 1, 2025; accounts moved to Citi on April 24, 2026 as the Citi AAdvantage Business card ($99): 2X on American, 2X at telecom, car rental and gas merchants, 1X elsewhere",
+    "While it existed the card earned 2X on American and at office supply, telecom and car rental merchants, 1X elsewhere, with a first checked bag free for up to 4 companions and preferred boarding"
+   ],
+   "watchOut": [
+    "Barclays no longer services this card; use the Citi AAdvantage Business entry for current earning",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://awardwallet.com/news/credit-cards/citi-sole-issuer-aadvantage-cards/",
+   "sourceUrls": [
+    "https://frequentmiler.com/barlcays-aviator-to-citi-transition-april-2026-what-we-know-and-what-we-dont/",
+    "https://www.nerdwallet.com/credit-cards/news/barclays-aadvantage-aviator-cards-close-to-new-applicants"
+   ],
+   "confidence": "low",
+   "unsure": [
+    "No Barclays or AA page for the Aviator Business could be fetched; the pre-conversion earning categories are from reporting on the Citi mapping and may not be exact"
+   ],
+   "color": "#2D7D8B"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-jetblue-business",
+   "name": "JetBlue Business",
+   "network": "Mastercard",
+   "type": "business",
+   "program": "jetblue-trueblue",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "jetblue",
+     "rate": 6
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "select-merchants",
+     "rate": 2,
+     "label": "office supply stores"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "5,000 bonus points every year after the account anniversary",
+    "$100 statement credit once per calendar year after a JetBlue Vacations package of $100 or more",
+    "10% of points back after redeeming for and flying a JetBlue-operated award flight",
+    "50% off eligible in-flight purchases on JetBlue-operated flights"
+   ],
+   "bestFor": "Small businesses that fly JetBlue and buy office supplies",
+   "tips": [
+    "6X on eligible JetBlue purchases, 2X at restaurants and office supply stores, 1X elsewhere, with no caps",
+    "First checked bag free for you and up to 3 companions and Group A boarding on JetBlue-operated flights",
+    "Employee cards are free and purchases on them earn points",
+    "Welcome offer: 50,000 points after $4,000 in the first 90 days plus 10,000 more after an employee card purchase in the first 90 days"
+   ],
+   "watchOut": [
+    "Groceries earn only 1X on the business card",
+    "Codeshare and partner flights do not get free bags, boarding or in-flight savings",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-business-card/",
+   "sourceUrls": [
+    "https://www.doctorofcredit.com/barclaycard-overhauls-card-benefits-mostly-negative-changes/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "Cell phone and rental car coverage are not shown on the Barclays business card page, so those keys are omitted"
+   ],
+   "color": "#317987"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-wyndham-rewards-earner-business",
+   "name": "Wyndham Rewards Earner Business",
+   "network": "Visa",
+   "type": "business",
+   "program": "wyndham-rewards",
+   "annualFee": 149,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "wyndham",
+     "rate": 8,
+     "label": "Hotels by Wyndham including Wyndham Travel Bundles"
+    },
+    {
+     "category": "gas",
+     "rate": 5
+    },
+    {
+     "category": "ev-charging",
+     "rate": 5
+    },
+    {
+     "category": "select-merchants",
+     "rate": 5,
+     "label": "marketing, advertising, office supply stores, shipping and eligible Wyndham Vacation Club purchases"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "15,000 bonus points each anniversary year after paying the annual fee",
+    "$65 wholesale club membership credit per year",
+    "Up to $50 accounting software credit per year",
+    "Automatic Wyndham Rewards Diamond level; National Car Rental Emerald Club Executive status"
+   ],
+   "bestFor": "Businesses with gas, advertising, office supply or shipping spend that stay at Wyndham brands",
+   "tips": [
+    "Refreshed June 17, 2026 (fee up from $95): 8X at Hotels by Wyndham, 5X on gas, EV charging, marketing, advertising, office supply stores and shipping, 1X elsewhere, no caps",
+    "Cards opened on or after June 17, 2026 redeem free nights for 20% fewer points; Points Payback redeems points as statement credits at about 0.33 cents each",
+    "Employee cards are free and earn toward the same account",
+    "Welcome offer: 45,000 points after $3,000 in 90 days plus 55,000 after $500 at Hotels by Wyndham in 180 days"
+   ],
+   "watchOut": [
+    "Accounts opened before June 17, 2026 keep the old fee and earning rules until the holder upgrades (old Earner: 5X Wyndham and gas, 2X dining and groceries; old Earner Plus $75: 6X Wyndham and gas, 4X dining and groceries, 7,500 anniversary points; old Earner Business $95: 8X Wyndham and gas, 5X marketing, advertising and utilities, 10% award discount)",
+    "Utilities and dining earn only 1X on the current version",
+    "The 20% award discount applies only to accounts opened under the June 2026 terms; older accounts get 10% and do not stack with another Wyndham card",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-business-card/",
+   "sourceUrls": [
+    "https://www.prnewswire.com/news-releases/wyndham-and-barclays-launch-updated-credit-card-suite-introduce-new-premier-card-with-complimentary-insider-membership-and-no-points-expiration-302803029.html",
+    "https://awardwallet.com/credit-cards/wyndham-rewards/wyndham-business-credit-card/?pubDate=2026-09-04",
+    "https://frequentmiler.com/wyndham-cards-refresh-new-premium-card-new-welcome-offers-new-benefits-and-new-changed-earning-rates-for-new-applicants/",
+    "https://www.doctorofcredit.com/barclays-refreshes-wyndham-personal-business-cards-increased-fees-added-credits-changed-points-earning/",
+    "https://www.thepointcalculator.com/us/wyndham-rewards-points/cards/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "The Barclays business page still shows the old $95 version (8X Wyndham and gas, 5X marketing, advertising and utilities, 75,000 point offer); the press release and later reviews carry the current terms",
+    "Older reporting cited cell phone insurance on the business card; it is not on any current page so the key is omitted"
+   ],
+   "color": "#275072"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-aadvantage-aviator-red",
+   "name": "AAdvantage Aviator Red World Elite Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "american-aadvantage",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "american-airlines",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Up to $25 back per year on American in-flight Wi-Fi",
+    "$99 companion certificate after $20,000 in purchases in a calendar year",
+    "25% off in-flight food and beverages"
+   ],
+   "bestFor": "Historical reference only; converted to the Citi AAdvantage Platinum Select in April 2026",
+   "tips": [
+    "Barclays stopped taking applications on October 1, 2025 because Citi became American's exclusive issuer",
+    "On April 24, 2026 every Aviator Red account was transferred to Citi and reissued as a Citi AAdvantage Platinum Select ($99): 2X on American, 2X at restaurants and gas stations, 1X elsewhere",
+    "While it existed the card earned 2X on eligible American Airlines purchases and 1X elsewhere, with a first checked bag free for up to 4 companions and preferred boarding",
+    "Converted holders kept some Barclays perks (companion certificate, Wi-Fi credit) for a limited time on top of Citi's benefits"
+   ],
+   "watchOut": [
+    "Barclays no longer issues or services any AAdvantage card; use the Citi AAdvantage Platinum Select entry for current earning",
+    "Anniversary dates and credit limits carried over, but card numbers and autopay did not",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/aadvantage-aviator-red-world-elite-mastercard/",
+   "sourceUrls": [
+    "https://awardwallet.com/news/credit-cards/citi-sole-issuer-aadvantage-cards/",
+    "https://www.nerdwallet.com/credit-cards/news/barclays-aadvantage-aviator-cards-close-to-new-applicants",
+    "https://frequentmiler.com/barlcays-aviator-to-citi-transition-april-2026-what-we-know-and-what-we-dont/",
+    "https://viewfromthewing.com/?p=243180"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Whether any Aviator Red accounts remain with Barclays after the April 2026 transfer; the merge step may drop this card"
+   ],
+   "color": "#205E6F"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-aadvantage-aviator-silver",
+   "name": "AAdvantage Aviator Silver World Elite Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "american-aadvantage",
+   "annualFee": 199,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "american-airlines",
+     "rate": 3
+    },
+    {
+     "category": "hotels",
+     "rate": 2
+    },
+    {
+     "category": "rental-car",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "Up to 15,000 bonus Loyalty Points per year (5,000 each at $20,000, $40,000 and $50,000 in spend)",
+    "$99 companion certificate for two guests after $20,000 in purchases in a calendar year",
+    "Up to $50 back per year on American in-flight Wi-Fi",
+    "Global Entry or TSA PreCheck fee credit"
+   ],
+   "bestFor": "Historical reference only; converted to the Citi AAdvantage Globe in April 2026",
+   "tips": [
+    "Was available only by upgrade from Aviator Red, never to new applicants; closed entirely in October 2025",
+    "On April 24, 2026 Aviator Silver accounts became Citi AAdvantage Globe cards ($350): 6X on American-booked hotels, 3X on American, 2X at restaurants, 1X elsewhere",
+    "Silver holders keep the $199 fee and the 15,000 Loyalty Point bonus through February 28, 2027",
+    "While it existed the card earned 3X on American, 2X on hotels and car rentals, 1X elsewhere, with two free checked bags and priority boarding"
+   ],
+   "watchOut": [
+    "Barclays no longer services this card; use the Citi AAdvantage Globe entry for current earning",
+    "The Globe's $350 fee may apply at a later renewal; Citi has not published the date",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://creditcards.aa.com/barclay-credit-card-aviator-silver-american-airlines-aadvantage",
+   "sourceUrls": [
+    "https://viewfromthewing.com/?p=243180",
+    "https://frequentmiler.com/barlcays-aviator-to-citi-transition-april-2026-what-we-know-and-what-we-dont/",
+    "https://milestomemories.com/citi-reveals-conversion-details-and-timeline-for-barclays-aadvantage-cards/"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "The AA.com Aviator Silver page could not be fetched; earning rates and credits are from pre-conversion reporting and memory of the published terms, so treat as medium confidence",
+    "Whether the $199 fee holds past February 2027"
+   ],
+   "color": "#204F6A"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-breeze-easy-visa",
+   "name": "Breeze Easy Visa",
+   "network": "Visa",
+   "type": "personal",
+   "program": "breeze-points",
+   "annualFee": 89,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "breeze-airways",
+     "rate": 5,
+     "label": "Nicer and Nicest bundles and trip add-ons (Nice bundles earn 2X, No Flex fares 1X); Breeze adds the same again when you fly"
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2,
+     "label": "restaurants including Breeze in-flight food and drink"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "7,500 BreezePoints each cardmember year after $10,000 in purchases",
+    "One-way bundle upgrade for every $15,000 in purchases",
+    "Priority boarding and complimentary in-flight Wi-Fi on Airbus A220 flights"
+   ],
+   "bestFor": "Breeze Airways regulars who buy Nicer or Nicest bundles",
+   "tips": [
+    "Up to 10X on Nicer and Nicest bundles and add-ons: 5X from the card at purchase plus 5X from Breezy Rewards when you fly; Nice bundles get 2X plus 2X and No Flex fares 1X plus 1X",
+    "2X at grocery stores and restaurants, 1X elsewhere, with no caps",
+    "BreezePoints are worth a fixed 1 cent each toward Breeze fares, seats, bags and fees and never expire",
+    "Welcome offer: 40,000 points plus Breezy 1 status for a year after $1,000 in purchases in the first 90 days"
+   ],
+   "watchOut": [
+    "No free checked bag or carry-on; the card is listed on Barclays' site but is only useful if you fly Breeze",
+    "Points have no cash option and no transfer partners",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/breeze-easy-visa-signature-credit-card",
+    "https://frequentmiler.com/breeze"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "The Barclays Breeze product page could not be fetched; terms are from Upgraded Points (October 17, 2026) and Frequent Miler",
+    "The fx fee of 0 comes from Frequent Miler"
+   ],
+   "color": "#1E6376"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-carnival-rewards-mastercard",
+   "name": "Carnival Rewards Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "carnival-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "carnival",
+     "rate": 3,
+     "label": "Carnival purchases: cruise fares, shore excursions, onboard spending, spa and specialty dining"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2,
+     "excludes": [
+      "superstore"
+     ],
+     "label": "eligible grocery stores excluding Target and Walmart"
+    }
+   ],
+   "benefits": {
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "2,500 bonus points each anniversary year after $2,000 in purchases",
+    "0% promotional APR for 6 billing cycles on Carnival cruise fare purchases"
+   ],
+   "bestFor": "Carnival cruisers who want points toward the next fare and progress to Carnival Rewards status",
+   "tips": [
+    "Launched September 1, 2026 as the replacement for the Carnival World Mastercard; existing accounts were migrated during September and FunPoints converted 1 to 1 into Carnival Rewards points",
+    "3X on Carnival purchases from the card plus up to 3X more from the Carnival Rewards program itself, so a cruise fare can earn 6X total",
+    "Every dollar also earns 1 Status Qualifying Star toward Carnival Rewards elite status",
+    "Points are worth 1 cent each toward Carnival fares, deposits and onboard purchases redeemed through the Carnival Hub app, with no minimum",
+    "Welcome offer: 50,000 points after $1,000 in purchases in the first 90 days"
+   ],
+   "watchOut": [
+    "Points redeem only with Carnival; statement credits, gift cards and air or hotel credits ended with the September 2026 relaunch, so the program has no cash option",
+    "Points do not cover taxes, fees or port charges, and only one guest per stateroom can apply points to a booking",
+    "Target and Walmart are not grocery stores",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://www.prnewswire.com/news-releases/carnival-cruise-line-and-barclays-launch-new-carnival-rewards-mastercard-to-accelerate-travel-experience-through-everyday-purchase-power-302863071.html",
+   "sourceUrls": [
+    "https://cards.barclaycardus.com/banking/cards/carnival-world-mastercard/",
+    "https://frequentmiler.com/?p=294942",
+    "https://upgradedpoints.com/news/carnival-mastercard-50k-welcome-offer/",
+    "https://www.thepointcalculator.com/us/carnival-rewards-points/cards/carnival-rewards-mastercard/",
+    "https://awardwallet.com/blog/?p=237086"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "The Barclays Carnival Rewards product page and FAQ could not be fetched; the old Carnival World Mastercard page (2X Carnival, 1X elsewhere, FunPoints) still renders but is superseded",
+    "Rental car coverage is from The Point Calculator's reading of the Mastercard benefits; Barclays does not publish a card-specific guide"
+   ],
+   "color": "#255788"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-emirates-skywards-premium",
+   "name": "Emirates Skywards Premium World Elite Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "emirates-skywards",
+   "annualFee": 499,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "emirates",
+     "rate": 3
+    },
+    {
+     "category": "travel",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "loungeAccess": true
+   },
+   "credits": [
+    "Emirates Skywards Gold status for the first 12 months, kept with $40,000 in purchases each cardmember year",
+    "10,000 bonus miles after $30,000 in purchases in a cardmember year",
+    "Priority Pass Select membership with unlimited visits for the cardholder and guests",
+    "Up to $120 Global Entry or TSA PreCheck fee credit every 4 years",
+    "25% off when buying or gifting Skywards Miles"
+   ],
+   "bestFor": "Emirates flyers who want Gold status and lounge access without flying for it",
+   "tips": [
+    "3 miles per dollar on Emirates, 2 on eligible travel, 1 elsewhere, no caps; miles never expire while the account is open",
+    "Gold status brings Emirates lounge access, extra baggage and priority check-in on Emirates flights",
+    "The $99 Emirates Skywards Rewards World Elite Mastercard earns the same rates with Silver status instead of Gold and no Priority Pass",
+    "Current welcome offer: 50,000 miles after $3,000 in 90 days (October 7, 2026 to January 5, 2027); the Barclays page shows an older 60,000 mile offer"
+   ],
+   "watchOut": [
+    "Skywards miles are worth about 1 cent each and carry high surcharges on many awards; there is no cash option",
+    "Keeping Gold after the first year takes $40,000 in annual spending",
+    "Eligible travel is defined by merchant code; the Barclays page does not publish the list",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/emirates-skywards-premium-world-elite-mastercard/",
+   "sourceUrls": [
+    "https://emirates.com/us/english/skywards/partners/barclays",
+    "https://www.nerdwallet.com/article/travel/airline-miles-and-hotel-points-valuations"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "The Barclays page omits the annual fee amount and says the Global Entry credit is up to $100 every 5 years, while Emirates says $120 every 4 years; Emirates' current page is used"
+   ],
+   "color": "#2D7F8F"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-frontier-airlines-world-mastercard",
+   "name": "Frontier Airlines World Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "frontier-miles",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "frontier-airlines",
+     "rate": 5,
+     "label": "eligible purchases at flyfrontier.com"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "$100 Frontier flight voucher each anniversary after $2,500 in purchases during the cardmember year",
+    "Instant Elite Gold status after the first purchase in the first 90 days",
+    "Award redemption fee waived when taxes and fees are paid with the card"
+   ],
+   "bestFor": "Frontier regulars who want free bags and status and will spend $2,500 a year for the voucher",
+   "tips": [
+    "5X on flyfrontier.com purchases, 3X at restaurants, 1X elsewhere, plus 1 Elite Status Point per $1 spent",
+    "Two free checked bags and Zone 2 boarding on Frontier flights",
+    "The annual fee is $0 the first year, then $99",
+    "Frontier miles are worth about 1 cent each toward award flights and have no cash option",
+    "A card purchase every 12 months keeps miles from expiring"
+   ],
+   "watchOut": [
+    "The $100 voucher covers only Frontier airfare booked on the website, expires 6 months after issue, and any leftover value is forfeited",
+    "Keeping Elite Gold past the first year requires meeting Frontier's status rules, not just holding the card",
+    "Frontier has no transfer partners, so miles are only useful on Frontier",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/frontier-airlines-world-mastercard/",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/reviews/credit-cards/frontier-airlines-card",
+    "https://www.thepointcalculator.com/us/airline/frontier/frontier-miles-value-calculator"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "Welcome offer differs by source (50,000 miles after $1,000 on the Barclays page; 60,000 on NerdWallet); the Barclays page is used"
+   ],
+   "color": "#306F82"
+  },
+  {
    "id": "barclays-gm-rewards-mastercard",
    "name": "GM Rewards Mastercard",
    "issuer": "Barclays",
@@ -11644,6 +12705,599 @@
     "World Elite Mastercard benefits are referenced but not itemized, so no benefit flags are set"
    ],
    "color": "#2B5E78"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-gap-encore-mastercard",
+   "name": "Gap Encore Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "gap-encore-points",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 5,
+   "earn": [
+    {
+     "merchant": "gap",
+     "rate": 25,
+     "label": "Gap Inc. brands: Gap, Old Navy, Banana Republic, Athleta and their factory stores, when the card is the only payment method"
+    },
+    {
+     "merchant": "old-navy",
+     "rate": 25
+    },
+    {
+     "category": "select-merchants",
+     "rate": 15,
+     "label": "other U.S. clothing stores by Mastercard apparel merchant code, excluding wholesale clubs, Amazon, Target, Walmart, digital wallets and marketplaces"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Automatic Encore All-Access tier with a birthday gift for you and up to 3 family members",
+    "Free standard shipping on orders of $35 or more, free basic alterations at Banana Republic, 60-day returns",
+    "One 20% off sale day per year usable once at each Gap Inc. brand"
+   ],
+   "bestFor": "Gap family shoppers; the Gap, Old Navy, Athleta and Banana Republic Encore cards are the same product with different art",
+   "tips": [
+    "Points are worth 0.2 cents each (500 points = $1): 25 points per dollar at Gap Inc. brands is 5% back, 15 points at other apparel stores is 3%, 5 points elsewhere is 1%",
+    "Formerly the Gap Good Rewards Mastercard; the Good Rewards program became Encore on February 24, 2026 and points converted automatically",
+    "The store-only Gap Encore Credit Card earns the same 25 points per dollar at Gap Inc. brands and nothing elsewhere",
+    "Welcome offer: 20% off your first Gap purchase within 14 days of opening"
+   ],
+   "watchOut": [
+    "Rewards can be spent only at Gap Inc. brands or in the Encore Market; no cash, statement credit or travel option",
+    "Third-party checkout (Afterpay, Klarna, PayPal, TikTok) and purchases outside the U.S. and Puerto Rico earn only 5 points per dollar at Gap Inc. brands",
+    "Points expire after 12 months with no activity",
+    "3% foreign transaction fee and an APR above 33%",
+    "World and World Elite accounts earn 10 points per dollar (2%) everywhere else instead of 5"
+   ],
+   "sourceUrl": "https://www.gapinc.com/en-us/articles/2026/02/gap-inc-launches-encore,-a-new-and-more-rewarding-",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/gap-credit-card",
+    "https://site.joinkudos.com/blog/gap-encore-mastercard-r-review-2026-best-card-for-apparel-shoppers",
+    "https://cardstack.money/cards/old-navy-encore-mastercard",
+    "https://cards.barclaycardus.com/banking/cards/"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Barclays' card list still names the product Gap Good Rewards Mastercard while Gap and NerdWallet call it Gap Encore Mastercard; the product page could not be fetched",
+    "The 3% fx fee is from CardStack, not a Barclays page"
+   ],
+   "color": "#275072"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-hawaiian-airlines-world-elite",
+   "name": "Hawaiian Airlines World Elite Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "alaska-miles",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "hawaiian-airlines",
+     "rate": 3
+    },
+    {
+     "merchant": "alaska-airlines",
+     "rate": 3
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "One-time 50% off a companion round-trip Main Cabin ticket between Hawaii and North America",
+    "$100 companion discount on the same routes after each account anniversary",
+    "Up to $100 per year ($10 per day) in in-flight purchase credits for Atmos Silver and higher members"
+   ],
+   "bestFor": "Hawaii-bound flyers who can still get the card through Bank of Hawaii",
+   "tips": [
+    "HawaiianMiles merged into Alaska's Atmos Rewards on October 1, 2025, so this card now earns Atmos points (about 1.4 to 1.55 cents each)",
+    "3X on eligible Hawaiian and Alaska purchases, 2X on gas, dining and eligible grocery stores, 1X elsewhere, no caps",
+    "Two free checked bags for the primary cardholder on Hawaiian and Alaska flights bought with the card",
+    "Barclays pulled the card from its own site on October 1, 2025, but still issues it as the Hawaiian Airlines Bank of Hawaii World Elite Mastercard through Bank of Hawaii and inflight applications",
+    "Atmos points can be shared with up to 10 other members free of charge"
+   ],
+   "watchOut": [
+    "Alaska and Bank of America said in April 2026 that Bank of America will become the sole issuer of Atmos cards; no conversion date or target product has been announced",
+    "Checked bag allowance does not extend to authorized users or Hawaiian international flights",
+    "Applicants who held the earlier Barclays Hawaiian card report being ruled ineligible for the Bank of Hawaii version",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/hawaiian-airlines-world-elite-mastercard/",
+   "sourceUrls": [
+    "https://yourmileagemayvary.com/2026/10/01/hawaiian-airlines-card-atmos-rewards/",
+    "https://frequentmiler.com/hawaiian-airlines-bank-of-hawaii-card-increased-70k-welcome-offer/",
+    "https://platinumflyer.com/hawaiian-airlines-card-moving-to-bank-of-america/",
+    "https://upgradedpoints.com/news/barclays-american-hawaiian-credit-cards-update/",
+    "https://www.bankrate.com/credit-cards/reviews/the-hawaiian-airlines-world-elite-mastercard"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "The Hawaiian Airlines Business World Elite Mastercard ($99, 50,000 point offer) exists but was not modeled; it earns the same way with business categories unconfirmed",
+    "Bank of Hawaii and the Barclays landing pages could not be fetched; availability may change without notice"
+   ],
+   "color": "#255C7E"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-jetblue-card",
+   "name": "JetBlue Card",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "jetblue-trueblue",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "jetblue",
+     "rate": 3
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "50% off eligible in-flight purchases on JetBlue-operated flights"
+   ],
+   "bestFor": "Occasional JetBlue flyers who want TrueBlue points with no annual fee",
+   "tips": [
+    "3X on eligible JetBlue purchases, 2X at restaurants and eligible grocery stores, 1X elsewhere, with no caps",
+    "Points never expire, can be pooled with family and friends, and can be used on any JetBlue seat with no blackout dates",
+    "Every purchase earns toward Mosaic status (1 tile per $1,000 spent)",
+    "Welcome offer: 10,000 points after $1,000 in purchases in the first 90 days"
+   ],
+   "watchOut": [
+    "No free checked bag and no anniversary bonus; those start with the JetBlue Plus",
+    "In-flight savings do not apply on codeshare or partner flights",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019",
+    "TrueBlue points are worth about 1.35 to 1.4 cents each and have no cash option on this card"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-card/",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/jetblue-barclaycard",
+    "https://www.doctorofcredit.com/barclaycard-overhauls-card-benefits-mostly-negative-changes/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "Rental car collision coverage and cell phone protection on the no-fee JetBlue Card are not shown on the Barclays page, so those keys are omitted"
+   ],
+   "color": "#1E5085"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-jetblue-plus",
+   "name": "JetBlue Plus",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "jetblue-trueblue",
+   "annualFee": 99,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "jetblue",
+     "rate": 6
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary"
+   },
+   "credits": [
+    "5,000 bonus points every year after the account anniversary",
+    "$100 statement credit once per year after a JetBlue Vacations package of $100 or more",
+    "10% of points back after redeeming for and flying a JetBlue-operated award flight",
+    "50% off eligible in-flight purchases on JetBlue-operated flights"
+   ],
+   "bestFor": "Regular JetBlue flyers who check a bag and want 6X on JetBlue",
+   "tips": [
+    "6X on eligible JetBlue purchases, 2X at restaurants and eligible grocery stores, 1X elsewhere, with no caps",
+    "First checked bag free for you and up to 3 companions on the same JetBlue-operated reservation",
+    "Points Payback lets you redeem points as a statement credit, up to $1,000 per year",
+    "Cell phone protection covers up to $800 per claim ($1,000 per 12 months, $50 deductible) when the wireless bill is paid with the card",
+    "Welcome offer: 50,000 points after $1,000 in purchases and paying the annual fee in the first 90 days"
+   ],
+   "watchOut": [
+    "Free bags and in-flight savings exclude codeshare and partner-operated flights",
+    "The $99 fee is not waived the first year",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019",
+    "Rental car coverage is secondary in the U.S.; trip cancellation covers up to $5,000 per trip and baggage delay up to $100 per day for 3 days"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-plus-card/",
+   "sourceUrls": [
+    "https://upgradedpoints.com/credit-cards/reviews/jetblue-plus-barclaycard/benefits/",
+    "https://hellosafe.com/credit-card-insurance/united-states/barclays/jetblue-plus",
+    "https://www.doctorofcredit.com/barclaycard-overhauls-card-benefits-mostly-negative-changes/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "Insurance amounts come from HelloSafe's reading of the Barclays World Elite guide to benefits, not a Barclays page"
+   ],
+   "color": "#1E5E7B"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-jetblue-premier",
+   "name": "JetBlue Premier",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "jetblue-trueblue",
+   "annualFee": 499,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "jetblue",
+     "rate": 6,
+     "label": "eligible JetBlue purchases including JetBlue Vacations and TrueBlue Travel (formerly Paisly)"
+    },
+    {
+     "category": "dining",
+     "rate": 2
+    },
+    {
+     "category": "groceries",
+     "rate": 2
+    }
+   ],
+   "benefits": {
+    "cellPhoneProtection": true,
+    "rentalCarCDW": "secondary",
+    "loungeAccess": true
+   },
+   "credits": [
+    "Up to $300 per calendar year in statement credits on TrueBlue Travel bookings (hotels, cars, cruises)",
+    "Up to $120 Global Entry or TSA PreCheck fee credit every 4 years",
+    "5,000 bonus points every year after the account anniversary",
+    "25 Mosaic tiles each calendar year (half of Mosaic 1)",
+    "Companion pass credit worth up to $500 after $15,000 in a calendar year, and another up to $1,500 after $75,000",
+    "15% of points back after award flight redemptions",
+    "Up to 14 ClassPass credits per month, enrollment required",
+    "50% off eligible in-flight purchases on JetBlue-operated flights"
+   ],
+   "bestFor": "Frequent JetBlue flyers who want lounge access and a head start on Mosaic status",
+   "tips": [
+    "6X on eligible JetBlue and TrueBlue Travel purchases, 2X at restaurants and eligible grocery stores, 1X elsewhere",
+    "Priority Pass Select membership plus BlueHouse lounge access at JFK and Boston for you and one guest on eligible fares",
+    "First checked bag free for you and up to 3 companions, Group A boarding",
+    "Benefits were expanded in spring 2026 (25 tiles, companion credits, 15% rebate, TrueBlue Travel credit) with the fee unchanged at $499",
+    "Current welcome offer: 70,000 points plus 5 tiles after $5,000 in purchases and paying the annual fee in the first 90 days (offers vary by channel)"
+   ],
+   "watchOut": [
+    "$150 fee per authorized user",
+    "The $300 credit works only on TrueBlue Travel bookings, not on flights booked directly",
+    "Companion pass credits cover only the companion's base fare and post 6 to 8 weeks after travel",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-premier-card/",
+   "sourceUrls": [
+    "https://ir.jetblue.com/news/news-details/2026/JetBlue-and-Barclays-Enhance-Airlines-Popular-Premier-Card-with-New-Benefits-and-Expanded-Rewards/default.aspx",
+    "https://www.nerdwallet.com/credit-cards/reviews/jetblue-premier",
+    "https://www.doctorofcredit.com/barclays-jetblue-premier-credit-card-adds-new-benefits-no-annual-fee-increase-still-499/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "The Barclays page still shows the pre-2026 wording (Paisly credit, 10% rebate); JetBlue's April 2026 release and later reviews confirm the newer terms",
+    "Insurance protections are not listed on the Barclays page; cell phone and rental car flags mirror the JetBlue Plus World Elite guide"
+   ],
+   "color": "#25698D"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-old-navy-encore-mastercard",
+   "name": "Old Navy Encore Mastercard",
+   "network": "Mastercard",
+   "type": "personal",
+   "program": "gap-encore-points",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 5,
+   "earn": [
+    {
+     "merchant": "old-navy",
+     "rate": 25,
+     "label": "Gap Inc. brands: Old Navy, Gap, Banana Republic, Athleta and their factory stores, when the card is the only payment method"
+    },
+    {
+     "merchant": "gap",
+     "rate": 25
+    },
+    {
+     "category": "select-merchants",
+     "rate": 15,
+     "label": "other U.S. clothing stores by Mastercard apparel merchant code, excluding wholesale clubs, Amazon, Target, Walmart, digital wallets and marketplaces"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Automatic Encore All-Access tier with a birthday gift for you and up to 3 family members",
+    "Free standard shipping on orders of $35 or more and a 60-day return window",
+    "One 20% off sale day per year usable once at each Gap Inc. brand"
+   ],
+   "bestFor": "Old Navy and Gap shoppers who want 5% back in store credit on Gap Inc. purchases",
+   "tips": [
+    "Points are worth 0.2 cents each (500 points = $1), so 25 points per dollar is 5% back, 15 points is 3% and 5 points is 1%",
+    "Gap Inc. relaunched its loyalty program as Encore on February 24, 2026; Navyist Rewards and Good Rewards cards and points converted automatically",
+    "The store-only Old Navy Encore Credit Card earns the same 25 points per dollar at Gap Inc. brands but nothing elsewhere; applicants are considered for the Mastercard first",
+    "Welcome offer: 30% off your first Old Navy purchase within 14 days of opening"
+   ],
+   "watchOut": [
+    "Rewards can be spent only at Gap Inc. brands or in the Encore Market; there is no cash, statement credit or travel option",
+    "Paying through Afterpay, Klarna, PayPal or TikTok at Gap Inc. brands earns only 5 points per dollar, and sales tax and shipping earn nothing",
+    "Points expire after 12 months with no earning or redemption activity",
+    "3% foreign transaction fee and an APR above 33%",
+    "Accounts approved as World or World Elite Mastercard earn 10 points per dollar (2%) everywhere else instead of 5"
+   ],
+   "sourceUrl": "https://www.gapinc.com/en-us/articles/2026/02/gap-inc-launches-encore,-a-new-and-more-rewarding-",
+   "sourceUrls": [
+    "https://www.nerdwallet.com/credit-cards/learn/old-navy-credit-card",
+    "https://cardstack.money/cards/old-navy-encore-mastercard",
+    "https://www.rivo.io/blog/old-navy-navyist-rewards-program"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Barclays product pages for the Old Navy and Gap cards could not be fetched; earning details are from Gap Inc.'s press release, NerdWallet (October 2026) and CardStack",
+    "The 3% fx fee is from CardStack, not a Barclays page"
+   ],
+   "color": "#214E7D"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-priceline-vip-rewards-visa",
+   "name": "Priceline VIP Rewards Visa",
+   "network": "Visa",
+   "type": "personal",
+   "program": "priceline-points",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "priceline",
+     "rate": 5,
+     "label": "Priceline bookings and cruises, including when partly paid with points"
+    },
+    {
+     "category": "gas",
+     "rate": 2
+    },
+    {
+     "category": "dining",
+     "rate": 2,
+     "label": "restaurants including delivery services"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "Up to $120 Global Entry or TSA PreCheck fee credit each anniversary year after $10,000 in purchases",
+    "$50 statement credit when you book a Priceline cruise",
+    "Automatic Priceline VIP Gold status with hotel and rental car discounts"
+   ],
+   "bestFor": "Travelers who book most trips through Priceline",
+   "tips": [
+    "5X on Priceline bookings, 2X at gas stations and restaurants, 1X elsewhere, with no caps",
+    "Points are worth 1 cent each as statement credits against Priceline purchases, gift cards or merchandise, so 5X on Priceline is 5% back",
+    "The old Priceline Rewards Visa (3.3% effective value on travel) was converted to this card on July 2, 2025, and the extra redemption bonus ended",
+    "Welcome offer: 20,000 points after $500 in purchases in the first 90 days"
+   ],
+   "watchOut": [
+    "Points have no transfer partners; value is fixed at 1 cent, so the card is plain cash back pointed at Priceline",
+    "The Global Entry credit needs $10,000 of spending in the anniversary year",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://frequentmiler.com/priceline",
+   "sourceUrls": [
+    "https://www.doctorofcredit.com/grandfathered-priceline-cards-to-be-devalued-no-more-3-3-on-all-purchases/",
+    "https://www.doctorofcredit.com/barclays-launches-priceline-vip-rewards-visa-card/",
+    "https://dannydealguru.com/barclays-priceline-vip-rewards-review/"
+   ],
+   "confidence": "medium",
+   "unsure": [
+    "Neither the Barclays nor the Priceline product page could be fetched; rates come from Frequent Miler (Oct 2025 page with Sept 2026 offer data), Doctor of Credit and Danny the Deal Guru",
+    "The card is absent from Barclays' public card list, so it may be offered only through Priceline"
+   ],
+   "color": "#1D4968"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-wyndham-rewards-earner",
+   "name": "Wyndham Rewards Earner",
+   "network": "Visa",
+   "type": "personal",
+   "program": "wyndham-rewards",
+   "annualFee": 0,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "wyndham",
+     "rate": 5,
+     "label": "Hotels by Wyndham including Wyndham Travel Bundles"
+    },
+    {
+     "category": "dining",
+     "rate": 3
+    },
+    {
+     "category": "groceries",
+     "rate": 3,
+     "excludes": [
+      "superstore"
+     ],
+     "label": "grocery stores excluding Target and Walmart"
+    },
+    {
+     "category": "gas",
+     "rate": 3
+    },
+    {
+     "category": "ev-charging",
+     "rate": 3
+    },
+    {
+     "category": "select-merchants",
+     "rate": 3,
+     "label": "eligible Wyndham Vacation Club purchases (not down payments)"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "7,500 bonus points each anniversary year after $15,000 in eligible purchases",
+    "Automatic Wyndham Rewards Gold level"
+   ],
+   "bestFor": "Road trippers who stay at Wyndham brands and want a no-fee card with 3X on gas and groceries",
+   "tips": [
+    "Refreshed June 17, 2026: 5X at Hotels by Wyndham, 3X on dining, grocery stores, gas and EV charging, 1X elsewhere, with no caps",
+    "Cardholders redeem free nights for 10% fewer points and get a booking discount on paid stays",
+    "Wyndham points are worth about 0.7 cents each; free nights run 7,500 to 30,000 points per bedroom and Vacasa rentals are a strong use",
+    "Welcome offer: 30,000 points after $1,000 in 90 days plus 45,000 after $500 at Hotels by Wyndham in 180 days"
+   ],
+   "watchOut": [
+    "Accounts opened before June 17, 2026 keep the old fee and earning rules until the holder upgrades (old Earner: 5X Wyndham and gas, 2X dining and groceries; old Earner Plus $75: 6X Wyndham and gas, 4X dining and groceries, 7,500 anniversary points; old Earner Business $95: 8X Wyndham and gas, 5X marketing, advertising and utilities, 10% award discount)",
+    "Target and Walmart do not count as grocery stores, and Vacation Club down payments earn nothing",
+    "The 7,500 anniversary bonus requires $15,000 in spending; the no-fee card has no Points Payback cash option",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://www.wyndhamrewardscreditcard.com/",
+   "sourceUrls": [
+    "https://www.prnewswire.com/news-releases/wyndham-and-barclays-launch-updated-credit-card-suite-introduce-new-premier-card-with-complimentary-insider-membership-and-no-points-expiration-302803029.html",
+    "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-card/",
+    "https://frequentmiler.com/wyndham-cards-refresh-new-premium-card-new-welcome-offers-new-benefits-and-new-changed-earning-rates-for-new-applicants/",
+    "https://www.doctorofcredit.com/barclays-refreshes-wyndham-personal-business-cards-increased-fees-added-credits-changed-points-earning/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "The Barclays product page still shows the pre-June 2026 wording (5X gas, 2X dining and groceries, 60,000 point offer); the Wyndham-hosted site and the June 17, 2026 press release carry the current terms"
+   ],
+   "color": "#20516F"
+  },
+  {
+   "issuer": "Barclays",
+   "verified": "2026-10-28",
+   "id": "barclays-wyndham-rewards-earner-plus",
+   "name": "Wyndham Rewards Earner Plus",
+   "network": "Visa",
+   "type": "personal",
+   "program": "wyndham-rewards",
+   "annualFee": 95,
+   "fxFee": 0,
+   "base": 1,
+   "earn": [
+    {
+     "merchant": "wyndham",
+     "rate": 6,
+     "label": "Hotels by Wyndham including Wyndham Travel Bundles"
+    },
+    {
+     "category": "dining",
+     "rate": 4
+    },
+    {
+     "category": "groceries",
+     "rate": 4,
+     "excludes": [
+      "superstore"
+     ],
+     "label": "grocery stores excluding Target and Walmart"
+    },
+    {
+     "category": "travel",
+     "rate": 4,
+     "label": "travel: airfare, car rental, rideshare, tolls and trains by merchant code"
+    },
+    {
+     "category": "gas",
+     "rate": 4
+    },
+    {
+     "category": "ev-charging",
+     "rate": 4
+    },
+    {
+     "category": "transit",
+     "rate": 4,
+     "label": "rideshare, tolls and trains are inside the travel category"
+    },
+    {
+     "category": "rental-car",
+     "rate": 4
+    },
+    {
+     "category": "select-merchants",
+     "rate": 4,
+     "label": "eligible Wyndham Vacation Club purchases (not down payments)"
+    }
+   ],
+   "benefits": {},
+   "credits": [
+    "15,000 bonus points each anniversary year after paying the annual fee",
+    "Free night worth up to 15,000 points after 5 paid nights at Wyndham in a calendar year (one per year)",
+    "Up to $50 per calendar year in meal delivery credits ($25 every 6 months)",
+    "Wyndham Rewards Diamond level the first year, then Platinum; National Car Rental Emerald Club Executive status"
+   ],
+   "bestFor": "Wyndham guests who want 4X on travel, gas, dining and groceries for a modest fee",
+   "tips": [
+    "Refreshed June 17, 2026 (fee up from $75): 6X at Hotels by Wyndham, 4X on dining, groceries and travel including gas, EV charging, air, car rental, rideshare, tolls and trains, 1X elsewhere, no caps",
+    "Free nights cost 10% fewer points for cardholders, and Points Payback redeems points as statement credits at about 0.33 cents each",
+    "The 15,000 anniversary points alone cover a mid-tier free night and exceed the $95 fee in value",
+    "Welcome offer: 45,000 points after $1,000 in 90 days plus 55,000 after $500 at Hotels by Wyndham in 180 days"
+   ],
+   "watchOut": [
+    "Accounts opened before June 17, 2026 keep the old fee and earning rules until the holder upgrades (old Earner: 5X Wyndham and gas, 2X dining and groceries; old Earner Plus $75: 6X Wyndham and gas, 4X dining and groceries, 7,500 anniversary points; old Earner Business $95: 8X Wyndham and gas, 5X marketing, advertising and utilities, 10% award discount)",
+    "Target and Walmart are not grocery stores; the travel category is defined by merchant category code, so hotels other than Wyndham earn only 1X",
+    "Diamond status lasts only the first year, then drops to Platinum",
+    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
+   ],
+   "sourceUrl": "https://www.wyndhamrewardscreditcard.com/",
+   "sourceUrls": [
+    "https://www.prnewswire.com/news-releases/wyndham-and-barclays-launch-updated-credit-card-suite-introduce-new-premier-card-with-complimentary-insider-membership-and-no-points-expiration-302803029.html",
+    "https://www.nerdwallet.com/reviews/credit-cards/wyndham-rewards-visa-annual-fee",
+    "https://frequentmiler.com/wyndham-cards-refresh-new-premium-card-new-welcome-offers-new-benefits-and-new-changed-earning-rates-for-new-applicants/",
+    "https://www.doctorofcredit.com/barclays-refreshes-wyndham-personal-business-cards-increased-fees-added-credits-changed-points-earning/"
+   ],
+   "confidence": "high",
+   "unsure": [
+    "The Barclays Earner Plus product page could not be fetched; terms are from the Wyndham-hosted card site, the June 2026 press release and NerdWallet"
+   ],
+   "color": "#1A446B"
   },
   {
    "id": "bilt-blue",

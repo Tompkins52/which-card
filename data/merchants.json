@@ -930,10 +930,7 @@
   {
    "id": "old-navy",
    "name": "Old Navy",
-   "aliases": [
-    "gap",
-    "banana republic"
-   ],
+   "aliases": [],
    "category": "other"
   },
   {
@@ -1197,9 +1194,7 @@
    "id": "spirit",
    "name": "Spirit Airlines",
    "aliases": [
-    "spirit",
-    "frontier",
-    "frontier airlines"
+    "spirit"
    ],
    "category": "flights",
    "also": [
@@ -1263,10 +1258,7 @@
   {
    "id": "best-western",
    "name": "Best Western",
-   "aliases": [
-    "la quinta",
-    "wyndham"
-   ],
+   "aliases": [],
    "category": "hotels",
    "also": [
     "travel"
@@ -1968,6 +1960,77 @@
     "hotels"
    ],
    "online": true
+  },
+  {
+   "id": "frontier-airlines",
+   "name": "Frontier Airlines",
+   "aliases": [
+    "frontier",
+    "flyfrontier"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "wyndham",
+   "name": "Wyndham Hotels",
+   "aliases": [
+    "la quinta",
+    "days inn",
+    "super 8",
+    "ramada",
+    "microtel"
+   ],
+   "category": "hotels",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "carnival",
+   "name": "Carnival Cruise Line",
+   "aliases": [
+    "carnival cruise"
+   ],
+   "category": "travel"
+  },
+  {
+   "id": "gap",
+   "name": "Gap",
+   "aliases": [
+    "banana republic",
+    "athleta"
+   ],
+   "category": "other"
+  },
+  {
+   "id": "priceline",
+   "name": "Priceline",
+   "aliases": [],
+   "category": "travel",
+   "online": true
+  },
+  {
+   "id": "emirates",
+   "name": "Emirates",
+   "aliases": [],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
+  },
+  {
+   "id": "breeze-airways",
+   "name": "Breeze Airways",
+   "aliases": [
+    "breeze"
+   ],
+   "category": "flights",
+   "also": [
+    "travel"
+   ]
   }
  ]
 }

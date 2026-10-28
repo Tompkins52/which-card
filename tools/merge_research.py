@@ -238,6 +238,9 @@ def main(src):
         'shell-credits': ('Shell fuel credits', 'percent', 1, 1, 1, 'Spendable only against Shell purchases.'),
         'victorias-secret-rewards': ('Victoria\'s Secret rewards', 'points', 0, 0.5, 0.5, 'Store rewards only.'),
         'navyist-rewards': ('Navyist and Gap Good Rewards', 'points', 0, 1, 1, 'Spendable at Gap, Old Navy, Banana Republic and Athleta.'),
+        'gap-encore-points': ('Encore points (Gap, Old Navy, Banana Republic, Athleta)', 'points', 0, 0.2, 0.2, 'Worth about 0.2 cent each, spendable only at Gap Inc. brands.'),
+        'carnival-rewards': ('Carnival Rewards points', 'points', 0, 1, 1, 'Worth 1 cent each toward a Carnival cruise.'),
+        'breeze-points': ('BreezePoints', 'points', 0, 1, 1, 'Worth 1 cent each toward Breeze flights.'),
     }
     for pid, (name, unit, cash, travel, transfer, note) in EXTRA_PROGRAMS.items():
         programs.setdefault(pid, {'name': name, 'unit': unit, 'cash': cash, 'travel': travel, 'transfer': transfer, 'note': note})
@@ -377,6 +380,7 @@ def main(src):
                 r['label'] = PORTALS.get(c['issuer'], 'issuer travel site')
         if c['issuer'] == 'Capital One':
             c['name'] = re.sub(r' (Cash )?Rewards$', '', c['name'])
+    cards = [c for c in cards if not c['id'].startswith('barclays-aviator')]
     cards.sort(key=lambda c: (ISSUER_ORDER.index(c['issuer']) if c['issuer'] in ISSUER_ORDER else 99, c['issuer'], c['type'], c['name']))
 
     with open(os.path.join(DATA, 'cards.json'), 'w', encoding='utf-8') as f:
