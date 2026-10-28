@@ -173,22 +173,6 @@
    "source": "TPG October 2026 valuation 1.5; NerdWallet Oct 2026: 1.1",
    "note": "Distance-based award chart with stopovers for 5,000 points; transfer 1:1 from Chase, Amex, Capital One or Bilt for Star Alliance partner business class."
   },
-  "synchrony-cashback": {
-   "name": "Cash back",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
-  "amazon-points": {
-   "name": "Amazon rewards",
-   "unit": "percent",
-   "cash": 1,
-   "travel": 1,
-   "transfer": 1,
-   "note": ""
-  },
   "paypal-cashback": {
    "name": "PayPal cash back",
    "unit": "percent",
@@ -197,8 +181,8 @@
    "transfer": 1,
    "note": ""
   },
-  "best-buy-rewards": {
-   "name": "My Best Buy rewards (Best Buy certificates)",
+  "cashback": {
+   "name": "Cash back",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -213,16 +197,24 @@
    "transfer": 1,
    "note": ""
   },
-  "target-circle": {
-   "name": "Target Circle",
+  "discover-cashback": {
+   "name": "Discover cash back",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
    "transfer": 1,
    "note": ""
   },
-  "discover-cashback": {
-   "name": "Discover cash back",
+  "synchrony-cashback": {
+   "name": "Cash back",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "target-circle": {
+   "name": "Target Circle",
    "unit": "percent",
    "cash": 1,
    "travel": 1,
@@ -237,8 +229,16 @@
    "transfer": 1,
    "note": ""
   },
-  "cashback": {
-   "name": "Cash back",
+  "best-buy-rewards": {
+   "name": "My Best Buy rewards (Best Buy certificates)",
+   "unit": "percent",
+   "cash": 1,
+   "travel": 1,
+   "transfer": 1,
+   "note": ""
+  },
+  "amazon-points": {
+   "name": "Amazon rewards",
    "unit": "percent",
    "cash": 1,
    "travel": 1,

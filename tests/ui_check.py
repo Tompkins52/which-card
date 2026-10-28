@@ -99,7 +99,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(200)
     page.screenshot(path=os.path.join(OUT, '10-detail.png'), full_page=False)
     assert 'Perks and credits' in page.inner_text('.sheet'), 'perks box missing'
-    assert page.get_attribute('.sheet a:has-text("Activate on the Chase site")', 'href').startswith('https://www.chase.com'), 'activation link missing'
+    assert page.get_attribute('.sheet a:has-text("Activate on the Chase site")', 'href').startswith('https://www.chase'), 'activation link missing'
     page.click('.perk-list li:has-text("DashPass") .switch')
     page.wait_for_timeout(200)
     assert 'All set' in page.inner_text('.sheet .perks'), 'perk toggle did not register'

@@ -99,7 +99,7 @@ def main(src):
     cards, notes = [], []
     seen = set()
     for name in sorted(os.listdir(src)):
-        if not name.endswith('.json') or name in ('bonuses.json', 'valuations.json'):
+        if not name.endswith('.json') or name in ('bonuses.json', 'valuations.json', 'perks.json'):
             continue
         with open(os.path.join(src, name), encoding='utf-8') as f:
             doc = json.load(f)
@@ -127,10 +127,28 @@ def main(src):
     if os.path.exists(perks_path):
         with open(perks_path, encoding='utf-8') as f:
             perks = json.load(f).get('cards', {})
+    PERK_IDS = {'amex-delta-platinum': 'amex-delta-skymiles-platinum', 'amex-delta-reserve': 'amex-delta-skymiles-reserve', 'amex-hilton-surpass': 'amex-hilton-honors-surpass',
+                'amex-hilton-aspire': 'amex-hilton-honors-aspire', 'chase-southwest-priority': 'chase-southwest-rapid-rewards-priority'}
+    for old_id, new_id in PERK_IDS.items():
+        if old_id in perks:
+            perks[new_id] = perks.pop(old_id)
+    if 'bilt-mastercard' in perks:
+        bilt = perks.pop('bilt-mastercard')
+        for bid, tier in (('bilt-blue', 'Blue'), ('bilt-obsidian', 'Obsidian'), ('bilt-palladium', 'Palladium')):
+            keep = []
+            for pk in bilt.get('perks', []):
+                text = (pk.get('name', '') + ' ' + (pk.get('note') or '') + ' ' + (pk.get('worth') or ''))
+                if tier == 'Blue' and ('Not on Blue' in text or 'Palladium' in pk.get('name', '') or 'Obsidian' in pk.get('name', '') or 'Palladium only' in text or pk['id'] in ('cell-phone-protection', 'travel-protections')):
+                    continue
+                if tier == 'Obsidian' and ('Palladium' in pk.get('name', '') or 'Palladium only' in text):
+                    continue
+                keep.append(dict(pk))
+            perks[bid] = {'benefitsUrl': bilt.get('benefitsUrl'), 'perks': keep}
     for c in cards:
         pk = perks.get(c['id'])
         if not pk:
             continue
+        pk['perks'] = [x for x in pk.get('perks', []) if x.get('id') != 'quarterly-5x' and (x.get('worth') or '').lower() != 'ended' and not (x.get('note') or '').lower().startswith('ended')]
         if pk.get('benefitsUrl'):
             c['benefitsUrl'] = pk['benefitsUrl']
         if pk.get('perks'):

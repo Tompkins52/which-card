@@ -293,7 +293,7 @@
     var start = performance.now(), dur = 420;
     function step(t) {
       var k = Math.min(1, (t - start) / dur); k = 1 - Math.pow(1 - k, 3);
-      el.textContent = rateText(target * k, unit);
+      el.textContent = rateText(target * (0.6 + 0.4 * k), unit);
       if (k < 1) requestAnimationFrame(step); else el.textContent = rateText(target, unit);
     }
     requestAnimationFrame(step);
