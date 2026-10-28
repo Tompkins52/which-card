@@ -609,7 +609,7 @@
     var nodes = [];
     if (intro) nodes.push(h('div', { class: 'hero-copy' }, h('div', { class: 'steps' }, h('i', { class: 'on' }), h('i')), h('p', { class: 'muted' }, 'Tap every card you carry. Just the names, never a card number.')));
     nodes.push(search, chips, list,
-      h('div', { class: 'note buddy' }, h('b', null, 'Why the cards look like that. '), 'Nope, those are not the real card pictures, and yeah, that is partly us being cheap. Mostly it is that every one of those designs is the bank\u2019s trademark, and we would rather not spend the rest of our lives in court over a picture. It also tells you something: the sites with the real pictures have a deal with the bank and get paid when you click. We do not. Nobody pays for a spot here and your info never leaves your phone.'),
+      h('div', { class: 'note buddy' }, h('b', null, 'Why do the cards look like that? '), 'Yeah, those are not the real card pictures. Is it because we are cheap a**es? Partially. Mostly it is because every one of those designs is trademarked, and the banks would keep our a**es in court until the sun burns out. That should tell you something, though: the sites with the real pictures have a deal with the bank and get paid every time you click. We get squat. Nobody pays for a spot here, nobody buys your info, and the only thing we want from you is 99 cents and a good pump story.')),
       h('button', { class: 'btn primary block', onclick: function () { closeSheet(); } }, 'Done'));
     openSheet(intro ? 'Your cards' : 'Add a card', nodes, { noClose: !!intro });
     sheetOnClose = function () {
@@ -1055,7 +1055,7 @@
         h('p', null, h('b', null, 'Which Card'), ' by Tompkins Software Systems.'),
         h('p', { style: 'margin-top:8px' }, 'Nothing to sign up for. Your card list, purchases and settings stay on this phone. The only thing that leaves it is an anonymous nearby-places lookup when you use location.'),
         h('p', { style: 'margin-top:8px', class: 'pledge' }, 'Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life.'),
-        h('p', { style: 'margin-top:8px' }, h('b', null, 'About the card pictures. '), 'They are drawn, not the real ones. Partly that is us being cheap, mostly it is that the real designs are the banks\u2019 trademarks and we are not interested in a lifetime in court. The sites that show the real pictures have a deal with the bank and get paid when you click. We do not, and that is the point.'),
+        h('p', { style: 'margin-top:8px' }, h('b', null, 'About the card pictures. '), 'Drawn, not real. Partly because we are cheap a**es, mostly because the real designs are trademarked and we are not spending eternity in court over a picture. The sites with the real pictures have a deal with the bank and get paid when you click. We get squat, on purpose.'),
         h('p', { style: 'margin-top:8px' }, 'Independent of every bank and card network. No bank pays for placement, no referral links, no sponsored cards; the ranking is arithmetic on your own cards. Rates and terms change; the issuer’s agreement wins. Point values are estimates.'),
         h('p', { style: 'margin-top:8px' }, 'Questions or a wrong number: ', h('a', { href: 'mailto:' + CONTACT }, CONTACT))));
     as.appendChild(h('button', { class: 'btn block', onclick: openDisclaimer }, 'See the welcome note again'));
