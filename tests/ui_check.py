@@ -170,6 +170,25 @@ with sync_playwright() as p:
     assert 'Customized Cash' in page.inner_text('.winner .name'), 'goal card should lead in bonus mode'
     assert 'to go' in page.inner_text('.winner'), 'goal flag missing'
 
+    # Best card anywhere
+    page.click('.tabs button[data-view=pay]')
+    page.click('.where-chip')
+    page.fill('#store-search', 'whole foods')
+    page.click('.suggest button:has-text("Whole Foods")')
+    page.fill('#amount', '85')
+    page.wait_for_selector('.anywhere')
+    page.wait_for_timeout(300)
+    page.evaluate("document.querySelector('.anywhere').scrollIntoView({block:'center'})")
+    page.wait_for_timeout(200)
+    page.screenshot(path=os.path.join(OUT, '19-anywhere.png'))
+    print('anywhere:', page.inner_text('.anywhere').replace('\n', ' / ')[:400])
+    page.fill('.anywhere input[type=range]', '150')
+    page.dispatch_event('.anywhere input[type=range]', 'input')
+    page.dispatch_event('.anywhere input[type=range]', 'change')
+    page.wait_for_timeout(300)
+    print('anywhere at 150 trips:', page.inner_text('.anywhere').replace('\n', ' / ')[:400])
+    page.screenshot(path=os.path.join(OUT, '20-anywhere-150.png'))
+
     # Custom card
     page.click('.tabs button[data-view=wallet]')
     page.click('#view-wallet button:has-text("Add a card")')

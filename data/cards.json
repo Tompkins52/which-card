@@ -3972,6 +3972,7 @@
    "unsure": [
     "Whether any American Express Amazon Business Prime accounts remain unconverted as of October 28, 2026; the merge step may prefer to model the U.S. Bank Prime Business Card instead"
    ],
+   "closed": true,
    "color": "#25557E"
   },
   {
@@ -4551,6 +4552,7 @@
    "unsure": [
     "Exact date applications closed (Nav says April 2026); whether existing Amex Lowe's accounts will be transferred to Synchrony; the 2.7% fx fee comes from FinanceBuzz, not an Amex page"
    ],
+   "closed": true,
    "color": "#315C87"
   },
   {
@@ -4671,6 +4673,7 @@
    "unsure": [
     "Amex removed the Plum product page in April 2026, so the fee, discount terms and fx fee come from Doctor of Credit, Danny the Deal Guru and Frequent Miler rather than an Amex page"
    ],
+   "closed": true,
    "color": "#1F4D65"
   },
   {
@@ -6895,6 +6898,7 @@
    "unsure": [
     "No foreign transaction fee is from NerdWallet (May 2026), not the issuer page"
    ],
+   "eligibility": "Needs a BJ's membership",
    "color": "#7D342C",
    "networkOptions": [
     "Discover",
@@ -6944,6 +6948,7 @@
    "unsure": [
     "No foreign transaction fee is from NerdWallet (May 2026), not the issuer page"
    ],
+   "eligibility": "Needs a BJ's Club+ membership",
    "color": "#6D2E26",
    "networkOptions": [
     "Discover",
@@ -7988,6 +7993,7 @@
    "unsure": [
     "Extended warranty is not listed on the Citi business card page; left unset"
    ],
+   "eligibility": "Needs a Costco membership",
    "color": "#1A4674"
   },
   {
@@ -8844,6 +8850,7 @@
      "keep": false
     }
    ],
+   "eligibility": "Needs a Costco membership",
    "color": "#B52E31"
   },
   {
@@ -8892,6 +8899,7 @@
     "The Citi product page returns Page Not Found and ExxonMobil's pages say applications are no longer accepted; the closure date and whether Citi plans to convert accounts were not found",
     "The 5% rebate is modeled as a merchant rate; the per-gallon fuel discount cannot be expressed as a percentage"
    ],
+   "closed": true,
    "color": "#306882",
    "onlyAt": [
     "mobil"
@@ -9489,6 +9497,7 @@
     "The Discover page did not state the foreign transaction fee; 0 matches every other Discover card and other-issuers.json",
     "What happens to secured accounts after migration to Capital One is not confirmed"
    ],
+   "closed": true,
    "color": "#653825"
   },
   {
@@ -10836,6 +10845,7 @@
    "unsure": [
     "Wells Fargo's site shows no One Key+ product page and the main card list omits it; whether it is still open to new applicants is not confirmed, and the terms here come from NerdWallet (November 2025), Upgraded Points (June 2026) and AwardWallet (July 2026)"
    ],
+   "closed": true,
    "color": "#7D2C31"
   },
   {
@@ -12104,54 +12114,8 @@
     "The program terms PDF still linked from Alliant is the October 2022 version with the old tiers; the product page and NerdWallet (spring 2026) confirm the flat 1.5%",
     "Rental car coverage is listed on the product page without saying primary or secondary"
    ],
+   "eligibility": "Needs Alliant membership (anyone can join)",
    "color": "#285277"
-  },
-  {
-   "issuer": "Barclays",
-   "verified": "2026-10-28",
-   "id": "barclays-aadvantage-aviator-business",
-   "name": "AAdvantage Aviator World Elite Business Mastercard",
-   "network": "Mastercard",
-   "type": "business",
-   "program": "american-aadvantage",
-   "annualFee": 95,
-   "fxFee": 0,
-   "base": 1,
-   "earn": [
-    {
-     "merchant": "american-airlines",
-     "rate": 2
-    },
-    {
-     "category": "select-merchants",
-     "rate": 2,
-     "label": "office supply, telecom and car rental merchants"
-    }
-   ],
-   "benefits": {},
-   "credits": [
-    "$99 companion certificate after $30,000 in purchases in a calendar year",
-    "5% AAdvantage mileage bonus after the account anniversary"
-   ],
-   "bestFor": "Historical reference only; converted to the Citi AAdvantage Business World Elite Mastercard in April 2026",
-   "tips": [
-    "Closed to new applicants October 1, 2025; accounts moved to Citi on April 24, 2026 as the Citi AAdvantage Business card ($99): 2X on American, 2X at telecom, car rental and gas merchants, 1X elsewhere",
-    "While it existed the card earned 2X on American and at office supply, telecom and car rental merchants, 1X elsewhere, with a first checked bag free for up to 4 companions and preferred boarding"
-   ],
-   "watchOut": [
-    "Barclays no longer services this card; use the Citi AAdvantage Business entry for current earning",
-    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
-   ],
-   "sourceUrl": "https://awardwallet.com/news/credit-cards/citi-sole-issuer-aadvantage-cards/",
-   "sourceUrls": [
-    "https://frequentmiler.com/barlcays-aviator-to-citi-transition-april-2026-what-we-know-and-what-we-dont/",
-    "https://www.nerdwallet.com/credit-cards/news/barclays-aadvantage-aviator-cards-close-to-new-applicants"
-   ],
-   "confidence": "low",
-   "unsure": [
-    "No Barclays or AA page for the Aviator Business could be fetched; the pre-conversion earning categories are from reporting on the Citi mapping and may not be exact"
-   ],
-   "color": "#2D7D8B"
   },
   {
    "issuer": "Barclays",
@@ -12273,117 +12237,6 @@
     "Older reporting cited cell phone insurance on the business card; it is not on any current page so the key is omitted"
    ],
    "color": "#275072"
-  },
-  {
-   "issuer": "Barclays",
-   "verified": "2026-10-28",
-   "id": "barclays-aadvantage-aviator-red",
-   "name": "AAdvantage Aviator Red World Elite Mastercard",
-   "network": "Mastercard",
-   "type": "personal",
-   "program": "american-aadvantage",
-   "annualFee": 99,
-   "fxFee": 0,
-   "base": 1,
-   "earn": [
-    {
-     "merchant": "american-airlines",
-     "rate": 2
-    }
-   ],
-   "benefits": {
-    "cellPhoneProtection": true,
-    "rentalCarCDW": "secondary"
-   },
-   "credits": [
-    "Up to $25 back per year on American in-flight Wi-Fi",
-    "$99 companion certificate after $20,000 in purchases in a calendar year",
-    "25% off in-flight food and beverages"
-   ],
-   "bestFor": "Historical reference only; converted to the Citi AAdvantage Platinum Select in April 2026",
-   "tips": [
-    "Barclays stopped taking applications on October 1, 2025 because Citi became American's exclusive issuer",
-    "On April 24, 2026 every Aviator Red account was transferred to Citi and reissued as a Citi AAdvantage Platinum Select ($99): 2X on American, 2X at restaurants and gas stations, 1X elsewhere",
-    "While it existed the card earned 2X on eligible American Airlines purchases and 1X elsewhere, with a first checked bag free for up to 4 companions and preferred boarding",
-    "Converted holders kept some Barclays perks (companion certificate, Wi-Fi credit) for a limited time on top of Citi's benefits"
-   ],
-   "watchOut": [
-    "Barclays no longer issues or services any AAdvantage card; use the Citi AAdvantage Platinum Select entry for current earning",
-    "Anniversary dates and credit limits carried over, but card numbers and autopay did not",
-    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
-   ],
-   "sourceUrl": "https://cards.barclaycardus.com/banking/cards/aadvantage-aviator-red-world-elite-mastercard/",
-   "sourceUrls": [
-    "https://awardwallet.com/news/credit-cards/citi-sole-issuer-aadvantage-cards/",
-    "https://www.nerdwallet.com/credit-cards/news/barclays-aadvantage-aviator-cards-close-to-new-applicants",
-    "https://frequentmiler.com/barlcays-aviator-to-citi-transition-april-2026-what-we-know-and-what-we-dont/",
-    "https://viewfromthewing.com/?p=243180"
-   ],
-   "confidence": "medium",
-   "unsure": [
-    "Whether any Aviator Red accounts remain with Barclays after the April 2026 transfer; the merge step may drop this card"
-   ],
-   "color": "#205E6F"
-  },
-  {
-   "issuer": "Barclays",
-   "verified": "2026-10-28",
-   "id": "barclays-aadvantage-aviator-silver",
-   "name": "AAdvantage Aviator Silver World Elite Mastercard",
-   "network": "Mastercard",
-   "type": "personal",
-   "program": "american-aadvantage",
-   "annualFee": 199,
-   "fxFee": 0,
-   "base": 1,
-   "earn": [
-    {
-     "merchant": "american-airlines",
-     "rate": 3
-    },
-    {
-     "category": "hotels",
-     "rate": 2
-    },
-    {
-     "category": "rental-car",
-     "rate": 2
-    }
-   ],
-   "benefits": {
-    "cellPhoneProtection": true,
-    "rentalCarCDW": "secondary"
-   },
-   "credits": [
-    "Up to 15,000 bonus Loyalty Points per year (5,000 each at $20,000, $40,000 and $50,000 in spend)",
-    "$99 companion certificate for two guests after $20,000 in purchases in a calendar year",
-    "Up to $50 back per year on American in-flight Wi-Fi",
-    "Global Entry or TSA PreCheck fee credit"
-   ],
-   "bestFor": "Historical reference only; converted to the Citi AAdvantage Globe in April 2026",
-   "tips": [
-    "Was available only by upgrade from Aviator Red, never to new applicants; closed entirely in October 2025",
-    "On April 24, 2026 Aviator Silver accounts became Citi AAdvantage Globe cards ($350): 6X on American-booked hotels, 3X on American, 2X at restaurants, 1X elsewhere",
-    "Silver holders keep the $199 fee and the 15,000 Loyalty Point bonus through February 28, 2027",
-    "While it existed the card earned 3X on American, 2X on hotels and car rentals, 1X elsewhere, with two free checked bags and priority boarding"
-   ],
-   "watchOut": [
-    "Barclays no longer services this card; use the Citi AAdvantage Globe entry for current earning",
-    "The Globe's $350 fee may apply at a later renewal; Citi has not published the date",
-    "Barclays removed extended warranty, purchase protection, price protection and trip delay from its cards on November 1, 2019"
-   ],
-   "sourceUrl": "https://creditcards.aa.com/barclay-credit-card-aviator-silver-american-airlines-aadvantage",
-   "sourceUrls": [
-    "https://viewfromthewing.com/?p=243180",
-    "https://frequentmiler.com/barlcays-aviator-to-citi-transition-april-2026-what-we-know-and-what-we-dont/",
-    "https://milestomemories.com/citi-reveals-conversion-details-and-timeline-for-barclays-aadvantage-cards/"
-   ],
-   "confidence": "medium",
-   "unsure": [
-    "The AA.com Aviator Silver page could not be fetched; earning rates and credits are from pre-conversion reporting and memory of the published terms, so treat as medium confidence",
-    "Whether the $199 fee holds past February 2027"
-   ],
-   "color": "#204F6A"
   },
   {
    "issuer": "Barclays",
@@ -13681,15 +13534,16 @@
     {
      "category": "groceries",
      "rate": 5,
-     "cap": 500,
+     "cap": 10000,
      "capPeriod": "year",
-     "label": "cap is $500 of cash back per calendar year combined across grocery stores, wholesale clubs and gas stations"
+     "capGroup": "aaa-daily-pool"
     },
     {
      "category": "gas",
      "rate": 3,
-     "cap": 500,
-     "capPeriod": "year"
+     "cap": 16667,
+     "capPeriod": "year",
+     "capGroup": "aaa-daily-pool"
     },
     {
      "category": "ev-charging",
@@ -13698,8 +13552,9 @@
     {
      "category": "warehouse",
      "rate": 3,
-     "cap": 500,
-     "capPeriod": "year"
+     "cap": 16667,
+     "capPeriod": "year",
+     "capGroup": "aaa-daily-pool"
     },
     {
      "category": "streaming",
@@ -13762,15 +13617,16 @@
     {
      "category": "gas",
      "rate": 5,
-     "cap": 350,
+     "cap": 7000,
      "capPeriod": "year",
-     "label": "cap is $350 of cash back per calendar year on the 5% category"
+     "capGroup": "aaa-travel-fuel"
     },
     {
      "category": "ev-charging",
      "rate": 5,
-     "cap": 350,
-     "capPeriod": "year"
+     "cap": 7000,
+     "capPeriod": "year",
+     "capGroup": "aaa-travel-fuel"
     },
     {
      "merchant": "hertz",
@@ -14872,6 +14728,7 @@
    "unsure": [
     "Cell phone protection, purchase protection, extended warranty and trip delay coverage are not listed on the product page; the Visa Signature guide to benefits governs"
    ],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#225887"
   },
   {
@@ -14930,6 +14787,8 @@
     "The $49 annual fee and the Global Entry credit are from Upgraded Points and NerdWallet, not an issuer page; Navy Federal no longer publishes a product page for this card",
     "Whether the 3x travel definition matches Flagship Premier's broad definition (rideshare, parking, transit) is not confirmed for this older card"
    ],
+   "closed": true,
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#215D7D"
   },
   {
@@ -14982,6 +14841,7 @@
    "unsure": [
     "Cell phone protection, purchase protection and extended warranty are not listed on the product page"
    ],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#2B4473"
   },
   {
@@ -15044,6 +14904,7 @@
    "unsure": [
     "Cell phone protection, purchase protection and extended warranty are not listed on the product page"
    ],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#226887"
   },
   {
@@ -15080,6 +14941,7 @@
    "verified": "2026-10-28",
    "confidence": "high",
    "unsure": [],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#224B63"
   },
   {
@@ -15120,6 +14982,7 @@
    "unsure": [
     "Cell phone protection, purchase protection and extended warranty are not listed on the product page; they depend on the Visa or Mastercard benefits guide for the card tier issued"
    ],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#1D4572"
   },
   {
@@ -15159,6 +15022,7 @@
    "unsure": [
     "Cell phone protection, purchase protection and extended warranty are not listed on the product page; they depend on the Visa Signature or World Mastercard benefits guide"
    ],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#1D446D"
   },
   {
@@ -15196,6 +15060,7 @@
    "unsure": [
     "The product page does not mention the old nRewards Secured name; the rename is inferred from Navy Federal's current lineup, which lists only cashRewards Secured"
    ],
+   "eligibility": "Needs Navy Federal membership (military, veterans, DoD and their families)",
    "color": "#234F6C"
   },
   {
@@ -15250,6 +15115,7 @@
     "Not in the assignment list but it is a current PenFed card; included for completeness",
     "Whether supermarkets, restaurants and streaming earn 3x on this card is unclear on PenFed's page (the comparison page lists only gas, military stores and sporting goods)"
    ],
+   "eligibility": "Needs PenFed membership (anyone can join with a $5 deposit)",
    "color": "#223C67"
   },
   {
@@ -15285,6 +15151,7 @@
    "verified": "2026-10-28",
    "confidence": "high",
    "unsure": [],
+   "eligibility": "Needs PenFed membership (anyone can join with a $5 deposit)",
    "color": "#285877"
   },
   {
@@ -15357,6 +15224,7 @@
     "PenFed's page renders the multipliers client-side; the 3x/4x travel and 2x/3x dining rates come from NerdWallet (October 2026) and the PenFed Honors Advantage page, which confirm an extra 1x for Honors Advantage members",
     "Rental car coverage is described on the PenFed page without saying primary or secondary"
    ],
+   "eligibility": "Needs PenFed membership (anyone can join with a $5 deposit)",
    "color": "#1A3774"
   },
   {
@@ -15423,6 +15291,7 @@
     "The point values are from NerdWallet (October 2026) quoting PenFed, not a PenFed page",
     "Rental car coverage is from NerdWallet's listing of Visa Signature benefits, not the product page"
    ],
+   "eligibility": "Needs PenFed membership (anyone can join with a $5 deposit)",
    "color": "#1A4D74"
   },
   {
@@ -15464,6 +15333,7 @@
     "PenFed's page renders the percentages client-side; the 2% and 1.5% figures come from the page's chart and from NerdWallet (February 2026)",
     "Rental car coverage, purchase protection and extended warranty are not listed on the product page"
    ],
+   "eligibility": "Needs PenFed membership (anyone can join with a $5 deposit)",
    "color": "#2B4A73"
   },
   {
@@ -15516,6 +15386,8 @@
     "Robinhood's page lists only trip interruption protection; purchase security, extended warranty and rental car coverage come from NerdWallet (October 2026) and Upgraded Points, and the rental coverage's primary or secondary status is not stated",
     "fxFee is 3 for new accounts; existing accounts opened before July 1, 2026 still have 0"
    ],
+   "eligibility": "Needs Robinhood Gold ($50 a year, counted in the math)",
+   "subscriptionFee": 50,
    "color": "#1A446B"
   },
   {
@@ -15563,6 +15435,7 @@
     "Foreign transaction fee is not published on SoFi's page or in NerdWallet's launch article; 0 is assumed to match the other SoFi cards and should be confirmed",
     "Protections are not published"
    ],
+   "eligibility": "Invitation only",
    "color": "#314D87"
   },
   {
@@ -15610,6 +15483,7 @@
     "SoFi's page confirms 2 points per dollar and 1 cent redemption but does not state the foreign transaction fee or the 3% SoFi Travel rate for this card; those come from NerdWallet (October 2026)",
     "The invitation-only status is from NerdWallet; SoFi's page shows a prequalification check rather than an open application"
    ],
+   "eligibility": "Invitation only",
    "color": "#285277"
   },
   {
@@ -15747,6 +15621,7 @@
     "The Sam's Club credit page shows no card terms; rates come from Nav (February 2026), Frequent Miler and Fit Small Business",
     "Foreign transaction fee: Nav and Fit Small Business say none, Frequent Miler says the card imposes one; recorded as 0 to match the consumer card"
    ],
+   "eligibility": "Needs a Sam's Club membership",
    "color": "#274A72",
    "memberships": [
     {
@@ -16112,6 +15987,7 @@
     "Membership prices differ between sources ($50/$110 versus $60/$120)",
     "No purchase or travel protections confirmed; only zero fraud liability is listed"
    ],
+   "eligibility": "Needs a Sam's Club membership",
    "color": "#1F6BB0",
    "memberships": [
     {
@@ -16563,6 +16439,7 @@
     "USAA product and terms pages for this card would not render; rates come from USAA's July 15, 2026 press release and the fee and protections from Doctor of Credit and Frequent Miler",
     "Whether the grocery category excludes warehouse clubs and superstores is assumed from USAA's other 2026 cards and not confirmed for this one"
    ],
+   "eligibility": "Needs USAA membership (military, veterans and their families)",
    "color": "#213E78"
   },
   {
@@ -16677,6 +16554,7 @@
     "Foreign transaction fee of 0% and the protections come from Frequent Miler, not the USAA terms page",
     "The schema has no health-and-wellness category; drugstore and fitness are the closest ids and the full definition is in the tips"
    ],
+   "eligibility": "Needs USAA membership (military, veterans and their families)",
    "color": "#1B4F79"
   },
   {
@@ -16736,6 +16614,7 @@
     "The choice object uses a non-schema 'automatic': true flag because USAA picks the category, matching the Citi Custom Cash convention in capitalone-citi.json",
     "Foreign transaction fee of 0% is from LendingTree; protections are not published"
    ],
+   "eligibility": "Needs USAA membership (military, veterans and their families)",
    "color": "#215478"
   },
   {
@@ -16810,6 +16689,7 @@
    "unsure": [
     "Protections (cell phone, purchase security, trip cancellation and delay) come from Bankrate (October 2026) and Military Money Manual, not an issuer page; the rental car waiver's primary or secondary status is not stated"
    ],
+   "eligibility": "Needs USAA membership (military, veterans and their families)",
    "color": "#2C5A7D"
   },
   {
@@ -16853,6 +16733,7 @@
    "unsure": [
     "USAA product pages require cookies and would not render, so the foreign transaction fee and protections come from the USAA rewards terms page plus Bankrate, AwardWallet and Upgraded Points (all 2026); the rental car waiver's primary or secondary status is not stated by those sources"
    ],
+   "eligibility": "Needs USAA membership (military, veterans and their families)",
    "color": "#203D6F"
   },
   {
@@ -16891,6 +16772,7 @@
    "unsure": [
     "USAA product pages would not render; fees and the intro offer come from Upgraded Points (August 2026) and NerdWallet (June 2026)"
    ],
+   "eligibility": "Needs USAA membership (military, veterans and their families)",
    "color": "#243A60"
   },
   {
@@ -17101,6 +16983,7 @@
     "Included as a discontinued but still-held card; the base of 1 is the starting tier and the merge step may want to treat 1.5 as the steady-state rate for long-term holders",
     "Issuer is recorded as WebBank because the schema enum has no Petal or Tilt value"
    ],
+   "closed": true,
    "color": "#22509B"
   }
  ]

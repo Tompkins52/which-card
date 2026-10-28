@@ -186,10 +186,46 @@ def main(src):
         programs['citi-ty']['transferRequires'] = ['citi-strata-premier', 'citi-strata-elite']
         programs['citi-ty']['note'] = (programs['citi-ty'].get('note') or '') + ' Double Cash, Custom Cash and Strata points transfer to the full partner list only alongside a Strata Premier or Strata Elite.'
     CLOSED = {'citi-custom-cash', 'wells-fargo-attune', 'us-bank-altitude-reserve', 'us-bank-shopper-cash-rewards', 'chase-slate-edge', 'amex-everyday', 'amex-everyday-preferred',
-              'amex-cash-magnet', 'amex-green', 'citi-simplicity'}
+              'amex-cash-magnet', 'amex-green', 'citi-simplicity', 'amex-amazon-business-prime', 'amex-lowes-business-rewards', 'amex-plum-card',
+              'citi-exxon-mobil-smart-card-plus', 'discover-it-secured', 'navy-federal-flagship-rewards', 'petal-2-visa', 'wells-fargo-one-key-plus-card'}
+    ELIGIBILITY = [
+        ('navy-federal-', 'Needs Navy Federal membership (military, veterans, DoD and their families)'),
+        ('usaa-', 'Needs USAA membership (military, veterans and their families)'),
+        ('penfed-', 'Needs PenFed membership (anyone can join with a $5 deposit)'),
+        ('alliant-', 'Needs Alliant membership (anyone can join)'),
+        ('citi-costco-', 'Needs a Costco membership'),
+        ('sams-club-', 'Needs a Sam\'s Club membership'),
+        ('synchrony-sams-club-', 'Needs a Sam\'s Club membership'),
+        ('capital-one-bjs-one-plus', 'Needs a BJ\'s Club+ membership'),
+        ('capital-one-bjs-one-mastercard', 'Needs a BJ\'s membership'),
+        ('robinhood-gold-card', 'Needs Robinhood Gold ($50 a year, counted in the math)'),
+        ('sofi-', 'Invitation only'),
+    ]
     for c in cards:
         if c['id'] in CLOSED:
             c['closed'] = True
+        for prefix, text in ELIGIBILITY:
+            if c['id'].startswith(prefix):
+                c['eligibility'] = text
+                break
+        if c['id'] == 'robinhood-gold-card':
+            c['subscriptionFee'] = 50
+        # AAA cards cap cash back earned, not spend: turn the cash cap into the matching spend cap
+        if c['id'] == 'bread-aaa-daily-advantage-visa':
+            for r in c['earn']:
+                if r.get('cap') == 500:
+                    r['cap'] = int(round(500 / (r['rate'] / 100.0)))
+                    r['capGroup'] = 'aaa-daily-pool'
+                    r.pop('label', None)
+        if c['id'] == 'bread-aaa-travel-advantage-visa':
+            for r in c['earn']:
+                if r.get('cap') == 350:
+                    r['cap'] = 7000
+                    r['capGroup'] = 'aaa-travel-fuel'
+                    r.pop('label', None)
+        for r in c['earn']:
+            if r.get('label', '').lower().startswith('cap is'):
+                r.pop('label')
     programs.setdefault('british-airways-avios', {'name': 'Avios (British Airways, Aer Lingus, Iberia)', 'unit': 'points', 'cash': 0, 'travel': 1.5, 'transfer': 1.5,
                                                   'note': 'Best on short-haul partner flights and off-peak British Airways awards; Avios move freely between the three programs.'})
     programs.setdefault('disney-rewards', {'name': 'Disney Rewards Dollars', 'unit': 'percent', 'cash': 1, 'travel': 1, 'transfer': 1,
@@ -380,7 +416,7 @@ def main(src):
                 r['label'] = PORTALS.get(c['issuer'], 'issuer travel site')
         if c['issuer'] == 'Capital One':
             c['name'] = re.sub(r' (Cash )?Rewards$', '', c['name'])
-    cards = [c for c in cards if not c['id'].startswith('barclays-aviator') and c['id'] != 'chase-amazon-visa']
+    cards = [c for c in cards if 'aviator' not in c['id'] and c['id'] != 'chase-amazon-visa']
     MEMBERSHIPS = {
         'amazon-prime': {'id': 'amazon-prime', 'question': 'Do you have an Amazon Prime membership?', 'yes': 'With Prime', 'no': 'Without Prime'},
         'sams-club-plus-membership': {'id': 'sams-club-plus-membership', 'question': 'Are you a Sam\'s Club Plus member (not the basic Club membership)?', 'yes': 'Plus member', 'no': 'Club member'},

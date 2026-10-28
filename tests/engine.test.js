@@ -188,3 +188,22 @@ assert.strictEqual(r.rate, 3);
 r = E.evaluateCard(E.cardById(data, 'primev'), {}, { merchant: 'amazon', amount: 100 }, { priority: 'cash' }, data, Q4);
 assert.strictEqual(r.rate, 3, 'unanswered counts as no membership');
 console.log('membership tests passed');
+
+// 18. Best card anywhere, ranked by yearly gain after fees, and the highest rate with its break-even
+(function () {
+  var st2 = { wallet: [{ cardId: 'prime' }], prefs: { priority: 'cash', redeem: {} } };
+  var aw = E.bestAnywhere({ merchant: 'jewel-osco', amount: 85 }, st2, data, Q4, 85, 52);
+  assert.ok(aw, 'bestAnywhere returns a result');
+  assert.strictEqual(aw.best.card.id, 'custom', 'no-fee 5% (category pointed here) beats 6% with a $95 fee at 52 trips');
+  assert.strictEqual(Math.round(aw.best.gain), Math.round((0.05 - 0.01) * 85 * 52 * 100));
+  assert.strictEqual(aw.highestRate.card.id, 'bcp');
+  assert.strictEqual(aw.highestRateBreakEven.trips, 23, 'bcp fee pays off after about 23 trips of $85');
+  // the store's own card wins where it is accepted, and only there
+  aw = E.bestAnywhere({ merchant: 'costco', amount: 150 }, st2, data, Q4, 150, 24);
+  assert.notStrictEqual(aw.best.card.network, 'American Express', 'Amex is never suggested at Costco');
+  // steady mode ignores rotating bonuses when judging a card to sign up for
+  var st3 = { wallet: [{ cardId: 'prime' }], prefs: { priority: 'cash', redeem: {} } };
+  aw = E.bestAnywhere({ merchant: 'shell', amount: 45 }, st3, data, Q4, 45, 52);
+  assert.notStrictEqual(aw.best.card.id, 'flex', 'a rotating 5% is not a reason to get a card');
+  console.log('best anywhere tests passed');
+})();

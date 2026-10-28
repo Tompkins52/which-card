@@ -447,6 +447,7 @@
       });
       root.appendChild(ul);
     }
+    if (where && state.prefs.showAnywhere !== false) renderAnywhere(root, rc, amount);
     rec.notes.forEach(function (n) { root.appendChild(h('div', { class: 'note' }, n)); });
     if (!where) root.appendChild(h('p', { class: 'hint' }, 'Pick the store above to see the best card there.'));
     if (!PREVIEW && !state.prefs.location && !state.locationAsked && 'geolocation' in navigator) {
@@ -456,6 +457,107 @@
           h('button', { class: 'btn', onclick: function () { state.locationAsked = true; saveState(); renderAnswer(); } }, 'No'),
           h('button', { class: 'btn primary', onclick: function () { state.locationAsked = true; state.prefs.location = true; saveState(); renderAnswer(); locate(); } }, 'Yes'))));
     }
+  }
+
+  /* ---------- Best card anywhere ---------- */
+  // Typical spend per trip and trips per year, used until the person has logged a few purchases here.
+  var TYPICAL = { groceries: [85, 52], gas: [45, 52], dining: [30, 52], online: [50, 24], warehouse: [150, 12], superstore: [60, 24], drugstore: [25, 12],
+    travel: [400, 4], flights: [400, 3], hotels: [300, 3], 'portal-travel': [300, 3], transit: [15, 100], 'rental-car': [250, 2], streaming: [15, 12], phone: [90, 12],
+    utilities: [150, 12], 'home-improvement': [75, 12], entertainment: [60, 12], 'department-store': [60, 8], fitness: [40, 12], 'ev-charging': [15, 52], rent: [1800, 12], other: [50, 12] };
+  function paceKey() { return ctx.merchant ? 'm:' + ctx.merchant : 'c:' + (ctx.category || 'other'); }
+  function historyHere() {
+    var cutoff = Date.now() - 365 * 864e5, n = 0, total = 0, first = Date.now();
+    state.wallet.forEach(function (e) {
+      (e.purchases || []).forEach(function (p) {
+        var t = new Date(p.date).getTime(); if (t < cutoff) return;
+        var hit = ctx.merchant ? p.merchant === ctx.merchant : (p.category === ctx.category || (p.merchant && (E.merchantById(data, p.merchant) || {}).category === ctx.category));
+        if (hit) { n++; total += Number(p.amount) || 0; if (t < first) first = t; }
+      });
+    });
+    var days = Math.max(30, (Date.now() - first) / 864e5);
+    return { n: n, avg: n ? total / n : 0, perYear: n ? Math.round(n * 365 / days) : 0 };
+  }
+  function pace(amount) {
+    var catId = ctx.category || ((E.merchantById(data, ctx.merchant) || {}).category) || 'other';
+    var t = TYPICAL[catId] || TYPICAL.other;
+    var hist = historyHere();
+    state.trips = state.trips || {};
+    var saved = state.trips[paceKey()];
+    var trips = saved || (hist.n >= 3 ? Math.max(1, hist.perYear) : t[1]);
+    var perTrip = amount > 0 ? amount : (hist.n >= 3 ? hist.avg : t[0]);
+    return { trips: trips, perTrip: perTrip, source: amount > 0 ? 'typed' : (hist.n >= 3 ? 'history' : 'typical'), tripsSource: saved ? 'set' : (hist.n >= 3 ? 'history' : 'typical') };
+  }
+  function dollars(c) { var v = Math.round(Math.abs(c) / 100); return (c < 0 ? '-' : '') + '$' + v.toLocaleString('en-US'); }
+  function hypotheticalHow(r) {
+    var catName = cat(E.contextCategories({ merchant: ctx.merchant, category: ctx.category }, data).primary).name.toLowerCase();
+    if (r.source === 'choice') return r.card.choice && r.card.choice.auto ? 'Counted as if you use it only for ' + catName + ', so that stays its top category.' : 'Counted with ' + catName + ' picked as its bonus category.';
+    if (r.source === 'choice2') return 'Counted with ' + catName + ' picked as its second category.';
+    return '';
+  }
+  function renderAnywhere(root, rc, amount) {
+    var p = pace(amount);
+    var box = h('div', { class: 'anywhere' });
+    var top = h('div', { class: 'aw-top' });
+    var bottom = h('div', { class: 'aw-bottom' });
+    var tripsOut = h('b', { class: 'num' }, String(p.trips));
+    var slider = h('input', { type: 'range', min: '1', max: '208', step: '1', value: String(Math.min(208, p.trips)), 'aria-label': 'Trips a year here' });
+    var paceLine = h('div', { class: 'aw-pace' },
+      h('label', null, 'Trips a year here: ', tripsOut, h('span', { class: 'muted' }, ' of about ' + (Math.abs(p.perTrip - Math.round(p.perTrip)) < 0.005 ? '$' + Math.round(p.perTrip).toLocaleString('en-US') : money(p.perTrip)) + (p.source === 'typed' ? ' (this purchase)' : p.source === 'history' ? ' (your average)' : ' (typical)'))),
+      slider);
+    box.appendChild(top); box.appendChild(paceLine); box.appendChild(bottom);
+    root.appendChild(box);
+    var pending = false;
+    function draw() {
+      pending = false;
+      var aw = E.bestAnywhere(rc, state, data, new Date(), p.perTrip, p.trips);
+      clear(top); clear(bottom);
+      if (!aw) { box.hidden = true; return; }
+      var whereName = currentWhere().title;
+      var b = aw.best, hi = aw.highestRate;
+      var mineName = aw.mine ? (aw.mine.entry.nickname || aw.mine.card.name) : null;
+      var win = b.gain >= 100;
+      top.appendChild(h('div', { class: 'aw-eyebrow' }, icon('trophy'), 'Best card anywhere for ' + whereName));
+      if (win) {
+        top.appendChild(h('button', { class: 'aw-card', onclick: function () { openCardDetail(b.card.id); } },
+          cardArt(b.card, 72),
+          h('span', { class: 't' }, h('b', null, b.card.name),
+            h('span', null, (b.unit === 'percent' ? pctText(b.effectivePercent) : rateText(b.effectiveRate, b.unit) + ' (about ' + pctText(b.effectivePercent) + ')') + ' here \u00b7 ' + (b.cost ? '$' + Math.round(b.cost / 100) + ' a year' : 'no annual fee'))),
+          h('span', { class: 'chev' }, icon('chev'))));
+        top.appendChild(h('p', { class: 'aw-vs' }, mineName ? 'You\u2019re getting ' + pctText(aw.minePct) + ' with ' + mineName + '.' : 'Nothing in your wallet works here.'));
+      } else {
+        top.appendChild(h('p', { class: 'aw-set' }, mineName ? 'Nothing out there beats your ' + mineName + ' here. You\u2019re set.' : 'No card does better here.'));
+      }
+      var chips = h('div', { class: 'flags' });
+      if (win) {
+        b.needs.forEach(function (n) { chips.appendChild(h('span', { class: 'flag warn' }, 'Needs ' + n.replace(/^With /, ''))); });
+        if (b.card.eligibility) chips.appendChild(h('span', { class: 'flag' }, b.card.eligibility));
+        var how = hypotheticalHow(b); if (how) top.appendChild(h('p', { class: 'small muted' }, how));
+      }
+      if (chips.childNodes.length) top.appendChild(chips);
+      if (aw.mine && aw.mine.source === 'rotating') {
+        var qEnd = E.quarterEnd(new Date());
+        top.appendChild(h('p', { class: 'small muted' }, 'Your ' + pctText(aw.minePct) + ' here is a rotating bonus that ends ' + qEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', so the yearly math uses your everyday best' + (aw.mineSteady ? ' (' + (aw.mineSteady.entry.nickname || aw.mineSteady.card.name) + ', ' + pctText(aw.mineSteady.effectivePercent) + ')' : '') + '.'));
+      }
+      if (win) {
+        bottom.appendChild(h('div', { class: 'aw-net num' }, '+' + dollars(b.gain) + ' a year'));
+        var gross = b.gain + b.cost;
+        bottom.appendChild(h('p', { class: 'small' }, dollars(gross) + ' more in rewards on ' + dollars(p.perTrip * p.trips * 100) + ' a year of spending here' + (b.cost ? ', minus its ' + dollars(b.cost) + ' fee.' : '. No annual fee.')));
+        if (b.cost && aw.bestBreakEven && aw.bestBreakEven.trips) bottom.appendChild(h('p', { class: 'small muted' }, 'Its fee pays for itself after about ' + aw.bestBreakEven.trips + ' trips a year here.'));
+      }
+      if (hi && hi !== b && hi.effectivePercent > (win ? b.effectivePercent : aw.minePct) + 0.01) {
+        var be = aw.highestRateBreakEven;
+        var line = 'Highest rate here is ' + hi.card.name + ' at ' + pctText(hi.effectivePercent) + ', but its ' + dollars(hi.cost) + ' fee ';
+        line += be && be.never ? 'never pays off from this store alone.' : 'only pays off after about ' + be.trips + ' trips a year here.';
+        bottom.appendChild(h('p', { class: 'small muted' }, line));
+      }
+      bottom.appendChild(h('p', { class: 'aw-foot small muted' }, 'Just math, counting only ' + whereName + '. Nobody paid for this spot.'));
+    }
+    slider.addEventListener('input', function () {
+      p.trips = parseInt(slider.value, 10) || 1; tripsOut.textContent = String(p.trips);
+      if (!pending) { pending = true; requestAnimationFrame(draw); }
+    });
+    slider.addEventListener('change', function () { state.trips = state.trips || {}; state.trips[paceKey()] = p.trips; saveState(); });
+    draw();
   }
 
   function logPurchase(res, amount) {
@@ -1127,6 +1229,8 @@
       h('button', { class: 'switch' + (state.prefs.payMethod === 'wallet' ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.payMethod === 'wallet' ? 'true' : 'false', 'aria-label': 'Pay with phone by default', onclick: function () { state.prefs.payMethod = state.prefs.payMethod === 'wallet' ? 'card' : 'wallet'; ctx.payMethod = state.prefs.payMethod; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Find my store when I open the app'), h('span', null, PREVIEW ? 'Available in the installed app, not in this preview.' : 'Uses your location once per visit. Nothing is stored.')),
       h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) locate(); } })));
+    ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
+      h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I am outside the US'), h('span', null, 'Counts foreign transaction fees against each card.')),
       h('button', { class: 'switch' + (state.prefs.abroad ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.abroad ? 'true' : 'false', 'aria-label': 'Outside the US', onclick: function () { state.prefs.abroad = !state.prefs.abroad; saveState(); renderMore(); } })));
     root.appendChild(ps);

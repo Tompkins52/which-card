@@ -137,7 +137,7 @@
     (card.earn || []).forEach(function (r, idx) {
       var hit = false, label = '';
       var rate = r.rate;
-      if (r.when && !inWindow(r.when, now)) return;
+      if (r.when && (ctx.steady || !inWindow(r.when, now))) return;
       if (r.walletPayOnly && !cats.all['wallet-pay']) return;
       if (r.onlineOnly && !cats.all.online) return;
       if (r.requires && !(entry.memberships && entry.memberships[r.requires])) return;
@@ -167,7 +167,7 @@
         if (tierCats.some(matches)) list.push({ rate: st.rate, source: 'choice2', label: 'second tier', cap: st.sharesCap ? (ch.cap || 0) : (st.cap || 0), capPeriod: st.sharesCap ? ch.capPeriod : (st.capPeriod || ''), pool: st.sharesCap ? 'choice' : 'choice2', activation: false, note: '' });
       }
     }
-    if (card.rotating && card.rotating.calendar) {
+    if (card.rotating && card.rotating.calendar && !ctx.steady) {
       var cal = card.rotating.calendar[q];
       if (cal) {
         var rotCat = (cal.categories || []).filter(function (c) { return cats.all[c]; })[0];
@@ -321,28 +321,168 @@
     return { results: results, best: results[0] || null, categories: cats, notes: notes };
   }
 
-  // Where the catalog beats the wallet, for the Offers tab.
+  // ---- Cards you do not hold ----------------------------------------------------------
+
+  // Memberships the person has told us about on any card (Prime, Sam's Club Plus ...).
+  function knownMemberships(state) {
+    var m = {};
+    (state.wallet || []).forEach(function (e) {
+      Object.keys(e.memberships || {}).forEach(function (k) { if (e.memberships[k]) m[k] = true; else if (!(k in m)) m[k] = false; });
+    });
+    return m;
+  }
+
+  // How a card would be set up if you got it for this purchase: its bonus category pointed here,
+  // the memberships you have told us about applied, unknown ones assumed or not.
+  function hypotheticalEntry(card, ctx, data, known, assume) {
+    var cats = contextCategories(ctx, data);
+    var matches = function (c) { return !!cats.all[c] || !!(cats.merchant && (cats.merchant.id === c || cats.merchant.parent === c)); };
+    var entry = { memberships: {}, purchases: [] };
+    (card.memberships || []).forEach(function (m) { entry.memberships[m.id] = (m.id in known) ? known[m.id] : !!assume; });
+    if (card.choice) {
+      var ch = card.choice;
+      var hit = (ch.options || []).filter(matches);
+      if (hit.length) entry.choices = hit.slice(0, ch.slots || 1);
+      if (ch.secondTier && ch.secondTier.slots) {
+        var hit2 = (ch.secondTier.categories || []).filter(matches);
+        if (hit2.length) entry.choices2 = hit2.slice(0, ch.secondTier.slots);
+      }
+    }
+    return entry;
+  }
+
+  // Cards someone could still sign up for: not in the wallet, not closed, business cards only for business owners.
+  function catalogPool(state, data) {
+    var walletIds = {}, hasBusiness = false;
+    (state.wallet || []).forEach(function (e) {
+      walletIds[e.cardId] = true;
+      var c = cardById(data, e.cardId);
+      if (c && c.type === 'business') hasBusiness = true;
+    });
+    return data.cards.filter(function (card) {
+      if (walletIds[card.id] || card.custom || card.hidden || card.closed) return false;
+      if (card.type === 'business' && !hasBusiness) return false;
+      return true;
+    });
+  }
+
+  function yearlyCost(card) { return ((card.annualFee || 0) + (card.subscriptionFee || 0)) * 100; }
+
+  // Every catalog card you could get, evaluated for this purchase on its everyday rate
+  // (no rotating or time-window bonuses), set up the way you would use it here.
+  function catalogOptions(ctx, state, data, now, opts) {
+    opts = opts || {};
+    var basePrefs = Object.assign({}, state.prefs || {}, { wallet: state.wallet || [] });
+    var cash = (basePrefs.priority || 'cash') === 'cash';
+    var steadyCtx = Object.assign({}, ctx, { steady: true });
+    var known = knownMemberships(state);
+    var out = [];
+    catalogPool(state, data).forEach(function (card) {
+      if (opts.skipStoreCards && card.onlyAt) return;
+      var pv = data.valuations.programs[card.program];
+      if (cash && pv && unitFor(card.program, data) !== 'percent' && !pv.cash) return;
+      if (opts.maxFee !== undefined && (card.annualFee || 0) > opts.maxFee) return;
+      var prefs = Object.assign({}, basePrefs, { wallet: basePrefs.wallet.concat([{ cardId: card.id }]) });
+      var unknown = (card.memberships || []).filter(function (m) { return !(m.id in known); });
+      [false].concat(unknown.length ? [true] : []).forEach(function (assume) {
+        var entry = hypotheticalEntry(card, steadyCtx, data, known, assume);
+        var r = evaluateCard(card, entry, steadyCtx, prefs, data, now);
+        if (!r.accepted || r.effectiveRate <= 0) return;
+        if (opts.bonusOnly && r.source === 'base') return;
+        r.needs = assume ? unknown.map(function (m) { return m.yes; }) : [];
+        r.prefs = prefs;
+        out.push(r);
+      });
+    });
+    return out;
+  }
+  function byRate(a, b) {
+    if (Math.abs(b.effectivePercent - a.effectivePercent) > 1e-9) return b.effectivePercent - a.effectivePercent;
+    if (yearlyCost(a.card) !== yearlyCost(b.card)) return yearlyCost(a.card) - yearlyCost(b.card);
+    if (a.needs.length !== b.needs.length) return a.needs.length - b.needs.length;
+    var ae = a.card.eligibility ? 1 : 0, be = b.card.eligibility ? 1 : 0;
+    if (ae !== be) return ae - be;
+    var as = a.card.onlyAt ? 1 : 0, bs = b.card.onlyAt ? 1 : 0;
+    if (as !== bs) return as - bs;
+    return (a.card.type === 'business' ? 1 : 0) - (b.card.type === 'business' ? 1 : 0);
+  }
+  function bestCatalogCard(ctx, state, data, now, opts) {
+    var list = catalogOptions(ctx, state, data, now, opts);
+    list.sort(byRate);
+    return list[0] || null;
+  }
+
+  // Value in cents of spending perTrip dollars, trips times a year, on a card. Caps are honored by
+  // spreading the spend evenly across each cap period.
+  function yearlyValue(res, ctx, data, now, perTrip, trips) {
+    if (!res || !res.card || perTrip <= 0 || trips <= 0) return 0;
+    var steadyCtx = Object.assign({}, ctx, { steady: true });
+    var entry = Object.assign({}, res.entry || {}, { purchases: [] });
+    var prefs = res.prefs || {};
+    var probe = evaluateCard(res.card, entry, Object.assign({}, steadyCtx, { amount: perTrip }), prefs, data, now);
+    var period = probe.cap ? probe.cap.period : '';
+    var k = { quarter: 4, month: 12, cycle: 12, year: 1 }[period] || 1;
+    var r = evaluateCard(res.card, entry, Object.assign({}, steadyCtx, { amount: perTrip * trips / k }), prefs, data, now);
+    return r.accepted ? r.valueCents * k : 0;
+  }
+
+  // The best card anywhere for this store at your pace (perTrip dollars, trips times a year), against
+  // the best card you already hold. "best" maximizes yearly rewards after the card's yearly cost;
+  // "highestRate" is the top rate regardless of fee, with how many trips its fee needs to pay off.
+  function bestAnywhere(ctx, state, data, now, perTrip, trips) {
+    now = now || new Date();
+    var minePrefs = Object.assign({}, state.prefs || {}, { wallet: state.wallet || [] });
+    // Compare against the highest-earning card you hold, even when bonus mode ranks a goal card first.
+    function topEarner(results) {
+      var top = null;
+      results.forEach(function (r) { if (r.accepted && (!top || r.effectivePercent > top.effectivePercent + 1e-9)) top = r; });
+      return top;
+    }
+    var mineNow = topEarner(recommend(ctx, state, data, now).results);
+    var mineSteady = topEarner(recommend(Object.assign({}, ctx, { steady: true }), state, data, now).results);
+    if (mineSteady) mineSteady.prefs = minePrefs;
+    var mineYear = mineSteady ? yearlyValue(mineSteady, ctx, data, now, perTrip, trips) : 0;
+    var list = catalogOptions(ctx, state, data, now);
+    if (!list.length) return null;
+    list.forEach(function (r) {
+      r.year = yearlyValue(r, ctx, data, now, perTrip, trips);
+      r.cost = yearlyCost(r.card);
+      r.gain = r.year - r.cost - mineYear;
+    });
+    var best = list.slice().sort(function (a, b) {
+      if (Math.abs(b.gain - a.gain) > 0.5) return b.gain - a.gain;
+      return byRate(a, b);
+    })[0];
+    var highestRate = list.slice().sort(byRate)[0];
+    function breakEven(r) {
+      if (!r.cost) return { trips: 0, never: false };
+      function gainAt(t) { return yearlyValue(r, ctx, data, now, perTrip, t) - r.cost - (mineSteady ? yearlyValue(mineSteady, ctx, data, now, perTrip, t) : 0); }
+      var lo = 0, hi = null;
+      [1, 2, 4, 8, 12, 24, 36, 52, 78, 104, 156, 208, 312, 416, 520, 780, 1040].some(function (t) { if (gainAt(t) >= 0) { hi = t; return true; } lo = t; return false; });
+      if (hi === null) return { trips: null, never: true };
+      for (var i = 0; i < 24 && hi - lo > 0.5; i++) { var mid = (lo + hi) / 2; if (gainAt(mid) >= 0) hi = mid; else lo = mid; }
+      return { trips: Math.ceil(hi), never: false };
+    }
+    return {
+      mine: mineNow, mineSteady: mineSteady, minePct: mineNow ? mineNow.effectivePercent : 0, mineYear: mineYear,
+      best: best, highestRate: highestRate, perTrip: perTrip, trips: trips,
+      worthIt: best.gain >= 100,
+      highestRateBreakEven: highestRate !== best ? breakEven(highestRate) : null,
+      bestBreakEven: breakEven(best)
+    };
+  }
+
+  // Where the catalog beats the wallet, for the Compare tab.
   function gaps(state, data, now) {
     now = now || new Date();
-    var prefs = Object.assign({}, state.prefs || {}, { wallet: state.wallet || [] });
     var out = [];
-    var walletIds = {};
-    (state.wallet || []).forEach(function (e) { walletIds[e.cardId] = true; });
+    var cash = ((state.prefs || {}).priority || 'cash') === 'cash';
     data.categories.forEach(function (cat) {
       if (!cat.quick || cat.id === 'other') return;
-      var ctx = { category: cat.id, amount: 100 };
+      var ctx = { category: cat.id, amount: 100, steady: true };
       var mine = recommend(ctx, state, data, now).best;
-      var minePct = mine ? mine.effectivePercent : 0;
-      var bestCatalog = null;
-      data.cards.forEach(function (card) {
-        if (walletIds[card.id] || card.type === 'business' || card.hidden || card.closed || card.onlyAt) return;
-        var pv = data.valuations.programs[card.program];
-        if ((prefs.priority || 'cash') === 'cash' && pv && !pv.cash) return;
-        if ((prefs.priority || 'cash') === 'cash' && (card.annualFee || 0) > 150) return;
-        var r = evaluateCard(card, {}, ctx, prefs, data, now);
-        if (r.source === 'base') return;
-        if (!bestCatalog || r.effectivePercent > bestCatalog.effectivePercent || (r.effectivePercent === bestCatalog.effectivePercent && (card.annualFee || 0) < (bestCatalog.card.annualFee || 0))) bestCatalog = r;
-      });
+      var minePct = mine && mine.accepted ? mine.effectivePercent : 0;
+      var bestCatalog = bestCatalogCard(ctx, state, data, now, { skipStoreCards: true, bonusOnly: true, maxFee: cash ? 150 : undefined });
       if (bestCatalog && bestCatalog.effectivePercent - minePct >= 1.5) {
         out.push({ category: cat, mine: mine, minePct: minePct, card: bestCatalog.card, pct: bestCatalog.effectivePercent, reason: bestCatalog.reason });
       }
@@ -372,6 +512,7 @@
     quarterOf: quarterOf, quarterEnd: quarterEnd, nextQuarterKey: nextQuarterKey, periodKey: periodKey,
     valuation: valuation, unitFor: unitFor, merchantById: merchantById, cardById: cardById, categoryById: categoryById,
     contextCategories: contextCategories, evaluateCard: evaluateCard, recommend: recommend, gaps: gaps,
+    bestAnywhere: bestAnywhere, yearlyValue: yearlyValue, catalogOptions: catalogOptions, yearlyCost: yearlyCost, knownMemberships: knownMemberships,
     cardSummary: cardSummary, spendInPool: spendInPool, fmtMoney: fmtMoney, fmtDate: fmtDate
   };
 }));

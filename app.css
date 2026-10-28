@@ -351,3 +351,21 @@ a.btn { text-decoration: none; }
 @keyframes bob { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-6px); } }
 
 .note.buddy { background: var(--surface); border: 1px dashed var(--line); color: var(--fg); line-height: 1.5; }
+
+/* Best card anywhere */
+.anywhere { border: 1.5px dashed color-mix(in srgb, var(--brass) 70%, var(--line)); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; background: color-mix(in srgb, var(--brass) 6%, var(--surface)); }
+.aw-top, .aw-bottom { display: flex; flex-direction: column; gap: 8px; }
+.aw-eyebrow { display: flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: color-mix(in srgb, var(--brass) 80%, var(--fg)); }
+.aw-eyebrow svg { width: 16px; height: 16px; }
+.aw-card { display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; align-items: center; text-align: left; width: 100%; }
+.aw-card .t { min-width: 0; }
+.aw-card .t b { display: block; font-family: var(--font-display); font-size: 1.1rem; }
+.aw-card .t span { display: block; color: var(--muted); font-size: .88rem; }
+.aw-card .chev svg { width: 20px; height: 20px; color: var(--muted); }
+.aw-vs { font-size: .95rem; }
+.aw-set { font-weight: 600; font-size: 1rem; }
+.aw-pace { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; border-top: 1px solid var(--line); }
+.aw-pace label { font-size: .9rem; }
+.aw-pace input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; }
+.aw-net { font-family: var(--font-display); font-weight: 800; font-size: 1.8rem; color: var(--good); line-height: 1.1; }
+.aw-foot { padding-top: 2px; }
