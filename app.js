@@ -213,7 +213,7 @@
       '<path d="M132 74 q18 -4 32 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>' +
       '<path d="M104 128 q30 22 60 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>' +
       '<path d="M128 139 q8 14 2 24 q-10 -6 -2 -24z" fill="#E86A6A"/>' +
-      '<text x="182" y="146" text-anchor="end" fill="#fff" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="11" font-weight="800" font-style="italic" opacity=".8">PAYS IN FULL</text>' +
+      '<text x="198" y="57" text-anchor="end" fill="#fff" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="800" font-style="italic" font-stretch="112%" letter-spacing=".6" opacity=".85">PAYS IN FULL</text>' +
       '</g>' +
       '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="#1E1328" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="#1E1328"/>' +
       '<path d="M206 70 q22 -16 26 2" fill="none" stroke="#1E1328" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="#1E1328"/>' +
