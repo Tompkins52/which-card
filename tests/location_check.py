@@ -343,6 +343,33 @@ with sync_playwright() as p:
     check('Found Costco' in note, 'the lookup note says so: %s' % note[-60:])
     ctx.set_geolocation(HERE)
 
+    # 14d. A place the map does not know: pick its kind, name it, and the spot is remembered.
+    all_modes('ok')
+    ctx.set_geolocation(ACROSS)
+    open_with(state(True))
+    page.wait_for_selector('.near-label', timeout=8000)
+    page.click('.quick button:has-text("Dining")')
+    page.wait_for_selector('.note.remember', timeout=3000)
+    check('Remember this spot' in page.locator('.note.remember').inner_text(), 'a store picked by hand, with the phone placed, offers to remember the spot')
+    page.fill('.note.remember input', "Norman's")
+    page.click('.note.remember button:has-text("Remember")')
+    page.wait_for_timeout(400)
+    check("You’re at" in where_text() and "Norman" in where_text() and 'Dining' in where_text(), 'once remembered it says you are at it, by name: %s' % where_text()[:60])
+    page.screenshot(path=os.path.join(OUT, 'loc-7-remembered.png'))
+    # Back at the same spot later, with every map service down, it still knows.
+    all_modes('fail')
+    seed(dict(state(True), myPlaces=page.evaluate('JSON.parse(localStorage.getItem("whichcard.state.v1")).myPlaces')))
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    check("Norman" in where_text() and winner() == 'Costco Anywhere Visa', 'back at that spot it says you are at it, even with the map down, and answers for dining')
+    page.click('.tabs button[data-view="more"]')
+    check(page.locator('.my-places li', has_text="Norman's").count() == 1, 'More lists the spot you remembered')
+    page.click('.my-places button[aria-label="Forget Norman\'s"]')
+    page.wait_for_timeout(200)
+    check(page.locator('.my-places').count() == 0, 'and can forget it')
+    all_modes('ok')
+    ctx.set_geolocation(HERE)
+
     # 15. The location test under More runs each step on the phone and reports it.
     all_modes('ok')
     mode.update(de='fail')

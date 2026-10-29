@@ -26,6 +26,7 @@
     if (!s.prefs.payMethod) s.prefs.payMethod = 'card';
     s.prefs.redeem = s.prefs.redeem || {};
     s.customCards = s.customCards || [];
+    s.myPlaces = s.myPlaces || [];
     return s;
   }
   function saveState() { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { /* storage may be unavailable */ } }
@@ -358,6 +359,7 @@
         h('span', { class: 'ic', style: '--tint:' + tintFor(ctx.category || (ctx.merchant ? (E.merchantById(data, ctx.merchant) || {}).category : 'other')) }, icon(w.icon)),
         h('span', { class: 't' }, ctx.located ? h('span', { class: 'here-label' }, icon('pin'), 'You\u2019re at') : null, h('b', null, w.title), h('span', null, w.sub)),
         h('span', { class: 'change' }, 'Change')));
+      var rn = rememberNote(w); if (rn) root.appendChild(rn);
       if (nearby.length > 1) {
         root.appendChild(h('div', { class: 'nearby', style: 'margin-top:8px' }, nearby.slice(0, 5).map(function (n) {
           var same = n.merchant ? n.merchant === ctx.merchant : (!ctx.merchant && n.category === ctx.category && n.name === ctx.customName);
@@ -426,6 +428,26 @@
   }
   // A store from the lookup. quiet: found on its own when the app opened, so the keyboard stays down.
   function applyNearby(n, quiet) { setWhere(n.merchant || null, n.merchant ? null : n.category, n.merchant ? '' : n.name, true, quiet); }
+  // Offered under a store picked by hand while the phone knows where it is: remember this spot, so
+  // next time standing here says "You're at". One line, one tap when the store already has a name.
+  function rememberNote(w) {
+    if (!state.prefs.location || ctx.located || !lastFix || Date.now() - lastFix.at > 10 * 60 * 1000) return null;
+    var key = whereKey({ merchant: ctx.merchant, category: ctx.category, name: ctx.customName });
+    if (rememberLater === key || nearMyPlace(lastFix.lat, lastFix.lon)) return null;
+    var preset = ctx.merchant ? w.title : (ctx.customName || '');
+    var input = h('input', { type: 'text', class: 'field', placeholder: 'Store name', value: preset, 'aria-label': 'Store name', autocomplete: 'off', autocapitalize: 'words' });
+    function save() {
+      var name = input.value.trim(); if (!name) { input.focus(); return; }
+      rememberPlace(name, ctx.merchant, ctx.category || 'other', lastFix);
+      ctx.customName = ctx.merchant ? '' : name; ctx.located = true;
+      state.lastWhere = { merchant: ctx.merchant, category: ctx.category, customName: ctx.customName, located: true, at: Date.now() };
+      saveState(); renderPay(); toast('Remembered. Next time you\u2019re here it will know.');
+    }
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); save(); } });
+    return h('div', { class: 'note remember' },
+      h('span', null, 'Remember this spot? Next time you\u2019re here it will say so.'),
+      h('div', { class: 'remember-row' }, input, h('button', { class: 'btn primary', onclick: save }, 'Remember'), h('button', { class: 'btn ghost', onclick: function () { rememberLater = key; renderWhere(); } }, 'Later')));
+  }
 
   var lastWinner = null, interacted = false;
   document.addEventListener('pointerdown', function () { interacted = true; }, { once: true, passive: true });
@@ -651,9 +673,11 @@
   // 5. "You're at" is only said when it is sure: the position is inside the place's footprint, or
   //    within about 30 meters of it (a little more when the fix is rough). Otherwise the stores
   //    near you are offered, closest first, and you tap the one you are at.
-  // 6. The last lookup is written down (when, how good the fix was, which server answered and how
+  // 6. A place the map does not know can be remembered: pick the store or its kind by hand, give
+  //    it a name, and the spot is saved on this phone. From then on, standing there says "You're at".
+  // 7. The last lookup is written down (when, how good the fix was, which server answered and how
   //    fast) and shown under More, so a lookup that went wrong can be reported exactly.
-  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix', nearState = false;
+  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix', nearState = false, lastFix = null, rememberLater = '';
   var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
   var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
   var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
@@ -697,7 +721,7 @@
     // Answer from the stores around the spot. "You're at" only when sure; otherwise the stores near
     // you, to tap. A later, better fix only moves the answer if the person has not touched it.
     function answer(lat, lon, acc) {
-      var list = rankPlaces(raw, lat, lon, Math.max(AROUND, center.radius || AROUND));
+      var list = rankPlaces((raw || []).concat(myPlacesRaw()), lat, lon, Math.max(AROUND, center.radius || AROUND));
       var sure = list.length > 0 && isAt(list[0], acc);
       trace.found = list.length; trace.top = list.length ? list[0].name : null;
       if (!answered) {
@@ -735,6 +759,14 @@
       announce('You’re at ' + top.name + '.');
     }
     function lookUp(lat, lon, acc) {
+      // Standing at a spot the person remembered: that is the answer, no map needed.
+      var mine = rankPlaces(myPlacesRaw(), lat, lon, AROUND);
+      if (mine.length && isAt(mine[0], acc)) {
+        raw = []; center = { lat: lat, lon: lon, radius: AROUND };
+        trace.source = 'remembered'; trace.servers = [];
+        answer(last.lat, last.lon, last.acc);
+        return;
+      }
       var spot = cachedSpot(lat, lon);
       if (spot) {
         raw = spot.places; center = { lat: spot.lat, lon: spot.lon, radius: spot.radius };
@@ -756,6 +788,8 @@
         raw = fresh; answer(last.lat, last.lon, last.acc);
       }, function () {
         if (!live() || answered || center !== here) return;
+        // The map is down, but spots the person remembered nearby can still be offered.
+        if (rankPlaces(myPlacesRaw(), lat, lon, radius).length) { raw = []; answer(last.lat, last.lon, last.acc); return; }
         fail('The map did not answer. Pick the store above.');
       });
     }
@@ -763,7 +797,7 @@
       if (!live()) { stopFix && stopFix(); return; }
       if (trace.fixMs === null) trace.fixMs = Date.now() - t0;
       trace.acc = Math.round(acc); saveLookup(trace);
-      last = { lat: lat, lon: lon, acc: acc };
+      last = { lat: lat, lon: lon, acc: acc }; lastFix = { lat: lat, lon: lon, acc: acc, at: Date.now() };
       if (!center) { lookUp(lat, lon, acc); return; }
       var d = haversine(lat, lon, center.lat, center.lon);
       // Still inside the area already searched: answer again from the same list, no new lookup.
@@ -841,6 +875,7 @@
     var bits = [];
     bits.push(typeof t.fixMs === 'number' ? 'Position in ' + (t.fixMs / 1000).toFixed(1) + ' s, within ' + t.acc + ' m.' : t.fixError ? 'No position from the phone (' + t.fixError + ').' : t.outcome ? 'No position from the phone.' : 'Waiting for a position.');
     if (t.source === 'saved') bits.push('Stores from this phone, saved on an earlier visit.');
+    else if (t.source === 'remembered') bits.push('A spot you remembered.');
     else if (t.servers && t.servers.length) bits.push('Map: ' + t.servers.filter(Boolean).map(function (sv) { return sv.host + ' ' + sv.text + (typeof sv.ms === 'number' && sv.text !== 'not needed' ? (/^answered/.test(sv.text) ? ' in ' : ' after ') + (sv.ms / 1000).toFixed(1) + ' s' : ''); }).join('; ') + '.');
     bits.push(t.outcome === 'found' ? 'Found ' + t.top + '.' : t.outcome === 'near' ? 'Not sure; nearest is ' + t.top + '.' : t.outcome === 'none' ? 'No store within 120 m.' : (t.outcome || 'Not finished.'));
     return h('p', { class: 'small muted lookup-note' }, 'Last lookup, ' + stamp + '. ' + bits.join(' '));
@@ -946,8 +981,23 @@
       timers.push(setTimeout(function () { if (answered) finish(true, union); else finish(false, new Error('slow')); }, MAP_LIMIT));
     });
   }
+  // Places the person remembered, as candidates. A remembered spot is one point inside the place, so
+  // 25 meters around it count as inside.
+  function myPlacesRaw() {
+    return (state.myPlaces || []).map(function (m) { return { t: { name: m.name }, lat: m.lat, lon: m.lon, mine: m }; });
+  }
+  function nearMyPlace(lat, lon) {
+    return (state.myPlaces || []).some(function (m) { return haversine(lat, lon, m.lat, m.lon) <= 60; });
+  }
+  function rememberPlace(name, merchantId, categoryId, fix) {
+    state.myPlaces = (state.myPlaces || []).filter(function (m) { return haversine(fix.lat, fix.lon, m.lat, m.lon) > 25 || m.name !== name; });
+    state.myPlaces.unshift({ name: name, merchant: merchantId || null, category: merchantId ? null : categoryId, lat: Math.round(fix.lat * 1e5) / 1e5, lon: Math.round(fix.lon * 1e5) / 1e5, at: Date.now() });
+    state.myPlaces = state.myPlaces.slice(0, 200);
+    saveState();
+  }
   // Distance from a point to a place: 0 inside its footprint (when the map gave one), else to its nearest edge or its center.
   function edgeDistance(lat, lon, p) {
+    if (p.mine) return Math.max(0, haversine(lat, lon, p.lat, p.lon) - 25);
     if (p.bbox && p.bbox.length === 4) {
       var la = Math.min(Math.max(lat, p.bbox[0]), p.bbox[2]), lo = Math.min(Math.max(lon, p.bbox[1]), p.bbox[3]);
       return haversine(lat, lon, la, lo);
@@ -961,6 +1011,11 @@
     (raw || []).forEach(function (p) {
       var t = p.t || {}, name = t.name || t.brand; if (!name) return;
       var edge = edgeDistance(lat, lon, p), dist = haversine(lat, lon, p.lat, p.lon); if (edge > (within || AROUND)) return;
+      if (p.mine) {
+        var mm = p.mine.merchant ? E.merchantById(data, p.mine.merchant) : null;
+        out.push({ name: p.mine.name, merchant: mm ? mm.id : null, category: mm ? mm.category : (p.mine.category || 'other'), dist: dist, edge: edge, bboxed: false, mine: true });
+        return;
+      }
       var match = matchMerchant(name, t), category = match ? match.category : null;
       if (!category) {
         Object.keys(t).some(function (k) { var kv = k + '=' + t[k]; return OSM_MAP.some(function (m) { if (m[0].test(kv)) { category = m[1]; return true; } return false; }); });
@@ -1657,6 +1712,15 @@
       h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) relocate(); else forgetPlaces(); } })));
     var note = state.prefs.location ? lookupNote() : null;
     if (note) ps.appendChild(note);
+    if ((state.myPlaces || []).length) {
+      var mp = h('div', { class: 'box small' }, h('h3', null, 'Spots you remembered'), h('p', { class: 'muted' }, 'Standing at one of these says you are there, even when the map does not know it.'));
+      var ul = h('ul', { class: 'my-places' });
+      state.myPlaces.forEach(function (m) {
+        var mm = m.merchant ? E.merchantById(data, m.merchant) : null, c = cat(mm ? mm.category : (m.category || 'other'));
+        ul.appendChild(h('li', null, h('span', null, m.name, h('small', null, c.name)), h('button', { class: 'btn ghost', 'aria-label': 'Forget ' + m.name, onclick: function () { state.myPlaces = state.myPlaces.filter(function (x) { return x !== m; }); saveState(); renderMore(); } }, 'Forget')));
+      });
+      mp.appendChild(ul); ps.appendChild(mp);
+    }
     if (!PREVIEW) ps.appendChild(h('button', { class: 'btn block', onclick: openLocationTest }, 'Test location on this phone'));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
       h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
@@ -1703,13 +1767,13 @@
       h('button', { class: 'btn danger block', onclick: function () { try { localStorage.removeItem(STATE_KEY); } catch (e) { } forgetPlaces(); state = loadState(); rebuildCards(); ctx = { merchant: null, category: null, customName: '', amount: '', payMethod: 'card' }; closeSheet(); showView('pay'); toast('Erased'); } }, 'Yes, erase'),
       h('button', { class: 'btn block', onclick: closeSheet }, 'Keep it')]);
   }
-  function exportCode() { try { return 'WC1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ wallet: state.wallet, prefs: state.prefs, customCards: state.customCards })))); } catch (e) { return ''; } }
+  function exportCode() { try { return 'WC1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ wallet: state.wallet, prefs: state.prefs, customCards: state.customCards, myPlaces: state.myPlaces })))); } catch (e) { return ''; } }
   function importCode(code) {
     try {
       code = (code || '').trim(); if (code.indexOf('WC1.') !== 0) return false;
       var obj = JSON.parse(decodeURIComponent(escape(atob(code.slice(4)))));
       if (!obj || !Array.isArray(obj.wallet)) return false;
-      state.wallet = obj.wallet; state.prefs = obj.prefs || state.prefs; state.prefs.redeem = state.prefs.redeem || {}; state.customCards = obj.customCards || []; state.onboarded = true; rebuildCards(); saveState(); return true;
+      state.wallet = obj.wallet; state.prefs = obj.prefs || state.prefs; state.prefs.redeem = state.prefs.redeem || {}; state.customCards = obj.customCards || []; state.myPlaces = Array.isArray(obj.myPlaces) ? obj.myPlaces : state.myPlaces; state.onboarded = true; rebuildCards(); saveState(); return true;
     } catch (e) { return false; }
   }
   function copyText(t) { if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t); return Promise.reject(); }

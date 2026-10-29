@@ -432,6 +432,13 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 .aw-foot { padding-top: 2px; }
 
 /* ---------- Location: the question, the wait ---------- */
+.note.remember { display: grid; gap: 10px; margin-top: 10px; color: var(--fg); }
+.remember-row { display: flex; gap: 8px; }
+.remember-row input.field { flex: 1; min-width: 0; }
+.my-places { list-style: none; margin: 8px 0 0; padding: 0; }
+.my-places li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.my-places li span { font-weight: 650; }
+.my-places li small { display: block; font-weight: 500; color: var(--muted); }
 .note.ask { display: grid; gap: 8px; padding: 18px 18px 16px; border-radius: 22px; background: var(--pocket); color: color-mix(in srgb, var(--pocket-ink) 82%, transparent); position: relative; }
 .note.ask::before { content: ""; position: absolute; inset: 6px; border-radius: 17px; border: 1.5px dashed rgba(246, 166, 35, .42); pointer-events: none; }
 .note.ask > * { position: relative; }
