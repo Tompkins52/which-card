@@ -641,9 +641,11 @@
   // 2. The map is asked for the named places around that fix. The search reaches past the 120 meters
   //    the answer uses, by as much as the fix might be off, so a better fix that lands inside the
   //    searched area is answered again from the same list, with no second lookup.
-  // 3. Three public map servers: two are asked at once, the third two seconds later or as soon as
-  //    one fails, and the first real answer wins. A busy server's "runtime error" is not an answer.
-  //    After 8 seconds the screen says the map is slow and keeps looking; after 60 it gives up.
+  // 3. Four public map services are raced: photon.komoot.io (a fast place index) and two Overpass
+  //    servers at once, the third Overpass server two seconds later or as soon as one fails. The
+  //    first answer that names a store the app knows wins; an empty answer only counts once every
+  //    service has answered; a busy server's "runtime error" is not an answer at all. After 8
+  //    seconds the screen says the map is slow and keeps looking; after 60 it gives up.
   // 4. The stores found around a spot are kept on this phone for 30 days, so a place you have been
   //    before is answered without asking the map again (refreshed quietly after 3 days).
   // 5. The last lookup is written down (when, how good the fix was, which server answered and how
@@ -652,8 +654,7 @@
   var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
   var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
   var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
-  var MAP_SERVERS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
-  var MAP_THIRD = 2000, MAP_SLOW = 8000, MAP_LIMIT = 60000;
+  var MAP_FIRST = 3, MAP_NEXT = 2000, MAP_SLOW = 8000, MAP_LIMIT = 60000;
   var DAY = 24 * 60 * 60 * 1000;
   // Version 1 of the saved stores could hold a busy server's empty answer as "no stores here". Drop it.
   try { localStorage.removeItem('whichcard.places.v1'); } catch (e) { }
@@ -830,63 +831,95 @@
   function saveLookup(trace) { try { localStorage.setItem(LOOKUP_KEY, JSON.stringify(trace)); } catch (e) { } }
   function loadLookup() { try { return JSON.parse(localStorage.getItem(LOOKUP_KEY) || 'null'); } catch (e) { return null; } }
 
-  // The named places around a point, from the first public map server to answer. The same query the
-  // app has used since it first looked up stores: four plain searches, one per kind of place.
-  function fetchPlaces(lat, lon, radius, log, tick) {
+  // The map services, each answering with the named places around a point as [{t: tags, lat, lon}].
+  // The Overpass query is the one the app has used since it first looked up stores: four plain
+  // searches, one per kind of place. Photon is a search index over the same OpenStreetMap data.
+  function overpassQuery(lat, lon, radius) {
     var at = lat.toFixed(5) + ',' + lon.toFixed(5), r = Math.round(radius);
     var parts = ['shop', 'amenity', 'leisure', 'tourism'].map(function (k) { return 'nwr(around:' + r + ',' + at + ')[name][' + k + '];'; }).join('');
-    var q = '[out:json][timeout:15];(' + parts + ');out center tags 80;';
-    return askMap(q, log, tick).then(function (j) {
-      var out = [];
-      (j.elements || []).forEach(function (el) {
-        var t = el.tags || {}, la = el.lat || (el.center && el.center.lat), lo = el.lon || (el.center && el.center.lon);
-        if (!(t.name || t.brand) || !la || !lo) return;
-        var keep = {};
-        ['name', 'brand', 'shop', 'amenity', 'leisure', 'tourism'].forEach(function (k) { if (t[k]) keep[k] = t[k]; });
-        out.push({ t: keep, lat: la, lon: lo });
-      });
-      return out;
-    });
+    return '[out:json][timeout:15];(' + parts + ');out center tags 80;';
   }
-  function hostOf(u) { try { return new URL(u).hostname; } catch (e) { return u; } }
-  function askMap(q, log, tick) {
+  function keepTags(t) { var keep = {}; ['name', 'brand', 'shop', 'amenity', 'leisure', 'tourism'].forEach(function (k) { if (t[k]) keep[k] = t[k]; }); return keep; }
+  function askOverpass(url) {
+    return function (lat, lon, radius, signal) {
+      return fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(overpassQuery(lat, lon, radius)), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: signal })
+        .then(function (r) { if (!r.ok) return r.text().then(function (t) { throw new Error('error ' + r.status + (t ? ': ' + t.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 90) : '')); }); return r.json(); })
+        .then(function (j) {
+          if (!j || !Array.isArray(j.elements)) throw new Error('not a map answer');
+          // A busy server can answer with no places and a note that the search ran out of time. That is not "no stores here".
+          if (j.remark && /error|timed? ?out/i.test(j.remark)) throw new Error('busy: ' + String(j.remark).slice(0, 80));
+          var out = [];
+          j.elements.forEach(function (el) {
+            var t = el.tags || {}, la = el.lat || (el.center && el.center.lat), lo = el.lon || (el.center && el.center.lon);
+            if ((t.name || t.brand) && la && lo) out.push({ t: keepTags(t), lat: la, lon: lo });
+          });
+          return out;
+        });
+    };
+  }
+  function askPhoton(lat, lon, radius, signal) {
+    return fetch('https://photon.komoot.io/reverse?lat=' + lat.toFixed(5) + '&lon=' + lon.toFixed(5) + '&radius=' + (radius / 1000).toFixed(2) + '&limit=40', { signal: signal })
+      .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); })
+      .then(function (j) {
+        if (!j || !Array.isArray(j.features)) throw new Error('not a map answer');
+        var out = [];
+        j.features.forEach(function (f) {
+          var pr = f.properties || {}, g = f.geometry && f.geometry.coordinates;
+          if (!pr.name || !g || g.length < 2 || ['shop', 'amenity', 'leisure', 'tourism'].indexOf(pr.osm_key) < 0) return;
+          var t = { name: pr.name }; t[pr.osm_key] = pr.osm_value || 'yes';
+          out.push({ t: t, lat: g[1], lon: g[0] });
+        });
+        return out;
+      });
+  }
+  var SOURCES = [
+    { host: 'photon.komoot.io', ask: askPhoton },
+    { host: 'overpass-api.de', ask: askOverpass('https://overpass-api.de/api/interpreter') },
+    { host: 'overpass.private.coffee', ask: askOverpass('https://overpass.private.coffee/api/interpreter') },
+    { host: 'overpass.kumi.systems', ask: askOverpass('https://overpass.kumi.systems/api/interpreter') }
+  ];
+  function sameSpot(a, b) { return (a.t.name || a.t.brand) === (b.t.name || b.t.brand) && haversine(a.lat, a.lon, b.lat, b.lon) < 30; }
+  // The race. The first answer that names a store the app knows (within 120 meters) wins at once.
+  // Empty answers are kept and merged; they count only once every service has answered. Errors and
+  // busy servers are not answers. With nothing by the time limit, the lookup fails.
+  function fetchPlaces(lat, lon, radius, log, tick) {
     log = log || [];
     return new Promise(function (resolve, reject) {
-      var done = false, failed = 0, started = 0, controllers = [], timers = [], t0 = Date.now();
+      var done = false, started = 0, finished = 0, answered = 0, union = [], controllers = [], timers = [], t0 = Date.now();
       function finish(ok, value) {
         if (done) return; done = true;
         timers.forEach(clearTimeout);
         controllers.forEach(function (c) { try { c.abort(); } catch (e) { } });
-        log.forEach(function (l) { if (l.ms === null) l.text = ok ? 'not needed' : 'no answer in ' + Math.round(MAP_LIMIT / 1000) + ' s'; });
+        log.forEach(function (l) { if (l && l.ms === null) l.text = ok ? 'not needed' : 'no answer in ' + Math.round(MAP_LIMIT / 1000) + ' s'; });
         if (tick) tick();
         if (ok) resolve(value); else reject(value);
       }
-      function note(i, text) { log[i] = { host: hostOf(MAP_SERVERS[i]), ms: Date.now() - t0, text: text }; if (tick) tick(); }
+      function note(i, text) { log[i] = { host: SOURCES[i].host, ms: Date.now() - t0, text: text }; if (tick) tick(); }
+      function merge(list) { list.forEach(function (p) { if (!union.some(function (u) { return sameSpot(u, p); })) union.push(p); }); }
+      function settle() { if (finished >= SOURCES.length) { if (answered) finish(true, union); else finish(false, new Error('no answer')); } }
       function next() {
-        if (done || started >= MAP_SERVERS.length) return;
+        if (done || started >= SOURCES.length) return;
         var i = started++;
         var c = typeof AbortController === 'function' ? new AbortController() : null;
         if (c) controllers.push(c);
-        log[i] = { host: hostOf(MAP_SERVERS[i]), ms: null, text: 'asked' }; if (tick) tick();
-        fetch(MAP_SERVERS[i], { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: c ? c.signal : undefined })
-          .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); })
-          .then(function (j) {
-            if (!j || !Array.isArray(j.elements)) throw new Error('not a map answer');
-            // A busy server can answer with no places and a note that the search ran out of time. That is not "no stores here".
-            if (j.remark && /error|timed? ?out/i.test(j.remark)) throw new Error('busy: ' + String(j.remark).slice(0, 80));
-            if (done) return;
-            note(i, 'answered with ' + j.elements.length + (j.elements.length === 1 ? ' place' : ' places'));
-            finish(true, j);
-          })
-          .catch(function (e) {
-            if (done) return;
-            note(i, e && e.name === 'TypeError' ? 'no answer (blocked or offline)' : (e && e.message) || 'failed');
-            if (++failed >= MAP_SERVERS.length) finish(false, e); else next();
-          });
+        log[i] = { host: SOURCES[i].host, ms: null, text: 'asked' }; if (tick) tick();
+        SOURCES[i].ask(lat, lon, radius, c ? c.signal : undefined).then(function (list) {
+          if (done) return;
+          answered++; finished++;
+          var known = rankPlaces(list, lat, lon);
+          note(i, 'answered with ' + list.length + (list.length === 1 ? ' place' : ' places') + (list.length ? ', ' + known.length + ' the app knows' : ''));
+          merge(list);
+          if (known.length) finish(true, union); else settle();
+        }, function (e) {
+          if (done) return;
+          finished++;
+          note(i, e && e.name === 'AbortError' ? 'no answer' : e && e.name === 'TypeError' ? 'no answer (blocked or offline)' : (e && e.message) || 'failed');
+          next(); settle();
+        });
       }
-      next(); next();
-      timers.push(setTimeout(next, MAP_THIRD));
-      timers.push(setTimeout(function () { finish(false, new Error('slow')); }, MAP_LIMIT));
+      for (var k = 0; k < MAP_FIRST; k++) next();
+      timers.push(setTimeout(next, MAP_NEXT));
+      timers.push(setTimeout(function () { if (answered) finish(true, union); else finish(false, new Error('slow')); }, MAP_LIMIT));
     });
   }
   // The places within 120 meters of where you are, matched to the store list, closest first.
@@ -1238,43 +1271,24 @@
       }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
     });
     function testServers(lat, lon, radius) {
-      var at = lat.toFixed(5) + ',' + lon.toFixed(5);
-      var parts = ['shop', 'amenity', 'leisure', 'tourism'].map(function (k) { return 'nwr(around:' + radius + ',' + at + ')[name][' + k + '];'; }).join('');
-      var q = '[out:json][timeout:15];(' + parts + ');out center tags 80;';
-      say('Asking each map server for the named places within ' + radius + ' m, one at a time…');
+      say('Asking each map service for the named places within ' + radius + ' m, one at a time…');
       var i = 0;
       function one() {
-        if (i >= MAP_SERVERS.length) { photon(); return; }
-        var url = MAP_SERVERS[i++], host = hostOf(url), s0 = Date.now();
+        if (i >= SOURCES.length) { say('Done.'); return; }
+        var src = SOURCES[i++], s0 = Date.now();
         function took() { return ((Date.now() - s0) / 1000).toFixed(1) + ' s'; }
         var c = typeof AbortController === 'function' ? new AbortController() : null;
         var timer = setTimeout(function () { if (c) c.abort(); }, 30000);
-        fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: c ? c.signal : undefined })
-          .then(function (r) {
-            if (!r.ok) return r.text().then(function (t) { say(host + ': error ' + r.status + ' after ' + took() + (t ? ': ' + t.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120) : '') + '.'); });
-            return r.json().then(function (j) {
-              var els = j && j.elements || [], names = [];
-              els.forEach(function (el) { var n = el.tags && (el.tags.name || el.tags.brand); if (n && names.indexOf(n) < 0 && names.length < 6) names.push(n); });
-              say(host + ': ' + els.length + (els.length === 1 ? ' place' : ' places') + ' in ' + took() + (j && j.remark ? ' (server note: ' + String(j.remark).slice(0, 100) + ')' : '') + (names.length ? ': ' + names.join(', ') : '') + '.');
-              if (els.length) { var list = rankPlaces(els.map(function (el) { var t = el.tags || {}; return { t: t, lat: el.lat || (el.center && el.center.lat), lon: el.lon || (el.center && el.center.lon) }; }).filter(function (x) { return x.lat && x.lon; }), lat, lon); say('Of those, within 120 m and known to the app: ' + (list.length ? list.slice(0, 4).map(function (x) { return x.name + ' (' + Math.round(x.dist) + ' m)'; }).join(', ') : 'none') + '.'); }
-            });
+        src.ask(lat, lon, radius, c ? c.signal : undefined)
+          .then(function (list) {
+            var names = [];
+            list.forEach(function (p) { var n = p.t.name || p.t.brand; if (n && names.indexOf(n) < 0 && names.length < 6) names.push(n); });
+            say(src.host + ': ' + list.length + (list.length === 1 ? ' place' : ' places') + ' in ' + took() + (names.length ? ': ' + names.join(', ') : '') + '.');
+            var known = rankPlaces(list, lat, lon);
+            if (list.length) say('Of those, within 120 m and known to the app: ' + (known.length ? known.slice(0, 4).map(function (x) { return x.name + ' (' + Math.round(x.dist) + ' m)'; }).join(', ') : 'none') + '.');
           })
-          .catch(function (e) { say(host + ': ' + (e && e.name === 'AbortError' ? 'no answer in 30 s' : 'could not connect (' + ((e && e.message) || 'blocked or offline') + ')') + ' after ' + took() + '.'); })
+          .catch(function (e) { say(src.host + ': ' + (e && e.name === 'AbortError' ? 'no answer in 30 s' : e && e.name === 'TypeError' ? 'could not connect (blocked or offline)' : (e && e.message) || 'failed') + ' after ' + took() + '.'); })
           .then(function () { clearTimeout(timer); one(); });
-      }
-      // One more source, for comparison only: the app does not use it yet.
-      function photon() {
-        var s0 = Date.now(), c = typeof AbortController === 'function' ? new AbortController() : null;
-        var timer = setTimeout(function () { if (c) c.abort(); }, 15000);
-        fetch('https://photon.komoot.io/reverse?lat=' + lat.toFixed(5) + '&lon=' + lon.toFixed(5) + '&radius=' + (radius / 1000).toFixed(2) + '&limit=30', { signal: c ? c.signal : undefined })
-          .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); })
-          .then(function (j) {
-            var fs = j && j.features || [], names = [];
-            fs.forEach(function (f) { var pr = f.properties || {}; if (pr.name && names.length < 8) names.push(pr.name + ' [' + (pr.osm_key || '?') + '=' + (pr.osm_value || '?') + ']'); });
-            say('photon.komoot.io (for comparison): ' + fs.length + ' results in ' + ((Date.now() - s0) / 1000).toFixed(1) + ' s' + (names.length ? ': ' + names.join(', ') : '') + '.');
-          })
-          .catch(function (e) { say('photon.komoot.io (for comparison): ' + (e && e.name === 'AbortError' ? 'no answer in 15 s' : (e && e.message) || 'could not connect') + '.'); })
-          .then(function () { clearTimeout(timer); say('Done.'); });
       }
       one();
     }

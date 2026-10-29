@@ -1,5 +1,5 @@
 """Opening the app at a store: with location on, it says where you are standing and answers for that store,
-fast. The phone's position and the three public map servers are faked, so this runs anywhere.
+fast. The phone's position and the four public map services are faked, so this runs anywhere.
 Run from the repo root: python3 tests/location_check.py [outdir]"""
 import functools
 import http.server
@@ -34,6 +34,11 @@ SHELL = {'type': 'node', 'lat': 41.87861, 'lon': -87.63589, 'tags': {'name': 'Sh
 JEWEL = {'type': 'way', 'center': {'lat': 41.87920, 'lon': -87.63630}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
 JEWEL_THERE = {'type': 'way', 'center': {'lat': 41.88131, 'lon': -87.63590}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
 ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE]})
+PHOTON = json.dumps({'features': [
+    {'properties': {'name': 'Shell', 'osm_key': 'amenity', 'osm_value': 'fuel'}, 'geometry': {'coordinates': [-87.63589, 41.87861]}},
+    {'properties': {'name': 'Jewel-Osco', 'osm_key': 'shop', 'osm_value': 'supermarket'}, 'geometry': {'coordinates': [-87.63630, 41.87920]}},
+    {'properties': {'name': 'Wacker Drive', 'osm_key': 'highway', 'osm_value': 'primary'}, 'geometry': {'coordinates': [-87.63600, 41.87870]}}]})
+EMPTY = json.dumps({'elements': []})
 # What a busy server sends: a 200 with no places and a note that the search ran out of time.
 BUSY = json.dumps({'elements': [], 'remark': 'runtime error: Query timed out in "query" at line 1 after 16 seconds.'})
 WALLET = ['citi-costco-anywhere-visa', 'amex-blue-cash-preferred', 'wells-fargo-active-cash']
@@ -61,31 +66,34 @@ with sync_playwright() as p:
     browser = p.chromium.launch()
     ctx = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True,
                               geolocation=HERE, permissions=['geolocation'])
-    # How each map server behaves: ok, fail (an error page), busy (a 200 with no places and a timeout note),
-    # or hang (never answers).
-    mode = {'de': 'ok', 'coffee': 'ok', 'kumi': 'ok'}
+    # How each map service behaves: ok, empty (a real answer with nothing in it), fail (an error page),
+    # busy (a 200 with no places and a timeout note), or hang (never answers).
+    mode = {'photon': 'ok', 'de': 'ok', 'coffee': 'ok', 'kumi': 'ok'}
     asked, held = [], []
 
-    def all_modes(m):
-        mode.update(de=m, coffee=m, kumi=m)
+    def all_modes(m, photon=None):
+        mode.update(photon=photon or m, de=m, coffee=m, kumi=m)
 
     def map_server(route):
         url = route.request.url
-        host = 'coffee' if 'private.coffee' in url else 'kumi' if 'kumi.systems' in url else 'de'
+        host = 'photon' if 'photon.komoot.io' in url else 'coffee' if 'private.coffee' in url else 'kumi' if 'kumi.systems' in url else 'de'
         asked.append(host)
         if mode[host] == 'hang':
             held.append(route)
         elif mode[host] == 'fail':
-            route.fulfill(status=504, body='busy')
+            route.fulfill(status=502, body='<h1>502 Gateway Timeout</h1>This Overpass API server is currently at capacity.')
         elif mode[host] == 'busy':
             route.fulfill(status=200, content_type='application/json', body=BUSY)
+        elif mode[host] == 'empty':
+            route.fulfill(status=200, content_type='application/json', body=json.dumps({'features': []}) if host == 'photon' else EMPTY)
         else:
-            route.fulfill(status=200, content_type='application/json', body=ANSWER)
+            route.fulfill(status=200, content_type='application/json', body=PHOTON if host == 'photon' else ANSWER)
     ctx.route('**/api/interpreter', map_server)
+    ctx.route('**/photon.komoot.io/**', map_server)
     page = ctx.new_page()
     # Failed and cancelled lookups are on purpose; the browser logs them.
     page.on('console', lambda m: errors.append(m.text) if m.type == 'error' and 'ERR_TUNNEL' not in m.text and 'fonts.g' not in m.text
-            and 'status of 504' not in m.text and 'ERR_FAILED' not in m.text else None)
+            and 'status of 502' not in m.text and 'ERR_FAILED' not in m.text else None)
     page.on('pageerror', lambda e: errors.append(str(e)))
 
     def seed(s):
@@ -106,12 +114,14 @@ with sync_playwright() as p:
         return el.inner_text() if el.count() else ''
 
     def release_held():
+        # Routes the page has already moved on from are gone; aborting them is a no-op.
         for route in held:
             try:
                 route.abort()
             except Exception:
                 pass
         del held[:]
+        page.wait_for_timeout(100)
 
     # 1. Location not asked yet: the question sits at the top of the Pay screen, and one tap finds the store.
     open_with(state(False, asked=False))
@@ -171,15 +181,29 @@ with sync_playwright() as p:
     check(winner() == 'Amex Blue Cash Preferred', 'it answers for the new store')
     ctx.set_geolocation(HERE)
 
-    # 6. Two map servers are asked at once; when one is down, the other answers.
-    mode.update(de='fail', coffee='ok', kumi='ok')
+    # 6. The place index answers first; the Overpass servers can all be down or slow.
+    mode.update(photon='ok', de='fail', coffee='hang', kumi='hang')
+    del asked[:]
+    seed(state(True))
+    t0 = time.time()
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    took = time.time() - t0
+    release_held()
+    check('Shell' in where_text() and winner() == 'Costco Anywhere Visa' and took < 3.0, 'with the main map server at capacity, the place index answers in seconds (took %.1f)' % took)
+    page.click('.nearby button:has-text("Jewel-Osco")')
+    page.wait_for_timeout(300)
+    check('Jewel-Osco' in where_text(), 'the store next door came from the place index too')
+
+    # 6b. Three services are asked at once; when the index is down and one server fails, another answers.
+    mode.update(photon='fail', de='fail', coffee='ok', kumi='ok')
     del asked[:]
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
-    check('Shell' in where_text() and sorted(asked[:2]) == ['coffee', 'de'], 'two map servers are asked at once, and when one fails the other answers')
+    check('Shell' in where_text() and sorted(asked[:3]) == ['coffee', 'de', 'photon'], 'three services are asked at once, and when two fail the third answers')
 
     # 7. One hangs: the other's answer is used within seconds.
-    mode.update(de='hang', coffee='ok', kumi='ok')
+    mode.update(photon='fail', de='hang', coffee='ok', kumi='ok')
     del asked[:]
     seed(state(True))
     t0 = time.time()
@@ -189,15 +213,15 @@ with sync_playwright() as p:
     release_held()
     check('Shell' in where_text() and took < 4.0, 'when one map server hangs, another answers within seconds (took %.1f)' % took)
 
-    # 8. The first two fail: the third is asked at once and answers.
-    mode.update(de='fail', coffee='fail', kumi='ok')
+    # 8. The first two servers fail: the third is asked at once and answers.
+    mode.update(photon='fail', de='fail', coffee='fail', kumi='ok')
     del asked[:]
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
     check('Shell' in where_text() and 'kumi' in asked, 'when two map servers fail, the third answers')
 
     # 9. A busy server's "timed out" answer is not taken as "no stores here".
-    mode.update(de='busy', coffee='ok', kumi='ok')
+    mode.update(photon='fail', de='busy', coffee='ok', kumi='ok')
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
     check('Shell' in where_text(), 'a busy server\'s empty "timed out" answer is skipped and the real answer is used')
@@ -207,7 +231,22 @@ with sync_playwright() as p:
     saved = page.evaluate('JSON.parse(localStorage.getItem("whichcard.places.v2") || "{\\"spots\\":[]}").spots.length')
     check(saved == 0, 'when every server is busy, it says the map did not answer and saves nothing')
 
-    # 10. All three fail: the app says so at once and the last store comes back.
+    # 9b. Real empty answers: an early empty one does not end the search, and when all are empty it says so at once.
+    mode.update(photon='empty', de='hang', coffee='ok', kumi='ok')
+    seed(state(True))
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    release_held()
+    check('Shell' in where_text(), 'an empty answer from one service does not end the search; a later full one is used')
+    all_modes('empty')
+    seed(state(True))
+    t0 = time.time()
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.toast:has-text("No store found")', timeout=8000)
+    took = time.time() - t0
+    check(took < 5, 'when every service answers with nothing, it says no store was found at once (took %.1f)' % took)
+
+    # 10. All four fail: the app says so at once and the last store comes back.
     all_modes('fail')
     old = {'merchant': 'chipotle', 'category': None, 'customName': '', 'located': True, 'at': int(time.time() * 1000) - 5 * MINUTE}
     open_with(state(True, old))
@@ -276,18 +315,19 @@ with sync_playwright() as p:
 
     # 15. The location test under More runs each step on the phone and reports it.
     all_modes('ok')
-    page.route('**/photon.komoot.io/**', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'features': [{'properties': {'name': 'Shell', 'osm_key': 'amenity', 'osm_value': 'fuel'}, 'geometry': {'coordinates': [-87.63589, 41.87861]}}]})))
+    mode.update(de='fail')
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
     page.click('.tabs button[data-view="more"]')
     page.click('button:has-text("Test location on this phone")')
     page.wait_for_selector('.test-lines p:has-text("Done.")', timeout=60000)
     report = page.locator('.test-lines').inner_text()
-    check('Permission: granted' in report and 'Position in' in report and 'overpass-api.de: 3 places' in report and 'Shell (1 m)' in report and 'photon.komoot.io' in report,
-          'the location test reports the permission, the position, each map server and the comparison source: ' + report.replace(chr(10), ' | ')[:600])
+    check('Permission: granted' in report and 'Position in' in report and 'photon.komoot.io: 2 places' in report and 'overpass-api.de: error 502' in report
+          and 'at capacity' in report and 'overpass.private.coffee: 3 places' in report and 'Shell (1 m)' in report,
+          'the location test reports the permission, the position and each map service: ' + report.replace(chr(10), ' | ')[:700])
     page.screenshot(path=os.path.join(OUT, 'loc-5-test.png'))
     page.click('.sheet .close')
-    page.unroute('**/photon.komoot.io/**')
+    mode.update(de='ok')
 
     # 16. A rough first fix 80 meters off, then a precise one: answered again from the same list, no second lookup.
     OFF = {'latitude': 41.87932, 'longitude': -87.63590, 'accuracy': 120}
