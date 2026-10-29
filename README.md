@@ -24,7 +24,7 @@ The recommendation logic lives in `engine.js` and has no DOM dependencies; `test
 
 ## Look
 
-The idea is pulling the right card out of your wallet. The card to use is drawn big and tilted, a witch hat lands on its corner a beat later, the rest of the wallet sits in a plum pocket under it, and everything else stays quiet so the card colors carry the color. The witch shows up in four places only: the hat on the card to use, the header mark (a card in a hat), the home-screen icon, and the mascot on the welcome note. Palette: Mist #F5F2F8 (background), Ink #1E1328 (text), Plum #5B2E86 (actions), Pocket #2A1640 (the wallet) and Marigold #F6A623 (wins), with a dark version of each. Type is Archivo, one variable font used wide for names and headings and condensed for rates and dollar figures. The font ships with the app (`fonts/`), so no font service is contacted. The look follows the phone's light or dark setting unless one is picked under More.
+The idea is pulling the right card out of your wallet. The card to use is drawn big and tilted, a witch hat lands on its corner a beat later, the rest of the wallet sits in a plum pocket under it, and everything else stays quiet so the card colors carry the color. The witch shows up in four places only: the hat on the card to use, the header mark (a card in a hat), the home-screen icon, and the mascot on the welcome note. Palette: Mist #F5F2F8 (background), Ink #1E1328 (text), Plum #5B2E86 (actions), Pocket #2A1640 (the wallet) and Marigold #F6A623 (wins), with a dark version of each. Type is Archivo, one variable font used wide for names and headings and condensed for rates and dollar figures. The font ships with the app (`fonts/`), so no font service is contacted. The look follows the phone's light or dark setting unless one is picked under More. Dark mode is near-black and neutral, with purple kept for actions, like a black leather wallet with gold stitching.
 
 ## Files
 
@@ -32,7 +32,8 @@ The idea is pulling the right card out of your wallet. The card to use is drawn 
 | --- | --- |
 | `index.html`, `app.css`, `app.js`, `engine.js` | The app. No build step, no framework. |
 | `fonts/` | Archivo variable font (SIL Open Font License, see `LICENSE-Archivo.txt`). |
-| `manifest.webmanifest`, `sw.js`, `icons/` | Home-screen install and offline support. Shortcuts (long-press the icon on Android) open the app straight on Gas, Groceries, Dining or Amazon. |
+| `manifest.webmanifest`, `sw.js`, `icons/` | Home-screen install and offline support. Shortcuts (long-press the icon on Android) open the app straight on Gas, Groceries, Dining or Amazon. The service worker caches the whole app shell together under one version and serves every page load from it, so a phone never runs a page from one release with styles or code from another. |
+| `tools/stamp_sw.py` | Run by the deploy on the assembled site: stops the deploy if a file the service worker caches is missing, and sets the worker's VERSION to a hash of the shell, so every change reaches every phone as one whole update. |
 | `data/categories.json` | The spending categories the app understands. |
 | `data/merchants.json` | Stores and sites, their category, quirks (Costco is Visa only; Walmart is not a grocery store) and aliases for the location matcher. |
 | `data/cards.json` | The card catalog: earning rules, caps, rotating calendars with the activation page, choice categories, perks with their activation pages, benefits, tips, source page and verified date per card. |
@@ -73,7 +74,7 @@ python3 tools/validate_data.py
 node tests/engine.test.js
 ```
 
-Phone checks in a headless browser (Playwright): `python3 tests/ui_check.py` walks the app, and `python3 tests/location_check.py` fakes the phone's position and the OpenStreetMap answer to check the store lookup on open, on return, after a hand pick, and when the lookup fails.
+Phone checks in a headless browser (Playwright): `python3 tests/ui_check.py` walks the app, and `python3 tests/location_check.py` fakes the phone's position and the OpenStreetMap answer to check the store lookup on open, on return, after a hand pick, and when the lookup fails. `python3 tests/sw_check.py` assembles the site like the deploy and checks the service worker: the whole shell cached, the home-screen start address and the shortcuts working offline with the app's font, and a new deploy replacing the whole shell at once.
 
 ## Privacy
 

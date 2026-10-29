@@ -42,8 +42,10 @@ jobs:
         run: |
           mkdir -p site
           cp index.html app.css app.js engine.js sw.js manifest.webmanifest .nojekyll site/
-          cp -r icons data site/
+          cp -r icons data fonts site/
           rm -f site/data/source-hashes.json
+      - name: Check the service worker's files and stamp its version
+        run: python3 tools/stamp_sw.py site
       - uses: actions/configure-pages@v5
         with:
           enablement: true

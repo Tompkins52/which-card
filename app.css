@@ -3,6 +3,7 @@
    big, as if just pulled out, and the rest of your cards sit in a stitched plum pocket under it.
    Everything else stays quiet so the card colors carry the color.
    Palette: Mist (background), Ink (text), Plum (actions), Pocket (the wallet), Marigold (wins).
+   Dark mode is near-black and neutral; purple is kept for actions, like a black leather wallet with gold stitching.
    Type: Archivo, one variable family; wide for names and headings, condensed for the numbers. */
 
 @font-face {
@@ -45,23 +46,23 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #130B1B; --surface: #1D1427; --surface-2: #281C35; --fg: #F4EEFA; --muted: #ADA1BF; --line: #352845;
-    --accent: #C4A3FF; --accent-fg: #1E1328; --pocket: #26153A; --pocket-ink: #F6EFFC;
+    --bg: #121114; --surface: #1C1B20; --surface-2: #26252B; --fg: #F3F1F6; --muted: #A8A4B0; --line: #33313A;
+    --accent: #C4A3FF; --accent-fg: #1E1328; --pocket: #1F1D23; --pocket-ink: #F1EEF5;
     --gold: #FFC04D; --gold-ink: #FFC04D; --gold-wash: rgba(255, 192, 77, .22);
     --good: #4FD18F; --good-bg: #113324; --warn: #F2B94B; --warn-bg: #36270D; --bad: #F58C82; --bad-bg: #3B1814;
     --lift: 0 22px 36px -14px rgba(0, 0, 0, .8), 0 4px 10px rgba(0, 0, 0, .4); color-scheme: dark;
     --card-drop: drop-shadow(0 18px 16px rgba(0, 0, 0, .55)) drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
-    --toast-bg: #3A2752; --toast-fg: #F4EEFA; --toast-act: #FFC04D; --knob-on: #1E1328;
+    --toast-bg: #2B2A30; --toast-fg: #F3F1F6; --toast-act: #FFC04D; --knob-on: #1E1328;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #130B1B; --surface: #1D1427; --surface-2: #281C35; --fg: #F4EEFA; --muted: #ADA1BF; --line: #352845;
-  --accent: #C4A3FF; --accent-fg: #1E1328; --pocket: #26153A; --pocket-ink: #F6EFFC;
+  --bg: #121114; --surface: #1C1B20; --surface-2: #26252B; --fg: #F3F1F6; --muted: #A8A4B0; --line: #33313A;
+  --accent: #C4A3FF; --accent-fg: #1E1328; --pocket: #1F1D23; --pocket-ink: #F1EEF5;
   --gold: #FFC04D; --gold-ink: #FFC04D; --gold-wash: rgba(255, 192, 77, .22);
   --good: #4FD18F; --good-bg: #113324; --warn: #F2B94B; --warn-bg: #36270D; --bad: #F58C82; --bad-bg: #3B1814;
   --lift: 0 22px 36px -14px rgba(0, 0, 0, .8), 0 4px 10px rgba(0, 0, 0, .4); color-scheme: dark;
   --card-drop: drop-shadow(0 18px 16px rgba(0, 0, 0, .55)) drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
-  --toast-bg: #3A2752; --toast-fg: #F4EEFA; --toast-act: #FFC04D; --knob-on: #1E1328;
+  --toast-bg: #2B2A30; --toast-fg: #F3F1F6; --toast-act: #FFC04D; --knob-on: #1E1328;
 }
 
 /* ---------- Base ---------- */
