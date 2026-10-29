@@ -30,7 +30,7 @@ def main():
     engine = read('engine.js')
     app = read('app.js')
     inline = json.dumps(data, separators=(',', ':')).replace('</', '<\\/')
-    page = ('<title>Which Card</title>\n'
+    page = ('<title>Witch Card</title>\n'
             + '<style>\n' + css + '\n</style>\n'
             + body + '\n<script>\n' + engine + '\n</script>\n'
             + '<script>window.__PREVIEW=true;window.__WHICHCARD_DATA=' + inline + ';</script>\n'

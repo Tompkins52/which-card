@@ -1,10 +1,13 @@
-"""Draws the app icons (no external assets). Run from the repo root: python3 tools/make_icons.py"""
+"""Draws the app icons. Run from the repo root: python3 tools/make_icons.py
+
+The main icon is an SVG, a marigold card wearing a witch hat on a plum tile, rendered by the
+headless browser the tests use (Playwright). The shortcut icons are drawn with Pillow."""
 from PIL import Image, ImageDraw
 import os
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'icons')
 os.makedirs(ROOT, exist_ok=True)
-# Which Card's own colors: a plum tile, a marigold card, a white check.
+# Witch Card's own colors: a plum tile, a marigold card, an ink witch hat with a lavender band.
 PLUM_TOP = (88, 44, 132)
 PLUM = (42, 22, 64)
 INK = (30, 19, 40)
@@ -12,6 +15,44 @@ MARIGOLD = (246, 166, 35)
 CREAM = (255, 236, 186)
 WHITE = (255, 255, 255)
 LAVENDER = (246, 239, 252)
+
+
+def icon_svg(maskable=False):
+    """The icon at 512 units. The maskable version fills the square and keeps the art inside the safe circle."""
+    tile = '<rect width="512" height="512" fill="url(#tg)"/>' if maskable else '<rect width="512" height="512" rx="112" fill="url(#tg)"/>'
+    scale = 0.86 if maskable else 1.0
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">'
+        '<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5C2E8A"/><stop offset="1" stop-color="#2A1640"/></linearGradient>'
+        '<linearGradient id="ih" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3C2459"/><stop offset="1" stop-color="#140B1C"/></linearGradient></defs>'
+        + tile +
+        '<g transform="translate(256 256) scale(%s) translate(-256 -256)"><g transform="rotate(-10 250 300)">' % scale +
+        # the card, tilted as if just pulled out, with its shadow, chip, tap mark and a stripe
+        '<rect x="96" y="210" width="316" height="198" rx="26" fill="#000" opacity=".28" transform="translate(8 16)"/>'
+        '<rect x="96" y="210" width="316" height="198" rx="26" fill="#F6A623"/>'
+        '<rect x="128" y="276" width="62" height="48" rx="9" fill="#FFECBA"/>'
+        '<g fill="none" stroke="#1E1328" stroke-width="9" stroke-linecap="round" transform="translate(212 300)">'
+        '<path d="M0-16a22 22 0 0 1 0 32"/><path d="M14-28a38 38 0 0 1 0 56"/><path d="M28-40a54 54 0 0 1 0 80"/></g>'
+        '<rect x="128" y="358" width="140" height="16" rx="8" fill="#D6880A"/>'
+        # the witch hat
+        '<path d="M118 214 Q 150 120 186 52 Q 214 4 276 30 Q 284 36 270 40 Q 236 36 222 76 Q 206 140 246 214 Z" fill="url(#ih)" stroke="#B994EE" stroke-width="5" stroke-linejoin="round"/>'
+        '<path d="M124 190 Q 182 202 240 190 L 232 164 Q 182 175 134 164 Z" fill="#B994EE"/>'
+        '<ellipse cx="182" cy="214" rx="112" ry="22" fill="url(#ih)" stroke="#B994EE" stroke-width="5"/>'
+        '</g></g></svg>')
+
+
+def render_icons(jobs):
+    """jobs: (file name, size, maskable, opaque). Renders each with headless Chromium."""
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={'width': 512, 'height': 512})
+        for name, size, maskable, opaque in jobs:
+            svg = icon_svg(maskable).replace('width="512" height="512"', 'width="%d" height="%d"' % (size, size), 1)
+            bg = '#2A1640' if opaque else 'transparent'
+            page.set_content('<html><body style="margin:0;background:%s">%s</body></html>' % (bg, svg))
+            page.screenshot(path=os.path.join(ROOT, name), clip={'x': 0, 'y': 0, 'width': size, 'height': size}, omit_background=not opaque)
+        browser.close()
 
 
 def plum_tile(s, rounded=True):
@@ -30,38 +71,6 @@ def plum_tile(s, rounded=True):
         md.rectangle([0, 0, s, s], fill=255)
     tile.paste(grad, (0, 0), mask)
     return tile
-
-
-def card_icon(size, maskable=False):
-    s = size * 4  # draw large, downsample for smooth edges
-    img = plum_tile(s, rounded=not maskable)
-    d = ImageDraw.Draw(img)
-    pad = int(s * (0.22 if maskable else 0.16))
-    # A marigold card, tilted as if just pulled out, with a chip and a tap mark
-    cw, ch = s - 2 * pad, int((s - 2 * pad) * 0.63)
-    card = Image.new('RGBA', (cw, ch), (0, 0, 0, 0))
-    cd = ImageDraw.Draw(card)
-    cd.rounded_rectangle([0, 0, cw - 1, ch - 1], radius=int(ch * 0.12), fill=MARIGOLD)
-    cd.rounded_rectangle([int(cw * 0.1), int(ch * 0.3), int(cw * 0.3), int(ch * 0.56)], radius=int(ch * 0.05), fill=CREAM)
-    w = max(2, int(s * 0.016))
-    for i, r in enumerate([0.07, 0.12, 0.17]):
-        box = [int(cw * 0.36 - r * cw), int(ch * 0.43 - r * cw), int(cw * 0.36 + r * cw), int(ch * 0.43 + r * cw)]
-        cd.arc(box, -40, 40, fill=INK, width=w)
-    cd.rounded_rectangle([int(cw * 0.1), int(ch * 0.74), int(cw * 0.56), int(ch * 0.84)], radius=int(ch * 0.05), fill=(214, 136, 10))
-    card = card.rotate(10, resample=Image.BICUBIC, expand=True)
-    shadow = Image.new('RGBA', card.size, (0, 0, 0, 0))
-    shadow.paste((20, 8, 30, 110), (0, 0), card.split()[3])
-    cx = (s - card.width) // 2 - int(s * 0.03)
-    cy = (s - card.height) // 2 - int(s * 0.02)
-    img.alpha_composite(shadow, (cx + int(s * 0.015), cy + int(s * 0.035)))
-    img.alpha_composite(card, (cx, cy))
-    # The check: this is the one to use
-    r = int(s * 0.15)
-    bx, by = s - pad - int(r * 0.55), s - pad - int(r * 0.45)
-    d.ellipse([bx - r, by - r, bx + r, by + r], fill=WHITE)
-    lw = int(s * 0.034)
-    d.line([(bx - r * 0.45, by + r * 0.02), (bx - r * 0.1, by + r * 0.38), (bx + r * 0.5, by - r * 0.35)], fill=PLUM, width=lw, joint='curve')
-    return img.resize((size, size), Image.LANCZOS)
 
 
 def shortcut(name, size=96):
@@ -92,12 +101,12 @@ def shortcut(name, size=96):
     return img.resize((size, size), Image.LANCZOS)
 
 
-card_icon(192).save(os.path.join(ROOT, 'icon-192.png'))
-card_icon(512).save(os.path.join(ROOT, 'icon-512.png'))
-card_icon(512, maskable=True).save(os.path.join(ROOT, 'maskable-512.png'))
-apple = Image.new('RGB', (180, 180), PLUM)
-apple.paste(card_icon(180, maskable=True).convert('RGB'))
-apple.save(os.path.join(ROOT, 'apple-touch-icon.png'))
+render_icons([
+    ('icon-192.png', 192, False, False),
+    ('icon-512.png', 512, False, False),
+    ('maskable-512.png', 512, True, True),
+    ('apple-touch-icon.png', 180, True, True),
+])
 for n in ['gas', 'groceries', 'dining', 'online']:
     shortcut(n).save(os.path.join(ROOT, 'shortcut-%s.png' % n))
 print('icons written to', os.path.abspath(ROOT))

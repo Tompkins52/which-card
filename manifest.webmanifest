@@ -1,6 +1,6 @@
 {
-  "name": "Which Card",
-  "short_name": "Which Card",
+  "name": "Witch Card",
+  "short_name": "Witch Card",
   "description": "Tells you which of your credit cards to use at the store you are standing in.",
   "start_url": "./?source=pwa",
   "scope": "./",

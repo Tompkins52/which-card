@@ -95,8 +95,7 @@ b, strong { font-weight: 680; }
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); }
 .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 6px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 820; font-stretch: 112%; font-size: 1.2rem; letter-spacing: -.015em; }
-.brand .mark { position: relative; width: 30px; height: 20px; border-radius: 5px; background: linear-gradient(135deg, #7E4BC0, #3B1A60); transform: rotate(-9deg); box-shadow: 0 3px 6px rgba(42, 22, 64, .35); flex: none; }
-.brand .mark::after { content: ""; position: absolute; left: 5px; top: 6px; width: 8px; height: 6px; border-radius: 2px; background: var(--gold); }
+.brand .mark { width: 37px; height: 34px; flex: none; margin: -6px -2px -2px -3px; filter: drop-shadow(0 3px 4px rgba(42, 22, 64, .3)); }
 .icon-btn { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--fg); background: var(--surface); border: 1px solid var(--line); }
 .icon-btn svg { width: 22px; height: 22px; }
 .icon-btn.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
@@ -166,7 +165,11 @@ main { padding-block: 6px 28px; }
 .winner { display: flex; flex-direction: column; gap: 9px; position: relative; }
 .winner .w-label { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 650; font-size: .95rem; }
 .winner .w-label svg { width: 16px; height: 16px; }
-.winner .w-card { align-self: flex-start; width: min(100%, 300px); margin: 0 0 4px 4px; }
+.winner .w-card { position: relative; align-self: flex-start; width: min(100%, 300px); margin: 0 0 4px 4px; }
+.winner .w-hat { position: absolute; right: -5%; top: 0; width: 25%; transform: translate(0, -56%) rotate(16deg); transform-origin: 50% 85%; pointer-events: none; }
+.winner .w-hat svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 6px rgba(42, 22, 64, .28)); }
+.winner.reveal .w-hat { animation: hatdrop .5s .32s cubic-bezier(.2, .9, .3, 1.25) both; }
+@keyframes hatdrop { from { opacity: 0; transform: translate(-10%, -150%) rotate(-12deg); } to { opacity: 1; transform: translate(0, -56%) rotate(16deg); } }
 @media (max-height: 720px) { .winner .w-card { width: min(100%, 240px); } }
 .winner .w-card .card-art { display: block; width: 100%; }
 .winner .w-card .card-art svg { width: 100%; height: auto; transform: rotate(-2deg); filter: var(--card-drop); }
@@ -377,15 +380,16 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 /* ---------- Intro (first screen) ---------- */
 .intro { display: flex; flex-direction: column; gap: 16px; padding-block: 14px 8px; }
 .intro h1 { font-size: 2.35rem; font-weight: 840; font-stretch: 108%; line-height: 1.02; letter-spacing: -.025em; }
-.intro-art { position: relative; height: 168px; margin: 0 0 4px; }
+.intro-art { position: relative; height: 168px; margin: 24px 0 4px; }
 .mini-card { position: absolute; left: 50%; top: 18px; width: 178px; height: 112px; border-radius: 13px; box-shadow: 0 16px 28px -10px rgba(42, 22, 64, .5); transform-origin: bottom center; }
 .mini-card::before { content: ""; position: absolute; left: 16px; top: 34px; width: 30px; height: 22px; border-radius: 5px; background: linear-gradient(135deg, #FFE08A, #D9951A); }
 .mini-card::after { content: ""; position: absolute; left: 16px; bottom: 14px; width: 74px; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, .55); }
 .mini-card.c1 { background: linear-gradient(135deg, #8A55C9, #3B1A60); transform: translateX(-50%) translateX(-80px) rotate(-14deg); animation: fan1 .55s cubic-bezier(.2, .8, .2, 1) both; }
 .mini-card.c2 { background: linear-gradient(135deg, #F27A6B, #B7354A); transform: translateX(-50%) translateY(-8px); animation: fan2 .55s .05s cubic-bezier(.2, .8, .2, 1) both; z-index: 1; }
 .mini-card.c3 { background: linear-gradient(135deg, #2E8C86, #155650); transform: translateX(-50%) translateX(80px) rotate(14deg); animation: fan3 .55s .1s cubic-bezier(.2, .8, .2, 1) both; }
-.mini-check { position: absolute; left: calc(50% + 52px); top: 2px; width: 46px; height: 46px; border-radius: 50%; background: var(--gold); color: #1E1328; display: grid; place-items: center; z-index: 2; box-shadow: 0 8px 16px rgba(42, 22, 64, .3); animation: popin .35s .4s cubic-bezier(.2, .8, .2, 1) both; }
-.mini-check svg { width: 24px; height: 24px; }
+.mini-hat { position: absolute; left: calc(50% + 34px); top: -30px; width: 74px; z-index: 2; transform: rotate(14deg); transform-origin: 50% 85%; animation: hatin .5s .45s cubic-bezier(.2, .9, .3, 1.25) both; }
+.mini-hat svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 8px rgba(42, 22, 64, .3)); }
+@keyframes hatin { from { opacity: 0; transform: translateY(-40px) rotate(-10deg); } }
 @keyframes fan1 { from { transform: translateX(-50%) translateY(40px); opacity: 0; } }
 @keyframes fan2 { from { transform: translateX(-50%) translateY(40px); opacity: 0; } }
 @keyframes fan3 { from { transform: translateX(-50%) translateY(40px); opacity: 0; } }
@@ -397,7 +401,8 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 
 /* ---------- Pledge and mascot ---------- */
 .pledge { font-weight: 700; color: var(--accent); font-size: .98rem; line-height: 1.4; }
-.mascot { display: flex; justify-content: center; padding: 6px 0 0; }
+.mascot { display: flex; justify-content: center; padding: 6px 0 0; color: var(--fg); }
+.mascot-note { margin-top: -6px; text-align: center; font-weight: 760; font-stretch: 110%; color: var(--accent); letter-spacing: -.005em; }
 .mascot svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
 @keyframes bob { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-6px); } }
 

@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Which Card</title>
+<title>Witch Card</title>
 <meta name="description" content="Tells you which of your credit cards to use at the store you are standing in, before you pay.">
 <meta name="theme-color" content="#F5F2F8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#130B1B" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Which Card">
+<meta name="apple-mobile-web-app-title" content="Witch Card">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -61,7 +61,7 @@
 
 <header class="top">
   <div class="wrap">
-    <div class="brand"><span class="mark" aria-hidden="true"></span><span>Which Card</span></div>
+    <div class="brand"><svg class="mark" viewBox="0 -6 46 42" aria-hidden="true" focusable="false"><defs><linearGradient id="mk-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A55C9"/><stop offset="1" stop-color="#3B1A60"/></linearGradient><linearGradient id="mk-hat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2F6E"/><stop offset="1" stop-color="#170D20"/></linearGradient></defs><g transform="rotate(-9 23 25)"><rect x="6" y="14" width="33" height="21" rx="4.5" fill="url(#mk-card)"/><rect x="10" y="22" width="8" height="6" rx="1.6" fill="#F6A623"/><path d="M11 14.6 Q 14 6.5 17 0.5 Q 19.6 -3.8 24.8 -1.2 Q 25.4 -0.6 24.2 -0.3 Q 21 -0.8 20 2.6 Q 18.8 8 22.6 14.6 Z" fill="url(#mk-hat)" stroke="#7A5AA8" stroke-width=".8" stroke-linejoin="round"/><path d="M11.7 12.6 Q 16.8 13.6 21.9 12.6 L 21.2 10.2 Q 16.8 11.1 12.6 10.2 Z" fill="#F6A623"/><ellipse cx="16.8" cy="14.8" rx="11" ry="2.7" fill="url(#mk-hat)" stroke="#7A5AA8" stroke-width=".8"/></g></svg><span>Witch Card</span></div>
     <button id="btn-locate" class="icon-btn" aria-label="Find the store I am at" title="Find my store"><svg><use href="#i-pin"/></svg></button>
   </div>
 </header>
@@ -71,7 +71,7 @@
     <div id="pay-empty" class="intro" hidden>
       <div class="intro-art" aria-hidden="true">
         <span class="mini-card c1"></span><span class="mini-card c2"></span><span class="mini-card c3"></span>
-        <span class="mini-check"><svg><use href="#i-check"/></svg></span>
+        <span class="mini-hat"><svg viewBox="38 -44 102 96" aria-hidden="true" focusable="false"><defs><linearGradient id="in-hat" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2F6E"/><stop offset="1" stop-color="#170D20"/></linearGradient></defs><path d="M64 39 Q 78 4 92 -22 Q 104 -42 126 -30 Q 129 -28 124 -26 Q 110 -28 104 -14 Q 98 8 114 39 Z" fill="url(#in-hat)" stroke="#7A5AA8" stroke-width="1.6" stroke-linejoin="round"/><path d="M67 32 Q 89 35.5 110.5 32 L 107.4 24 Q 89 27.5 70.2 24 Z" fill="#F6A623"/><rect x="84" y="24.6" width="10" height="8.6" rx="1.6" fill="none" stroke="#1E1328" stroke-width="2"/><ellipse cx="89" cy="40" rx="46" ry="8" fill="url(#in-hat)" stroke="#7A5AA8" stroke-width="1.6"/></svg></span>
       </div>
       <h1>Stop guessing at the pump.</h1>
       <p class="muted">Tell it which cards you carry. Then, at any store, it names the card that earns the most, before you tap.</p>

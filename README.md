@@ -1,6 +1,8 @@
-# Which Card
+# Witch Card
 
-https://which-card.tompkinssoftwaresystems.com
+https://witch-card.tompkinssoftwaresystems.com
+
+Formerly Which Card. The name is a pun on what it does: it tells you which card to use, and its mascot is a card dressed as a witch. No magic, just math.
 
 A home-screen web app that tells you which of your credit cards to use at the store you are standing in, before you pay. Open it, confirm the store (or let it find the store from your location), type the amount if you want the dollar figure, and the best card is on screen. No account, no server, nothing leaves the phone except an anonymous nearby-places lookup when location is on.
 
@@ -8,9 +10,9 @@ Built by Tompkins Software Systems.
 
 ## How it works
 
-The first open shows a welcome note from a goofy cartoon card: the app is built for people who pay their statement in full and never pay interest; anyone who pays interest is welcome to carry on as they are.
+The first open shows a welcome note from the mascot, a goofy cartoon card in a witch hat riding a broom ("No magic. Just math."): the app is built for people who pay their statement in full and never pay interest; anyone who pays interest is welcome to carry on as they are.
 
-- **Pay** is the whole point: pick the store (search, quick buttons, or location), optionally type the amount, and the card to use appears drawn big, as if just pulled out of the wallet, with what it earns, why, and anything to watch (activation, caps, Visa-only stores, foreign fees). Every other card in the wallet is ranked below it in a stitched pocket, best first. "I used it" logs the purchase so caps and welcome-bonus goals stay current.
+- **Pay** is the whole point: pick the store (search, quick buttons, or location), optionally type the amount, and the card to use appears drawn big, as if just pulled out of the wallet, with the witch hat landing on it, with what it earns, why, and anything to watch (activation, caps, Visa-only stores, foreign fees). Every other card in the wallet is ranked below it in a stitched pocket, best first. "I used it" logs the purchase so caps and welcome-bonus goals stay current.
 - **Where you are standing.** With location on, the app looks up the stores around you every time it opens, and again when you come back to it after a minute or more, then shows "You're at" and the store's name with the best card for it, before any amount is typed. The stores next door are one tap away ("Not here?"). A store picked by hand in the last three minutes is kept, so switching to a payment app and back never moves you, and a new store clears the old amount. If the lookup fails, the last store comes back. The Pay screen asks once, at the top, whether to turn location on.
 - **Fast lookups.** Two position requests start together, a quick one from Wi-Fi and cell towers and a precise one from GPS; the first usable fix answers (one rougher than 150 meters waits up to 4 seconds for a better one) and a clearly better or clearly different fix in the next 12 seconds corrects it. The stores found around a spot are kept on the phone for 30 days (`whichcard.places.v1`: where the lookup was made, to about 10 meters, and the named places within 120 meters), so a place you have been before is answered with no lookup; a spot older than 3 days is refreshed quietly. A new place asks overpass.private.coffee first and overpass-api.de as well if the first has not answered in 1.5 seconds; the first good answer wins, and after 9 seconds the app stops and says the map is slow. Turning location off or erasing the app clears the kept stores.
 - **Best card anywhere** sits under each answer: the card from the whole catalog that would earn the most at that store at the person's pace (a trips-a-year slider, prefilled from their logged purchases or a typical pace), shown as yearly dollars after the card's annual fee, with the trip count at which a fee card pays for itself. It judges cards on their everyday rates, ignoring rotating and time-limited bonuses, and says plainly when nothing beats what they already carry. It can be turned off under More.
@@ -22,7 +24,7 @@ The recommendation logic lives in `engine.js` and has no DOM dependencies; `test
 
 ## Look
 
-The idea is pulling the right card out of your wallet. The card to use is drawn big and tilted, the rest of the wallet sits in a plum pocket under it, and everything else stays quiet so the card colors carry the color. Palette: Mist #F5F2F8 (background), Ink #1E1328 (text), Plum #5B2E86 (actions), Pocket #2A1640 (the wallet) and Marigold #F6A623 (wins), with a dark version of each. Type is Archivo, one variable font used wide for names and headings and condensed for rates and dollar figures. The font ships with the app (`fonts/`), so no font service is contacted. The look follows the phone's light or dark setting unless one is picked under More.
+The idea is pulling the right card out of your wallet. The card to use is drawn big and tilted, a witch hat lands on its corner a beat later, the rest of the wallet sits in a plum pocket under it, and everything else stays quiet so the card colors carry the color. The witch shows up in four places only: the hat on the card to use, the header mark (a card in a hat), the home-screen icon, and the mascot on the welcome note. Palette: Mist #F5F2F8 (background), Ink #1E1328 (text), Plum #5B2E86 (actions), Pocket #2A1640 (the wallet) and Marigold #F6A623 (wins), with a dark version of each. Type is Archivo, one variable font used wide for names and headings and condensed for rates and dollar figures. The font ships with the app (`fonts/`), so no font service is contacted. The look follows the phone's light or dark setting unless one is picked under More.
 
 ## Files
 
@@ -39,7 +41,7 @@ The idea is pulling the right card out of your wallet. The card to use is drawn 
 | `tools/validate_data.py` | Shape and cross-reference checks on the data. Runs in CI. |
 | `tools/check_sources.py` | The daily review job (see below). |
 | `tools/make_preview.py` | Builds a single-file preview with the data inlined. |
-| `tools/make_icons.py` | Draws the icons. |
+| `tools/make_icons.py` | Draws the icons (the main icon is an SVG rendered with Playwright). |
 
 ## Keeping the card data current
 
@@ -60,9 +62,9 @@ python3 -m http.server 8000
 
 then open http://localhost:8000. Location lookup needs HTTPS (or localhost).
 
-Live at https://which-card.tompkinssoftwaresystems.com (the old tompkins52.github.io/which-card address forwards there).
+Live at https://witch-card.tompkinssoftwaresystems.com (the tompkins52.github.io/which-card address forwards there). The repository keeps its old name, and so do the storage keys (`whichcard.*`), the engine's global (`WhichCardEngine`) and the setup code prefix, so nothing anyone saved is lost.
 
-Deploy: GitHub Pages through `.github/workflows/pages.yml` (Settings > Pages > Source: GitHub Actions). The custom domain is set in Settings > Pages > Custom domain, with a Cloudflare CNAME record `which-card` pointing at `tompkins52.github.io` (DNS only, gray cloud). No CNAME file is needed because the site deploys through Actions.
+Deploy: GitHub Pages through `.github/workflows/pages.yml` (Settings > Pages > Source: GitHub Actions). The custom domain is set in Settings > Pages > Custom domain, with a Cloudflare CNAME record `witch-card` pointing at `tompkins52.github.io` (DNS only, gray cloud). No CNAME file is needed because the site deploys through Actions.
 
 Checks before committing data:
 
@@ -79,4 +81,4 @@ The app stores the card names the person picks, their settings, goals and logged
 
 ## Independent
 
-Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life. Which Card takes nothing from any bank: no referral links, no paid placement, no sponsored cards. Every card gets the same treatment and the ranking is arithmetic on the person's own cards. It is not affiliated with any bank or card network. Earning rates are copied from issuer pages and can change without notice; the cardholder agreement always wins. Point values are estimates.
+Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life. Witch Card takes nothing from any bank: no referral links, no paid placement, no sponsored cards. Every card gets the same treatment and the ranking is arithmetic on the person's own cards. It is not affiliated with any bank or card network. Earning rates are copied from issuer pages and can change without notice; the cardholder agreement always wins. Point values are estimates.

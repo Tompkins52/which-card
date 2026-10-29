@@ -1,4 +1,4 @@
-/* Which Card: app shell. Depends on engine.js (WhichCardEngine). */
+/* Witch Card: app shell. Depends on engine.js (WhichCardEngine, the engine's name from before the rename). */
 (function () {
   'use strict';
   var E = window.WhichCardEngine;
@@ -199,9 +199,15 @@
   var sheetOnClose = null;
 
   /* ---------- first-run disclaimer ---------- */
+  // The mascot: a goofy plum card dressed as a witch, riding a broom. Arms take the text color so they show in dark mode.
   function mascotSvg() {
-    return '<svg viewBox="0 0 240 180" width="200" height="150" role="img" aria-label="A goofy cartoon credit card">' +
-      '<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A55C9"/><stop offset="1" stop-color="#3B1A60"/></linearGradient></defs>' +
+    return '<svg viewBox="-40 -66 296 274" width="214" height="198" role="img" aria-label="A goofy cartoon credit card dressed as a witch, riding a broom">' +
+      '<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A55C9"/><stop offset="1" stop-color="#3B1A60"/></linearGradient>' +
+      '<linearGradient id="mh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2F6E"/><stop offset="1" stop-color="#170D20"/></linearGradient></defs>' +
+      '<path d="M4 172 L 244 138" stroke="#7A4A22" stroke-width="7" stroke-linecap="round"/>' +
+      '<path d="M11.2 165.1 L -26.8 156.2 Q -36 176 -21.2 195.8 L 12.8 176.9 Z" fill="#E8B04B"/>' +
+      '<path d="M11 168 L -28 164 M11.5 171 L -30 176 M12 174 L -26 188" stroke="#B9802A" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
+      '<path d="M9 163.5 L 17.5 162.3 L 19.2 178.2 L 10.6 179.4 Z" fill="#5B2E86"/>' +
       '<g transform="rotate(-8 120 95)">' +
       '<rect x="30" y="40" width="180" height="112" rx="14" fill="url(#mg)"/>' +
       '<rect x="30" y="62" width="180" height="16" fill="#24103A" opacity=".9"/>' +
@@ -214,15 +220,33 @@
       '<path d="M104 128 q30 22 60 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>' +
       '<path d="M128 139 q8 14 2 24 q-10 -6 -2 -24z" fill="#E86A6A"/>' +
       '<text x="198" y="57" text-anchor="end" fill="#fff" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="800" font-style="italic" font-stretch="112%" letter-spacing=".6" opacity=".85">PAYS IN FULL</text>' +
-      '</g>' +
-      '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="#1E1328" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="#1E1328"/>' +
-      '<path d="M206 70 q22 -16 26 2" fill="none" stroke="#1E1328" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="#1E1328"/>' +
+      '<g transform="rotate(-7 89 40) translate(-4 0) translate(89 40) scale(1.2) translate(-89 -40)">' +
+      '<path d="M64 39 Q 78 4 92 -22 Q 104 -42 126 -30 Q 129 -28 124 -26 Q 110 -28 104 -14 Q 98 8 114 39 Z" fill="url(#mh)" stroke="#6A4A96" stroke-width="1.2" stroke-linejoin="round"/>' +
+      '<path d="M67 32 Q 89 35.5 110.5 32 L 107.4 24 Q 89 27.5 70.2 24 Z" fill="#F6A623"/>' +
+      '<rect x="84" y="24.6" width="10" height="8.6" rx="1.6" fill="none" stroke="#1E1328" stroke-width="2"/>' +
+      '<ellipse cx="89" cy="40" rx="46" ry="8" fill="url(#mh)" stroke="#6A4A96" stroke-width="1.2"/>' +
+      '</g></g>' +
+      '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="currentColor"/>' +
+      '<path d="M206 70 q22 -16 26 2" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="currentColor"/>' +
+      '</svg>';
+  }
+  // The witch hat, on its own: it lands on the card to use. Same shape as the mascot's.
+  var hatSeq = 0;
+  function hatSvg() {
+    var id = 'wh' + (++hatSeq);
+    return '<svg viewBox="38 -44 102 96" aria-hidden="true" focusable="false">' +
+      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2F6E"/><stop offset="1" stop-color="#170D20"/></linearGradient></defs>' +
+      '<path d="M64 39 Q 78 4 92 -22 Q 104 -42 126 -30 Q 129 -28 124 -26 Q 110 -28 104 -14 Q 98 8 114 39 Z" fill="url(#' + id + ')" stroke="#7A5AA8" stroke-width="1.6" stroke-linejoin="round"/>' +
+      '<path d="M67 32 Q 89 35.5 110.5 32 L 107.4 24 Q 89 27.5 70.2 24 Z" fill="#F6A623"/>' +
+      '<rect x="84" y="24.6" width="10" height="8.6" rx="1.6" fill="none" stroke="#1E1328" stroke-width="2"/>' +
+      '<ellipse cx="89" cy="40" rx="46" ry="8" fill="url(#' + id + ')" stroke="#7A5AA8" stroke-width="1.6"/>' +
       '</svg>';
   }
   function openDisclaimer() {
     var art = h('div', { class: 'mascot' }); art.innerHTML = mascotSvg();
     var nodes = [
       art,
+      h('p', { class: 'mascot-note' }, 'No magic. Just math.'),
       h('h2', { style: 'text-align:center' }, 'Quick word before we start'),
       h('p', { style: 'text-align:center' }, 'This was built for people who pay their statement in full every month so they never pay interest. Rewards are the only reason to pick one card over another.'),
       h('p', { class: 'muted', style: 'text-align:center' }, 'If you carry a balance and pay interest: no judgment, carry on exactly as you are. The rest of us appreciate you funding these rewards.'),
@@ -431,7 +455,9 @@
     var winner = h('div', { class: 'winner ' + tone + (changed ? ' reveal' : '') + (where ? '' : ' nowhere'), style: '--card:' + card.color });
     if (changed && interacted && navigator.vibrate) { try { navigator.vibrate(8); } catch (e) { } }
     winner.appendChild(h('div', { class: 'w-label' }, icon('check'), where ? 'Use this card' : 'For everything else, use'));
-    var pulled = h('div', { class: 'w-card' }); pulled.appendChild(cardArt(card, 300, { bare: true })); winner.appendChild(pulled);
+    var pulled = h('div', { class: 'w-card' }); pulled.appendChild(cardArt(card, 300, { bare: true }));
+    var hat = h('span', { class: 'w-hat' }); hat.innerHTML = hatSvg(); pulled.appendChild(hat);
+    winner.appendChild(pulled);
     winner.appendChild(h('div', { class: 'name' }, best.entry.nickname || card.name));
     var row = h('div', { class: 'wrow' });
     var unit = best.unit;
@@ -988,7 +1014,7 @@
         if (!existing && !walletEntry(card.id)) state.wallet.push({ cardId: card.id, added: new Date().toISOString() });
         saveState(); closeSheet(); toast(existing ? 'Card updated' : 'Added ' + card.name);
       } }, existing ? 'Save' : 'Add to my wallet'),
-      h('p', { class: 'small muted' }, 'Want it in the catalog for everyone? ', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Which Card: please add a card') + '&body=' + encodeURIComponent('Card: \nBank: \nWhat it earns: \nLink to the bank page: '), }, 'Email us the card name and the bank page'), '.')
+      h('p', { class: 'small muted' }, 'Want it in the catalog for everyone? ', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Witch Card: please add a card') + '&body=' + encodeURIComponent('Card: \nBank: \nWhat it earns: \nLink to the bank page: '), }, 'Email us the card name and the bank page'), '.')
     ];
     openSheet(existing ? 'Edit my card' : 'My card isn\u2019t here', nodes);
     sheetOnClose = function () { if (intro) openAddCards(true); else renderAll(); };
@@ -1311,7 +1337,7 @@
       }
       nodes.push(box);
     }
-    nodes.push(h('p', { class: 'small muted' }, 'Rates checked ' + fmtLongDate(card.verified || data.verified) + ' against the issuer. ', card.sourceUrl ? h('a', { href: card.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : null, card.sourceUrl ? ' or ' : '', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Which Card: wrong number on ' + card.name) }, 'Report a wrong number')));
+    nodes.push(h('p', { class: 'small muted' }, 'Rates checked ' + fmtLongDate(card.verified || data.verified) + ' against the issuer. ', card.sourceUrl ? h('a', { href: card.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : null, card.sourceUrl ? ' or ' : '', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Witch Card: wrong number on ' + card.name) }, 'Report a wrong number')));
     if (card.custom) nodes.push(h('button', { class: 'btn block', onclick: function () { openCustomCard(card); } }, 'Edit this card'));
     if (inWallet) nodes.push(h('button', { class: 'btn danger block', onclick: function () {
       toggleCard(card);
@@ -1468,7 +1494,7 @@
 
     var as = h('div', { class: 'section' }, h('h2', null, 'About'),
       h('div', { class: 'box small' },
-        h('p', null, h('b', null, 'Which Card'), ' by Tompkins Software Systems.'),
+        h('p', null, h('b', null, 'Witch Card'), ' by Tompkins Software Systems. The witch is for fun; the answers are arithmetic on your own cards. No magic. Just math.'),
         h('p', { style: 'margin-top:8px' }, 'Nothing to sign up for. Your card list, purchases and settings stay on this phone. The only thing that leaves it is an anonymous nearby-places lookup when you use location, and the stores it finds are remembered on this phone for 30 days so a return visit is instant.'),
         h('p', { style: 'margin-top:8px', class: 'pledge' }, 'Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life.'),
         h('p', { style: 'margin-top:8px' }, h('b', null, 'About the card pictures. '), 'Drawn, not real. Partly because we are cheap asses, mostly because the real designs are trademarked and we are not spending eternity in court over a picture. The sites with the real pictures have a deal with the bank and get paid when you click. We get squat, on purpose.'),

@@ -1,4 +1,4 @@
-/* Which Card recommendation engine.
+/* Witch Card recommendation engine (the global keeps its old name, WhichCardEngine).
    Pure functions, no DOM. Works in the browser (window.WhichCardEngine) and in Node (module.exports). */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
