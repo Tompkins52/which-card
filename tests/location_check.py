@@ -1,5 +1,5 @@
-"""Opening the app at a store: with location on, it says where you are standing and answers for that store.
-The phone's position and the OpenStreetMap lookup are both faked, so this runs anywhere.
+"""Opening the app at a store: with location on, it says where you are standing and answers for that store,
+fast. The phone's position and both public map servers are faked, so this runs anywhere.
 Run from the repo root: python3 tests/location_check.py [outdir]"""
 import functools
 import http.server
@@ -27,10 +27,13 @@ server = socketserver.TCPServer(('127.0.0.1', 0), functools.partial(Quiet, direc
 BASE = 'http://127.0.0.1:%d/' % server.server_address[1]
 threading.Thread(target=server.serve_forever, daemon=True).start()
 
-HERE = {'latitude': 41.98002, 'longitude': -88.30002}
-SHELL = {'type': 'node', 'lat': 41.98, 'lon': -88.30, 'tags': {'name': 'Shell', 'brand': 'Shell', 'amenity': 'fuel'}}
-JEWEL = {'type': 'way', 'center': {'lat': 41.9806, 'lon': -88.3004}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
-JEWEL_CLOSE = {'type': 'way', 'center': {'lat': 41.98002, 'lon': -88.30001}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
+# A made-up block downtown: a Shell station, a Jewel-Osco 70 meters away, and another Jewel-Osco 300 meters north.
+HERE = {'latitude': 41.87860, 'longitude': -87.63590, 'accuracy': 15}
+THERE = {'latitude': 41.88130, 'longitude': -87.63590, 'accuracy': 15}
+SHELL = {'type': 'node', 'lat': 41.87861, 'lon': -87.63589, 'tags': {'name': 'Shell', 'brand': 'Shell', 'amenity': 'fuel'}}
+JEWEL = {'type': 'way', 'center': {'lat': 41.87920, 'lon': -87.63630}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
+JEWEL_THERE = {'type': 'way', 'center': {'lat': 41.88131, 'lon': -87.63590}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
+ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE]})
 WALLET = ['citi-costco-anywhere-visa', 'amex-blue-cash-preferred', 'wells-fargo-active-cash']
 MINUTE = 60 * 1000
 
@@ -56,24 +59,33 @@ with sync_playwright() as p:
     browser = p.chromium.launch()
     ctx = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True,
                               geolocation=HERE, permissions=['geolocation'])
-    places = {'elements': [SHELL, JEWEL], 'fail': False}
+    # How each map server behaves: ok, fail (an error page), or hang (never answers).
+    mode = {'coffee': 'ok', 'de': 'ok'}
+    asked, held = [], []
 
-    def overpass(route):
-        if places['fail']:
+    def map_server(route):
+        host = 'coffee' if 'private.coffee' in route.request.url else 'de'
+        asked.append(host)
+        if mode[host] == 'hang':
+            held.append(route)
+        elif mode[host] == 'fail':
             route.fulfill(status=504, body='busy')
         else:
-            time.sleep(0.3)
-            route.fulfill(status=200, content_type='application/json', body=json.dumps({'elements': places['elements']}))
-    ctx.route('https://overpass-api.de/**', overpass)
+            route.fulfill(status=200, content_type='application/json', body=ANSWER)
+    ctx.route('**/api/interpreter', map_server)
     page = ctx.new_page()
-    # The failed lookup in check 5 is on purpose; the browser logs its 504.
-    page.on('console', lambda m: errors.append(m.text) if m.type == 'error' and 'ERR_TUNNEL' not in m.text and 'fonts.g' not in m.text and 'status of 504' not in m.text else None)
+    # Failed and cancelled lookups are on purpose; the browser logs them.
+    page.on('console', lambda m: errors.append(m.text) if m.type == 'error' and 'ERR_TUNNEL' not in m.text and 'fonts.g' not in m.text
+            and 'status of 504' not in m.text and 'ERR_FAILED' not in m.text else None)
     page.on('pageerror', lambda e: errors.append(str(e)))
 
-    def open_with(s, path=''):
+    def seed(s):
         # Seed the storage from a page that does not run the app, so an earlier lookup cannot write over it.
         page.goto(BASE + 'README.md', wait_until='domcontentloaded')
         page.evaluate('s => { localStorage.clear(); localStorage.setItem("whichcard.state.v1", JSON.stringify(s)); }', s)
+
+    def open_with(s, path=''):
+        seed(s)
         page.goto(BASE + path, wait_until='networkidle')
         page.wait_for_timeout(700)
 
@@ -83,6 +95,14 @@ with sync_playwright() as p:
     def winner():
         el = page.locator('.winner .name')
         return el.inner_text() if el.count() else ''
+
+    def release_held():
+        for route in held:
+            try:
+                route.abort()
+            except Exception:
+                pass
+        del held[:]
 
     # 1. Location not asked yet: the question sits at the top of the Pay screen, and one tap finds the store.
     open_with(state(False, asked=False))
@@ -102,31 +122,34 @@ with sync_playwright() as p:
 
     # 2. Location on: opening the app looks right away, even with a store from ten minutes ago.
     old = {'merchant': 'jewel-osco', 'category': None, 'customName': '', 'located': True, 'at': int(time.time() * 1000) - 10 * MINUTE}
-    page.goto(BASE + 'README.md', wait_until='domcontentloaded')
-    page.evaluate('s => { localStorage.clear(); localStorage.setItem("whichcard.state.v1", JSON.stringify(s)); }', state(True, old))
-    places['elements'] = [SHELL, JEWEL]
+    seed(state(True, old))
     page.goto(BASE, wait_until='domcontentloaded')
-    page.wait_for_selector('.where-chip.finding, .where-chip.here', timeout=5000)
-    saw_finding = page.locator('.where-chip.finding').count() > 0
-    if saw_finding:
-        page.screenshot(path=os.path.join(OUT, 'loc-3-finding.png'))
     page.wait_for_selector('.where-chip.here', timeout=8000)
     page.wait_for_timeout(300)
     check('Shell' in where_text(), 'on open it looks again and finds Shell instead of the store from ten minutes ago')
     check(page.evaluate('document.getElementById("amount") !== document.activeElement'), 'the keyboard stays down when the store is found on its own')
 
-    # 3. A store picked by hand a minute ago is kept: no lookup over a choice just made.
+    # 3. A place you have been before answers from this phone, with no map lookup.
+    del asked[:]
+    t0 = time.time()
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    took = time.time() - t0
+    check('Shell' in where_text() and not asked, 'a return visit answers from this phone without asking the map')
+    check(took < 2.0, 'a return visit answers in under 2 seconds (took %.1f)' % took)
+
+    # 4. A store picked by hand a minute ago is kept: no lookup over a choice just made.
     picked = {'merchant': 'walmart', 'category': None, 'customName': '', 'located': False, 'at': int(time.time() * 1000) - MINUTE}
     open_with(state(True, picked))
     page.wait_for_timeout(800)
     check('Walmart' in where_text() and "You’re at" not in where_text(), 'a store picked by hand a minute ago stays put')
 
-    # 4. Coming back to the app after a few minutes away looks again, and a new store clears the old amount.
+    # 5. Coming back to the app a few minutes later somewhere else looks again, and the old amount is cleared.
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
     page.fill('#amount', '45')
     page.wait_for_timeout(200)
-    places['elements'] = [SHELL, JEWEL_CLOSE]
+    ctx.set_geolocation(THERE)
     page.evaluate("""() => {
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
       document.dispatchEvent(new Event('visibilitychange'));
@@ -134,24 +157,50 @@ with sync_playwright() as p:
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
       document.dispatchEvent(new Event('visibilitychange'));
     }""")
-    page.wait_for_function('document.querySelector(".where-chip.here") && document.querySelector("#where").innerText.includes("Jewel-Osco")', timeout=8000)
+    page.wait_for_function('(document.querySelector(".where-chip.here b") || {}).textContent === "Jewel-Osco"', timeout=8000)
     check(page.input_value('#amount') == '', 'the amount from the last store is cleared at the new one')
     check(winner() == 'Amex Blue Cash Preferred', 'it answers for the new store')
+    ctx.set_geolocation(HERE)
 
-    # 5. The lookup fails: the last store comes back and the app says why.
-    places['fail'] = True
+    # 6. The first map server is down: the second one answers.
+    mode.update(coffee='fail', de='ok')
+    del asked[:]
+    open_with(state(True))
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    check('Shell' in where_text() and asked[:2] == ['coffee', 'de'], 'when the first map server fails, the second one answers')
+
+    # 7. The first map server hangs: the second one is asked after a moment and its answer is used.
+    mode.update(coffee='hang', de='ok')
+    del asked[:]
+    seed(state(True))
+    t0 = time.time()
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    took = time.time() - t0
+    release_held()
+    check('Shell' in where_text() and took < 4.0, 'when the first map server hangs, the second answers within seconds (took %.1f)' % took)
+
+    # 8. Both map servers fail: the app says so at once and the last store comes back.
+    mode.update(coffee='fail', de='fail')
     old = {'merchant': 'chipotle', 'category': None, 'customName': '', 'located': True, 'at': int(time.time() * 1000) - 5 * MINUTE}
     open_with(state(True, old))
-    page.wait_for_timeout(1200)
-    check('Chipotle' in where_text(), 'when the lookup fails, the last store comes back')
-    places['fail'] = False
+    page.wait_for_timeout(600)
+    check('Chipotle' in where_text(), 'when both map servers fail, the last store comes back')
 
-    # 6. "Pick it" stops the lookup and opens the store search; the late answer is ignored.
-    held = []
-    ctx.unroute('https://overpass-api.de/**')
-    ctx.route('https://overpass-api.de/**', lambda route: held.append(route))
-    page.goto(BASE + 'README.md', wait_until='domcontentloaded')
-    page.evaluate('s => { localStorage.clear(); localStorage.setItem("whichcard.state.v1", JSON.stringify(s)); }', state(True))
+    # 9. Both hang: the app gives up after 9 seconds instead of spinning, and says so.
+    mode.update(coffee='hang', de='hang')
+    seed(state(True))
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.finding', timeout=5000)
+    t0 = time.time()
+    page.wait_for_selector('.toast:has-text("map is slow")', timeout=15000)
+    took = time.time() - t0
+    release_held()
+    check(took < 11 and page.locator('#store-search').count() == 1, 'when the map never answers, it stops after about 9 seconds (took %.1f) and shows the store search' % took)
+
+    # 10. "Pick it" stops the lookup and opens the store search; a late answer is ignored.
+    mode.update(coffee='hang', de='hang')
+    seed(state(True))
     page.goto(BASE, wait_until='domcontentloaded')
     page.wait_for_selector('.where-chip.finding', timeout=8000)
     check(page.locator('.answer-wait').count() == 1, 'while it looks, the answer waits instead of guessing')
@@ -159,9 +208,34 @@ with sync_playwright() as p:
     page.click('.where-chip.finding .change')
     page.wait_for_timeout(300)
     for route in held:
-        route.fulfill(status=200, content_type='application/json', body=json.dumps({'elements': [SHELL]}))
+        try:
+            route.fulfill(status=200, content_type='application/json', body=ANSWER)
+        except Exception:
+            pass
+    del held[:]
     page.wait_for_timeout(800)
     check(page.locator('#store-search').count() == 1 and not page.locator('.where-chip.here').count(), '"Pick it" stops the lookup and shows the store search')
+
+    # 11. Turning location off forgets the stores this phone remembered.
+    mode.update(coffee='ok', de='ok')
+    open_with(state(True))
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    kept = page.evaluate('!!localStorage.getItem("whichcard.places.v1")')
+    page.click('.tabs button[data-view="more"]')
+    page.click('button[aria-label="Use location"]')
+    page.wait_for_timeout(200)
+    gone = page.evaluate('!localStorage.getItem("whichcard.places.v1")')
+    check(kept and gone, 'stores found nearby are kept on the phone, and turning location off forgets them')
+
+    # 12. Only a rough fix (cell towers, 400 meters): it waits a few seconds for better, then answers anyway.
+    ctx.set_geolocation(dict(HERE, accuracy=400))
+    seed(state(True))
+    t0 = time.time()
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=10000)
+    took = time.time() - t0
+    check(3.5 < took < 7, 'a rough fix waits about 4 seconds for a better one, then answers (took %.1f)' % took)
+    ctx.set_geolocation(HERE)
 
     browser.close()
 

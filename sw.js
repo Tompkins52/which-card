@@ -2,7 +2,7 @@
    App shell: cache first, refreshed in the background.
    Card data (data/*.json): network first, cached copy when offline.
    Bump VERSION when the shell changes so every phone picks up the new files. */
-var VERSION = 'wc-2026-10-28-2';
+var VERSION = 'wc-2026-10-29-1';
 var SHELL = ['./', './index.html', './app.css', './app.js', './engine.js', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {
