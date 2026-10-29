@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Which Card</title>
 <meta name="description" content="Tells you which of your credit cards to use at the store you are standing in, before you pay.">
-<meta name="theme-color" content="#F3F5F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1318" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F5F2F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#130B1B" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,9 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="preload" href="fonts/archivo-wdth.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
@@ -63,7 +61,7 @@
 
 <header class="top">
   <div class="wrap">
-    <div class="brand"><span class="mark"><svg><use href="#i-card"/></svg></span><span>Which Card</span></div>
+    <div class="brand"><span class="mark" aria-hidden="true"></span><span>Which Card</span></div>
     <button id="btn-locate" class="icon-btn" aria-label="Find the store I am at" title="Find my store"><svg><use href="#i-pin"/></svg></button>
   </div>
 </header>
@@ -94,11 +92,8 @@
         <label class="amount-field" for="amount">
           <span class="cur">$</span>
           <input id="amount" type="text" inputmode="decimal" placeholder="0" aria-label="Purchase amount, optional" autocomplete="off" enterkeyhint="done">
+          <span class="opt-note" aria-hidden="true">Amount (optional)</span>
         </label>
-        <div class="seg" role="group" aria-label="How you are paying">
-          <button id="pm-card" type="button"><svg><use href="#i-card"/></svg>Card</button>
-          <button id="pm-wallet" type="button"><svg><use href="#i-tap"/></svg>Phone</button>
-        </div>
       </div>
       <div id="answer"></div>
     </div>

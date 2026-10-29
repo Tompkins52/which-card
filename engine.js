@@ -505,7 +505,7 @@
     if (card.rotating) parts.unshift(card.rotating.rate + (unit === 'percent' ? '%' : 'x') + ' rotating');
     if (card.choice) parts.unshift(card.choice.rate + (unit === 'percent' ? '%' : 'x') + ' ' + (card.choice.auto ? 'top category' : 'chosen category'));
     parts.push(card.base + (unit === 'percent' ? '%' : 'x') + ' everything else');
-    return parts.slice(0, 5).join(' · ');
+    return parts.slice(0, 5).join(', ');
   }
 
   return {

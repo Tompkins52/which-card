@@ -109,18 +109,25 @@
     return '#' + [c(r), c(g), c(b)].map(function (v) { return (v < 16 ? '0' : '') + v.toString(16); }).join('');
   }
   var artSeq = 0;
-  function cardArt(card, width, opts) {
-    opts = opts || {};
-    var id = 'ca' + (++artSeq);
+  // The three stops of a card's face, its ink, and its chip, from the card's color and finish.
+  function cardColors(card) {
     var finish = card.finish || 'plastic';
     var base = card.color || '#3C4A5A';
-    var c1, c2, c3, ink, chipA = '#E7C56A', chipB = '#B8902F';
+    var c1, c2, c3, ink, chipA = '#F2D07A', chipB = '#B8902F';
     if (finish === 'silver') { c1 = '#F2F4F6'; c2 = '#C9D0D8'; c3 = '#9AA6B4'; ink = '#1B222B'; }
     else if (finish === 'gold') { c1 = '#F3E2A6'; c2 = '#D6B459'; c3 = '#A98528'; ink = '#2A2208'; chipA = '#FFF4CC'; chipB = '#C9A14A'; }
     else if (finish === 'black') { c1 = '#3A3F47'; c2 = '#17191E'; c3 = '#07080A'; ink = '#F3F4F6'; }
     else if (finish === 'metal') { c1 = shade(base, 0.35); c2 = base; c3 = shade(base, -0.45); ink = textColorFor(base) === 'dark-text' ? '#101418' : '#FFFFFF'; }
     else { c1 = shade(base, 0.22); c2 = base; c3 = shade(base, -0.3); ink = textColorFor(base) === 'dark-text' ? '#101418' : '#FFFFFF'; }
-    var W = 320, H = 200, big = width >= 120, mid = width >= 60;
+    return { finish: finish, c1: c1, c2: c2, c3: c3, ink: ink, chipA: chipA, chipB: chipB };
+  }
+  // opts.bare leaves the card's name off the face, for the big cards that print the name beside them.
+  function cardArt(card, width, opts) {
+    opts = opts || {};
+    var id = 'ca' + (++artSeq);
+    var col = cardColors(card), finish = col.finish;
+    var c1 = col.c1, c2 = col.c2, c3 = col.c3, ink = col.ink, chipA = col.chipA, chipB = col.chipB;
+    var W = 320, H = 200, big = width >= 120 && !opts.bare, mid = width >= 60;
     var name = card.name || '';
     var lines = [];
     if (big) {
@@ -141,9 +148,9 @@
       '</g>' +
       '<rect x="28" y="' + (big ? 70 : 62) + '" width="52" height="38" rx="7" fill="url(#' + id + 'c)"/><path d="M28 ' + (big ? 89 : 81) + ' h52 M54 ' + (big ? 70 : 62) + ' v38" stroke="' + chipB + '" stroke-opacity=".7" stroke-width="2" fill="none"/>' +
       '<g fill="none" stroke="' + ink + '" stroke-opacity=".75" stroke-width="3" stroke-linecap="round" transform="translate(' + (big ? 100 : 92) + ',' + (big ? 89 : 81) + ')"><path d="M0-9a13 13 0 0 1 0 18"/><path d="M8-15a21 21 0 0 1 0 30"/><path d="M16-21a29 29 0 0 1 0 42"/></g>' +
-      (mid ? '<text x="28" y="40" fill="' + ink + '" fill-opacity=".8" font-family="Figtree, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">' + escapeAttr((card.issuer || '').toUpperCase()) + '</text>' : '') +
-      (big ? lines.map(function (l, i) { return '<text x="28" y="' + (142 + i * 24) + '" fill="' + ink + '" font-family="Bricolage Grotesque, Figtree, Helvetica, Arial, sans-serif" font-size="' + (lines.length > 1 ? 22 : 24) + '" font-weight="800">' + escapeAttr(l) + '</text>'; }).join('') : '') +
-      '<text x="' + (W - 28) + '" y="' + (H - 22) + '" text-anchor="end" fill="' + ink + '" fill-opacity=".9" font-family="Figtree, Helvetica, Arial, sans-serif" font-size="' + (mid ? 16 : 26) + '" font-weight="800" font-style="italic" letter-spacing="1">' + net + '</text>' +
+      (mid ? '<text x="28" y="40" fill="' + ink + '" fill-opacity=".82" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" font-stretch="112%" letter-spacing="2">' + escapeAttr((card.issuer || '').toUpperCase()) + '</text>' : '') +
+      (big ? lines.map(function (l, i) { return '<text x="28" y="' + (142 + i * 24) + '" fill="' + ink + '" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="' + (lines.length > 1 ? 22 : 24) + '" font-weight="800" font-stretch="106%">' + escapeAttr(l) + '</text>'; }).join('') : '') +
+      '<text x="' + (W - 28) + '" y="' + (H - 22) + '" text-anchor="end" fill="' + ink + '" fill-opacity=".9" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="' + (mid ? 16 : 26) + '" font-weight="850" font-style="italic" font-stretch="112%" letter-spacing="1">' + net + '</text>' +
       '</svg>';
     var wrap = document.createElement('span');
     wrap.className = 'card-art' + (opts.cls ? ' ' + opts.cls : '');
@@ -180,7 +187,8 @@
     var body = h('div', { class: 'sheet-body' }, h('div', { class: 'wrap stack' }, bodyNodes));
     var sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
       h('div', { class: 'grab' }),
-      h('div', { class: 'wrap sheet-head' }, h('h2', null, title), opts.noClose ? null : h('button', { class: 'close', 'aria-label': 'Close', onclick: closeSheet }, icon('x'))),
+      // quietHead: the body carries its own big title (card detail), so the head is just the close button.
+      h('div', { class: 'wrap sheet-head' + (opts.quietHead ? ' quiet' : '') }, opts.quietHead ? null : h('h2', null, title), opts.noClose ? null : h('button', { class: 'close', 'aria-label': 'Close', onclick: closeSheet }, icon('x'))),
       body);
     var back = h('div', { class: 'sheet-backdrop', onclick: function () { if (!opts.noClose) closeSheet(); } });
     root.appendChild(back); root.appendChild(sheet);
@@ -193,11 +201,11 @@
   /* ---------- first-run disclaimer ---------- */
   function mascotSvg() {
     return '<svg viewBox="0 0 240 180" width="200" height="150" role="img" aria-label="A goofy cartoon credit card">' +
-      '<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E7D5B"/><stop offset="1" stop-color="#12352B"/></linearGradient></defs>' +
+      '<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A55C9"/><stop offset="1" stop-color="#3B1A60"/></linearGradient></defs>' +
       '<g transform="rotate(-8 120 95)">' +
       '<rect x="30" y="40" width="180" height="112" rx="14" fill="url(#mg)"/>' +
-      '<rect x="30" y="62" width="180" height="16" fill="#0B241D" opacity=".9"/>' +
-      '<rect x="46" y="118" width="38" height="24" rx="5" fill="#D4A84B"/><path d="M46 130h38M65 118v24" stroke="#A47E2C" stroke-width="2"/>' +
+      '<rect x="30" y="62" width="180" height="16" fill="#24103A" opacity=".9"/>' +
+      '<rect x="46" y="118" width="38" height="24" rx="5" fill="#F6A623"/><path d="M46 130h38M65 118v24" stroke="#B87400" stroke-width="2"/>' +
       '<circle cx="104" cy="104" r="17" fill="#fff"/><circle cx="150" cy="100" r="22" fill="#fff"/>' +
       '<circle cx="109" cy="106" r="7" fill="#101418"/><circle cx="144" cy="103" r="10" fill="#101418"/>' +
       '<circle cx="111" cy="103" r="2.5" fill="#fff"/><circle cx="147" cy="99" r="3" fill="#fff"/>' +
@@ -205,10 +213,10 @@
       '<path d="M132 74 q18 -4 32 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>' +
       '<path d="M104 128 q30 22 60 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>' +
       '<path d="M128 139 q8 14 2 24 q-10 -6 -2 -24z" fill="#E86A6A"/>' +
-      '<text x="182" y="146" text-anchor="end" fill="#fff" font-family="Figtree, Helvetica, Arial, sans-serif" font-size="11" font-weight="800" font-style="italic" opacity=".8">PAYS IN FULL</text>' +
+      '<text x="182" y="146" text-anchor="end" fill="#fff" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="11" font-weight="800" font-style="italic" opacity=".8">PAYS IN FULL</text>' +
       '</g>' +
-      '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="#12352B" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="#12352B"/>' +
-      '<path d="M206 70 q22 -16 26 2" fill="none" stroke="#12352B" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="#12352B"/>' +
+      '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="#1E1328" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="#1E1328"/>' +
+      '<path d="M206 70 q22 -16 26 2" fill="none" stroke="#1E1328" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="#1E1328"/>' +
       '</svg>';
   }
   function openDisclaimer() {
@@ -250,8 +258,6 @@
     empty.hidden = true; body.hidden = false;
     renderBanner();
     renderWhere();
-    document.getElementById('pm-card').classList.toggle('on', ctx.payMethod !== 'wallet');
-    document.getElementById('pm-wallet').classList.toggle('on', ctx.payMethod === 'wallet');
     renderAnswer();
   }
 
@@ -265,27 +271,30 @@
         h('span', { class: 'ask-actions' },
           h('button', { class: 'btn', onclick: function () { state.locationAsked = true; saveState(); renderBanner(); } }, 'Not now'),
           h('button', { class: 'btn primary', onclick: function () { state.locationAsked = true; state.prefs.location = true; saveState(); renderBanner(); relocate(); } }, 'Use my location'))));
-      return;
     }
+  }
+
+  // Activation and perk reminders sit under the answer, so the card to use always comes first.
+  function renderReminder(root) {
     var q = E.quarterOf(new Date());
     state.dismissed = state.dismissed || {};
-    if (state.dismissed['activate:' + q]) return;
-    var pending = [];
-    state.wallet.forEach(function (entry) {
-      var card = E.cardById(data, entry.cardId); if (!card || !card.rotating || !card.rotating.activation) return;
-      var cal = card.rotating.calendar && card.rotating.calendar[q]; if (!cal) return;
-      if (!(entry.activated && entry.activated[q])) pending.push({ card: card, entry: entry, cal: cal });
-    });
-    if (pending.length) {
-      var p = pending[0];
-      root.hidden = false;
-      root.appendChild(h('div', { class: 'note warn', style: 'display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap' },
-        h('span', null, h('b', null, p.card.name + ': '), 'activate the ' + quarterLabel(q) + ' ' + rateText(p.card.rotating.rate, E.unitFor(p.card.program, data)) + ' categories' + (p.cal.activateBy ? ' by ' + E.fmtDate(p.cal.activateBy) : '') + (pending.length > 1 ? ' (and ' + (pending.length - 1) + ' more)' : '')),
-        h('span', { style: 'display:flex;gap:8px;flex-wrap:wrap' },
-          h('button', { class: 'btn', style: 'min-height:36px;padding:6px 10px', onclick: function () { state.dismissed['activate:' + q] = true; saveState(); renderBanner(); } }, 'Later'),
-          p.card.rotating.activationUrl ? h('a', { class: 'btn primary', style: 'min-height:36px;padding:6px 10px', href: p.card.rotating.activationUrl, target: '_blank', rel: 'noopener' }, 'Activate') : null,
-          h('button', { class: 'btn', style: 'min-height:36px;padding:6px 10px', onclick: function () { p.entry.activated = p.entry.activated || {}; p.entry.activated[q] = true; saveState(); renderPay(); toast('Marked ' + p.card.name + ' as activated'); } }, 'Done, activated'))));
-      return;
+    if (!state.dismissed['activate:' + q]) {
+      var pending = [];
+      state.wallet.forEach(function (entry) {
+        var card = E.cardById(data, entry.cardId); if (!card || !card.rotating || !card.rotating.activation) return;
+        var cal = card.rotating.calendar && card.rotating.calendar[q]; if (!cal) return;
+        if (!(entry.activated && entry.activated[q])) pending.push({ card: card, entry: entry, cal: cal });
+      });
+      if (pending.length) {
+        var p = pending[0];
+        root.appendChild(h('div', { class: 'note warn remind' },
+          h('p', null, h('b', null, p.card.name + ': '), 'activate the ' + quarterLabel(q) + ' ' + rateText(p.card.rotating.rate, E.unitFor(p.card.program, data)) + ' categories' + (p.cal.activateBy ? ' by ' + E.fmtDate(p.cal.activateBy) : '') + (pending.length > 1 ? ' (and ' + (pending.length - 1) + ' more)' : '') + '.'),
+          h('div', { class: 'remind-actions' },
+            p.card.rotating.activationUrl ? h('a', { class: 'btn primary', href: p.card.rotating.activationUrl, target: '_blank', rel: 'noopener' }, 'Activate') : null,
+            h('button', { class: 'btn', onclick: function () { p.entry.activated = p.entry.activated || {}; p.entry.activated[q] = true; saveState(); renderPay(); toast('Marked ' + p.card.name + ' as activated'); } }, 'Done, activated'),
+            h('button', { class: 'btn ghost', onclick: function () { state.dismissed['activate:' + q] = true; saveState(); renderAnswer(); } }, 'Later'))));
+        return;
+      }
     }
     if (state.dismissed['perks:' + q]) return;
     var perkCards = [];
@@ -296,12 +305,11 @@
     });
     if (!perkCards.length) return;
     var pk = perkCards[0];
-    root.hidden = false;
-    root.appendChild(h('div', { class: 'note', style: 'display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap' },
-      h('span', null, h('b', null, pk.card.name + ': '), pk.n + (pk.n === 1 ? ' perk is' : ' perks are') + ' not activated yet' + (perkCards.length > 1 ? ' (other cards too)' : '')),
-      h('span', { style: 'display:flex;gap:8px' },
-        h('button', { class: 'btn', style: 'min-height:36px;padding:6px 10px', onclick: function () { state.dismissed['perks:' + q] = true; saveState(); renderBanner(); } }, 'Later'),
-        h('button', { class: 'btn primary', style: 'min-height:36px;padding:6px 10px', onclick: function () { openCardDetail(pk.card.id); } }, 'Review'))));
+    root.appendChild(h('div', { class: 'note remind' },
+      h('p', null, h('b', null, pk.card.name), ' has ' + pk.n + (pk.n === 1 ? ' perk' : ' perks') + ' to activate' + (perkCards.length > 1 ? ', and ' + (perkCards.length - 1) + (perkCards.length === 2 ? ' other card does too' : ' other cards do too') : '') + '.'),
+      h('div', { class: 'remind-actions' },
+        h('button', { class: 'btn primary', onclick: function () { openCardDetail(pk.card.id); } }, 'Review'),
+        h('button', { class: 'btn ghost', onclick: function () { state.dismissed['perks:' + q] = true; saveState(); renderAnswer(); } }, 'Later'))));
   }
 
   function currentWhere() {
@@ -420,20 +428,22 @@
     var tone = textColorFor(card.color);
     var changed = lastWinner !== card.id;
     lastWinner = card.id;
-    var winner = h('div', { class: 'winner ' + tone + (changed ? ' reveal' : ''), style: '--card:' + card.color });
+    var winner = h('div', { class: 'winner ' + tone + (changed ? ' reveal' : '') + (where ? '' : ' nowhere'), style: '--card:' + card.color });
     if (changed && interacted && navigator.vibrate) { try { navigator.vibrate(8); } catch (e) { } }
-    winner.appendChild(cardArt(card, 96, { cls: 'winner-art' }));
-    winner.appendChild(h('div', { class: 'eyebrow' }, icon('check'), where ? 'Use this card' : 'For everything else, use'));
+    winner.appendChild(h('div', { class: 'w-label' }, icon('check'), where ? 'Use this card' : 'For everything else, use'));
+    var pulled = h('div', { class: 'w-card' }); pulled.appendChild(cardArt(card, 300, { bare: true })); winner.appendChild(pulled);
     winner.appendChild(h('div', { class: 'name' }, best.entry.nickname || card.name));
     var row = h('div', { class: 'wrow' });
     var unit = best.unit;
+    // "4% on gas" reads as a big 4% with "on gas" under it.
+    var reasonTail = String(best.reason || '').replace(/^\s*[\d.]+\s*(%|x)\s*/i, '');
+    if (best.entry.multiplier && best.entry.multiplier > 1) reasonTail += ' (with your ' + Math.round((best.entry.multiplier - 1) * 100) + '% boost)';
     var rateNum = h('span', null, rateText(best.effectiveRate, unit));
-    var rateEl = h('div', { class: 'rate num' }, rateNum, unit !== 'percent' ? h('small', null, unit + ' · ' + pctText(best.effectivePercent) + ' value') : null);
+    var rateEl = h('div', { class: 'rate num' }, rateNum, h('small', null, reasonTail + (unit !== 'percent' ? ', ' + unit + ' worth ' + pctText(best.effectivePercent) : '')));
     row.appendChild(rateEl);
     if (changed) countUp(rateNum, best.effectiveRate, unit);
-    if (amount > 0) row.appendChild(h('div', { class: 'value num' }, (best.valueCents >= 0 ? cents(best.valueCents) : '-' + cents(-best.valueCents)) + (unit === 'percent' ? ' back' : ' value')));
+    if (amount > 0) row.appendChild(h('div', { class: 'value num' }, (best.valueCents >= 0 ? cents(best.valueCents) : '-' + cents(-best.valueCents)), h('span', null, unit === 'percent' ? 'back' : 'in value')));
     winner.appendChild(row);
-    winner.appendChild(h('div', { class: 'why' }, best.reason + (best.entry.multiplier && best.entry.multiplier > 1 ? ' (incl. your ' + Math.round((best.entry.multiplier - 1) * 100) + '% boost)' : '')));
     if (amount > 0 && rec.results.length > 1 && rec.results[1].accepted) {
       var edge = best.valueCents - rec.results[1].valueCents;
       if (edge >= 1) winner.appendChild(h('div', { class: 'edge num' }, cents(edge) + ' more than your next best card'));
@@ -446,17 +456,20 @@
     if (amount >= (state.prefs.protectionThreshold || 300)) best.protections.forEach(function (p) { flags.appendChild(h('span', { class: 'flag' }, p)); });
     if (flags.childNodes.length) winner.appendChild(flags);
     var actions = h('div', { class: 'winner-actions' });
-    if (amount > 0) actions.appendChild(h('button', { class: 'btn', onclick: function () { logPurchase(best, amount); } }, icon('check'), 'I used it'));
+    if (amount > 0) actions.appendChild(h('button', { class: 'btn primary', onclick: function () { logPurchase(best, amount); } }, icon('check'), 'I used it'));
     actions.appendChild(h('button', { class: 'btn', onclick: function () { openCardDetail(card.id); } }, 'Details'));
     winner.appendChild(actions);
     root.appendChild(winner);
+    renderReminder(root);
 
     if (rec.results.length > 1) {
-      var ul = h('ul', { class: 'others', 'aria-label': 'Your other cards' });
+      var pocket = h('div', { class: 'pocket' });
+      pocket.appendChild(h('p', { class: 'pocket-label', 'aria-hidden': 'true' }, 'The rest of your wallet'));
+      var ul = h('ul', { class: 'others', 'aria-label': 'Your other cards, best first' });
       rec.results.slice(1).forEach(function (r) {
-        var li = h('li', { class: r.accepted ? '' : 'off', style: '--card:' + r.card.color });
+        var col = cardColors(r.card);
+        var li = h('li', { class: r.accepted ? '' : 'off', style: '--c1:' + col.c1 + ';--c2:' + col.c2 + ';--c3:' + col.c3 + ';--on:' + col.ink });
         var btn = h('button', { onclick: function () { openCardDetail(r.card.id); } },
-          h('span', { class: 'bar' }),
           h('span', { class: 'n' }, r.entry.nickname || r.card.name,
             h('span', { class: 'why' }, r.reason),
             r.warnings.length ? h('span', { class: r.accepted ? 'warn' : 'bad' }, r.warnings[0]) : null,
@@ -465,7 +478,8 @@
             r.accepted ? h('small', null, amount > 0 ? (r.valueCents >= 0 ? cents(r.valueCents) : '-' + cents(-r.valueCents)) : (r.unit !== 'percent' ? pctText(r.effectivePercent) + ' value' : '')) : null));
         li.appendChild(btn); ul.appendChild(li);
       });
-      root.appendChild(ul);
+      pocket.appendChild(ul);
+      root.appendChild(pocket);
     }
     if (where && state.prefs.showAnywhere !== false) renderAnywhere(root, rc, amount);
     rec.notes.forEach(function (n) { root.appendChild(h('div', { class: 'note' }, n)); });
@@ -534,7 +548,7 @@
         top.appendChild(h('button', { class: 'aw-card', onclick: function () { openCardDetail(b.card.id); } },
           cardArt(b.card, 72),
           h('span', { class: 't' }, h('b', null, b.card.name),
-            h('span', null, (b.unit === 'percent' ? pctText(b.effectivePercent) : rateText(b.effectiveRate, b.unit) + ' (about ' + pctText(b.effectivePercent) + ')') + ' here \u00b7 ' + (b.cost ? '$' + Math.round(b.cost / 100) + ' a year' : 'no annual fee'))),
+            h('span', null, (b.unit === 'percent' ? pctText(b.effectivePercent) : rateText(b.effectiveRate, b.unit) + ' (about ' + pctText(b.effectivePercent) + ')') + ' here, ' + (b.cost ? '$' + Math.round(b.cost / 100) + ' a year' : 'no annual fee'))),
           h('span', { class: 'chev' }, icon('chev'))));
         top.appendChild(h('p', { class: 'aw-vs' }, mineName ? 'You\u2019re getting ' + pctText(aw.minePct) + ' with ' + mineName + '.' : 'Nothing in your wallet works here.'));
       } else {
@@ -902,7 +916,7 @@
         var inWallet = !!walletEntry(c.id);
         list.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : ''), style: '--card:' + c.color, onclick: function () { toggleCard(c); drawList(); } },
           cardArt(c, 56),
-          h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ' · $' + c.annualFee + '/yr' : ' · no annual fee'))),
+          h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ', $' + c.annualFee + ' a year' : ', no annual fee'))),
           h('span', { class: 'add' }, inWallet ? 'Added' : 'Add')));
       });
     }
@@ -1109,10 +1123,9 @@
     var unit = E.unitFor(card.program, data);
     var now = new Date(), q = E.quarterOf(now), nq = E.nextQuarterKey(now);
     var nodes = [];
-    var tone = textColorFor(card.color);
-    var hero = h('div', { class: 'detail-hero ' + tone, style: '--card:' + card.color },
-      cardArt(card, 200, { cls: 'hero-art' }),
-      h('div', { class: 'issuer' }, card.issuer + (card.network && card.network !== card.issuer ? ' · ' + card.network : '') + (card.type === 'business' ? ' · Business' : '')),
+    var hero = h('div', { class: 'detail-hero' },
+      cardArt(card, 300, { cls: 'hero-art', bare: true }),
+      h('div', { class: 'issuer' }, card.issuer + (card.network && card.network !== card.issuer ? ' ' + card.network : '') + (card.type === 'business' ? ', business card' : '')),
       h('h2', null, entry.nickname || card.name),
       h('div', { class: 'meta' },
         h('span', { class: 'flag' }, card.annualFee ? '$' + card.annualFee + ' annual fee' : 'No annual fee'),
@@ -1142,7 +1155,7 @@
       if (r.cap) sub.push('up to $' + r.cap.toLocaleString() + ' per ' + r.capPeriod);
       if (r.excludes && r.excludes.length) sub.push('not at ' + r.excludes.map(function (x) { return cat(x).name.toLowerCase(); }).join(' or '));
       if (r.note) sub.push(r.note);
-      rows.push([rateText(r.rate, unit), label, sub.join(' · ')]);
+      rows.push([rateText(r.rate, unit), label, sub.join(', ')]);
     });
     rows.push([rateText(card.base, unit), 'Everything else', '']);
     rows.forEach(function (r) { earn.appendChild(h('li', null, h('span', { class: 'l' }, r[1], r[2] ? h('small', null, r[2]) : null), h('span', { class: 'r' }, r[0]))); });
@@ -1298,7 +1311,7 @@
       }
       nodes.push(box);
     }
-    nodes.push(h('p', { class: 'small muted' }, 'Rates checked ' + fmtLongDate(card.verified || data.verified) + ' against the issuer. ', card.sourceUrl ? h('a', { href: card.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : null, ' · ', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Which Card: wrong number on ' + card.name) }, 'Report a wrong number')));
+    nodes.push(h('p', { class: 'small muted' }, 'Rates checked ' + fmtLongDate(card.verified || data.verified) + ' against the issuer. ', card.sourceUrl ? h('a', { href: card.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : null, card.sourceUrl ? ' or ' : '', h('a', { href: 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Which Card: wrong number on ' + card.name) }, 'Report a wrong number')));
     if (card.custom) nodes.push(h('button', { class: 'btn block', onclick: function () { openCustomCard(card); } }, 'Edit this card'));
     if (inWallet) nodes.push(h('button', { class: 'btn danger block', onclick: function () {
       toggleCard(card);
@@ -1306,7 +1319,7 @@
       closeSheet(); renderAll(); toast('Removed ' + card.name);
     } }, card.custom ? 'Delete this card' : 'Remove from wallet'));
     else nodes.push(h('button', { class: 'btn primary block', onclick: function () { toggleCard(card); closeSheet(); renderAll(); toast('Added ' + card.name); } }, 'Add to wallet'));
-    openSheet(card.name, nodes);
+    openSheet(entry.nickname || card.name, nodes, { quietHead: true });
     sheetOnClose = function () { renderAll(); };
   }
 
@@ -1363,8 +1376,8 @@
       var have = !!walletEntry(o.cardId);
       os.appendChild(h('div', { class: 'offer', style: '--card:' + (card ? card.color : '#777') },
         h('div', { class: 'h' }, h('b', null, o.cardName), have ? h('span', { class: 'badge good' }, 'You have it') : null),
-        h('div', { class: 'bonus num' }, o.cashBonus ? money(o.cashBonus) + ' cash' : o.bonus, o.bonusValueCents && !o.cashBonus ? h('span', { class: 'small muted', style: 'font-family:var(--font-body);font-weight:600' }, ' about ' + cents(o.bonusValueCents)) : null),
-        h('div', { class: 'req' }, o.spend ? 'Spend ' + money(o.spend) + ' in ' + o.months + ' month' + (o.months === 1 ? '' : 's') : 'No spend requirement', o.annualFee ? ' · $' + o.annualFee + ' annual fee' + (o.firstYearFeeWaived ? ' (waived first year)' : '') : ' · no annual fee'),
+        h('div', { class: 'bonus num' }, o.cashBonus ? money(o.cashBonus) + ' cash' : o.bonus, o.bonusValueCents && !o.cashBonus ? h('span', { class: 'about small muted' }, ' about ' + cents(o.bonusValueCents)) : null),
+        h('div', { class: 'req' }, o.spend ? 'Spend ' + money(o.spend) + ' in ' + o.months + ' month' + (o.months === 1 ? '' : 's') : 'No spend requirement', o.annualFee ? ', $' + o.annualFee + ' annual fee' + (o.firstYearFeeWaived ? ' (waived first year)' : '') : ', no annual fee'),
         o.notes ? h('div', { class: 'small muted' }, o.notes) : null,
         h('div', { class: 'foot' }, o.sourceUrl ? h('a', { href: o.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : h('span'), card ? h('button', { class: 'link', style: 'color:var(--accent);font-weight:600', onclick: function () { openCardDetail(card.id); } }, 'How it earns') : null)));
     });
@@ -1424,7 +1437,7 @@
     var ps = h('div', { class: 'section' }, h('h2', null, 'Paying'));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I usually pay with my phone'), h('span', null, 'Apple Pay or Google Pay. A few cards pay more this way.')),
       h('button', { class: 'switch' + (state.prefs.payMethod === 'wallet' ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.payMethod === 'wallet' ? 'true' : 'false', 'aria-label': 'Pay with phone by default', onclick: function () { state.prefs.payMethod = state.prefs.payMethod === 'wallet' ? 'card' : 'wallet'; ctx.payMethod = state.prefs.payMethod; saveState(); renderMore(); } })));
-    ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Find my store when I open the app'), h('span', null, PREVIEW ? 'Available in the installed app, not in this preview.' : 'Uses your location once per visit. Nothing is stored.')),
+    ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Find my store when I open the app'), h('span', null, PREVIEW ? 'Available in the installed app, not in this preview.' : 'Looks up the stores around you each time you open it. The stores it finds stay on this phone for 30 days.')),
       h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) relocate(); else forgetPlaces(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
       h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
@@ -1501,8 +1514,6 @@
       if (v !== amt.value) amt.value = v; ctx.amount = v; renderAnswer();
     });
     amt.addEventListener('keydown', function (e) { if (e.key === 'Enter') amt.blur(); });
-    document.getElementById('pm-card').addEventListener('click', function () { ctx.payMethod = 'card'; renderPay(); });
-    document.getElementById('pm-wallet').addEventListener('click', function () { ctx.payMethod = 'wallet'; renderPay(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) { hiddenAt = Date.now(); return; }

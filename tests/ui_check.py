@@ -32,6 +32,12 @@ threading.Thread(target=serve, daemon=True).start()
 time.sleep(0.5)
 errors = []
 
+
+def shot(page, path, **kw):
+    # Finish any running animation first so a sheet is never caught half way in.
+    page.screenshot(path=path, animations='disabled', **kw)
+
+
 with sync_playwright() as p:
     browser = p.chromium.launch()
     ctx = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True,
@@ -41,13 +47,13 @@ with sync_playwright() as p:
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.goto('http://127.0.0.1:%d/' % PORT)
     page.wait_for_selector('.sheet .mascot')
-    page.screenshot(path=os.path.join(OUT, '00-disclaimer.png'))
+    shot(page, os.path.join(OUT, '00-disclaimer.png'))
     page.click('.sheet button:has-text("I pay in full")')
     page.wait_for_selector('#btn-start')
-    page.screenshot(path=os.path.join(OUT, '00-intro.png'))
+    shot(page, os.path.join(OUT, '00-intro.png'))
     page.click('#btn-start')
     page.wait_for_selector('.sheet')
-    page.screenshot(path=os.path.join(OUT, '01-onboarding.png'))
+    shot(page, os.path.join(OUT, '01-onboarding.png'))
 
     def add(term, name):
         page.fill('.sheet input[type=search]', term)
@@ -59,21 +65,21 @@ with sync_playwright() as p:
     add('Costco', 'Costco Anywhere')
     add('Custom Cash', 'Custom Cash')
     page.fill('.sheet input[type=search]', '')
-    page.screenshot(path=os.path.join(OUT, '02-added.png'))
+    shot(page, os.path.join(OUT, '02-added.png'))
     page.click('.sheet button.btn:has-text("Done")')
     page.wait_for_selector('.sheet button:has-text("Yes, with Prime")')
-    page.screenshot(path=os.path.join(OUT, '02b-prime-question.png'))
+    shot(page, os.path.join(OUT, '02b-prime-question.png'))
     page.click('.sheet button:has-text("Yes, with Prime")')
     page.wait_for_selector('.sheet .opt')
-    page.screenshot(path=os.path.join(OUT, '03-priority.png'))
+    shot(page, os.path.join(OUT, '03-priority.png'))
     page.click('.sheet button:has-text("Start using it")')
     page.wait_for_selector('#pay-body:not([hidden])')
-    page.screenshot(path=os.path.join(OUT, '04-pay-empty.png'))
+    shot(page, os.path.join(OUT, '04-pay-empty.png'))
 
     page.click('.quick button:has-text("Gas")')
     page.fill('#amount', '40')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '05-gas-40.png'))
+    shot(page, os.path.join(OUT, '05-gas-40.png'))
     winner = page.inner_text('.winner .name')
     print('gas winner:', winner)
 
@@ -82,28 +88,28 @@ with sync_playwright() as p:
     page.click('.suggest button:has-text("Costco")')
     page.fill('#amount', '120')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '06-costco-120.png'))
+    shot(page, os.path.join(OUT, '06-costco-120.png'))
     print('costco winner:', page.inner_text('.winner .name'))
     print('others:', page.inner_text('.others'))
 
     page.click('.winner button:has-text("I used it")')
     page.wait_for_timeout(300)
-    page.screenshot(path=os.path.join(OUT, '07-logged.png'))
+    shot(page, os.path.join(OUT, '07-logged.png'))
 
     page.click('.where-chip')
     page.click('.quick button:has-text("Groceries")')
     page.fill('#amount', '85.50')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '08-groceries.png'))
+    shot(page, os.path.join(OUT, '08-groceries.png'))
     print('groceries winner:', page.inner_text('.winner .name'))
 
     page.click('.tabs button[data-view=wallet]')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '09-wallet.png'))
+    shot(page, os.path.join(OUT, '09-wallet.png'))
     page.click('.tile:has-text("Freedom Flex")')
     page.wait_for_selector('.sheet')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '10-detail.png'), full_page=False)
+    shot(page, os.path.join(OUT, '10-detail.png'), full_page=False)
     assert 'Perks and credits' in page.inner_text('.sheet'), 'perks box missing'
     assert page.get_attribute('.sheet a:has-text("Activate on the Chase site")', 'href').startswith('https://www.chase'), 'activation link missing'
     page.click('.perk-list li:has-text("DashPass") .switch')
@@ -113,21 +119,21 @@ with sync_playwright() as p:
 
     page.click('.tabs button[data-view=offers]')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '11-offers.png'))
+    shot(page, os.path.join(OUT, '11-offers.png'))
 
     page.click('.tabs button[data-view=more]')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '12-more.png'))
+    shot(page, os.path.join(OUT, '12-more.png'))
 
     page.emulate_media(color_scheme='dark')
     page.click('.tabs button[data-view=pay]')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '13-dark-pay.png'))
+    shot(page, os.path.join(OUT, '13-dark-pay.png'))
 
     # Shortcut URL
     page.goto('http://127.0.0.1:%d/?cat=dining&amt=32' % PORT)
     page.wait_for_selector('.winner')
-    page.screenshot(path=os.path.join(OUT, '14-shortcut-dining.png'))
+    shot(page, os.path.join(OUT, '14-shortcut-dining.png'))
     print('dining winner:', page.inner_text('.winner .name'))
 
     page.emulate_media(color_scheme='light')
@@ -149,7 +155,7 @@ with sync_playwright() as p:
     page.fill('.sheet input[aria-label="Spent so far"]', '250')
     page.click('.sheet button:has-text("Save")')
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '15-choice-goal.png'))
+    shot(page, os.path.join(OUT, '15-choice-goal.png'))
     assert '$250.00 of $1,000.00' in page.inner_text('.sheet'), 'goal progress missing'
     page.click('.sheet .close')
     page.wait_for_timeout(200)
@@ -160,7 +166,7 @@ with sync_playwright() as p:
     page.fill('#amount', '50')
     page.wait_for_timeout(200)
     print('gas winner with BofA on gas:', page.inner_text('.winner .name'))
-    page.screenshot(path=os.path.join(OUT, '16-gas-bofa.png'))
+    shot(page, os.path.join(OUT, '16-gas-bofa.png'))
 
     # Bonus priority puts the goal card first
     page.click('.tabs button[data-view=more]')
@@ -180,14 +186,14 @@ with sync_playwright() as p:
     page.wait_for_timeout(300)
     page.evaluate("document.querySelector('.anywhere').scrollIntoView({block:'center'})")
     page.wait_for_timeout(200)
-    page.screenshot(path=os.path.join(OUT, '19-anywhere.png'))
+    shot(page, os.path.join(OUT, '19-anywhere.png'))
     print('anywhere:', page.inner_text('.anywhere').replace('\n', ' / ')[:400])
     page.fill('.anywhere input[type=range]', '150')
     page.dispatch_event('.anywhere input[type=range]', 'input')
     page.dispatch_event('.anywhere input[type=range]', 'change')
     page.wait_for_timeout(300)
     print('anywhere at 150 trips:', page.inner_text('.anywhere').replace('\n', ' / ')[:400])
-    page.screenshot(path=os.path.join(OUT, '20-anywhere-150.png'))
+    shot(page, os.path.join(OUT, '20-anywhere-150.png'))
 
     # Custom card
     page.click('.tabs button[data-view=wallet]')
@@ -207,7 +213,7 @@ with sync_playwright() as p:
     page.click('.quick button:has-text("Gas")')
     page.wait_for_timeout(300)
     assert 'Elgin Credit Union' in page.inner_text('#answer'), 'custom card not ranked'
-    page.screenshot(path=os.path.join(OUT, '18-custom-card.png'))
+    shot(page, os.path.join(OUT, '18-custom-card.png'))
 
     # Setup code round trip
     page.click('.tabs button[data-view=more]')
@@ -226,7 +232,7 @@ with sync_playwright() as p:
     page.click('.tabs button[data-view=wallet]')
     page.wait_for_timeout(200)
     assert 'Customized Cash' in page.inner_text('#view-wallet'), 'setup code did not restore the wallet'
-    page.screenshot(path=os.path.join(OUT, '17-restored.png'))
+    shot(page, os.path.join(OUT, '17-restored.png'))
 
     # Body never wider than the viewport
     w = page.evaluate('document.documentElement.scrollWidth')

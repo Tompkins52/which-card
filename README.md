@@ -10,7 +10,7 @@ Built by Tompkins Software Systems.
 
 The first open shows a welcome note from a goofy cartoon card: the app is built for people who pay their statement in full and never pay interest; anyone who pays interest is welcome to carry on as they are.
 
-- **Pay** is the whole point: pick the store (search, quick buttons, or location), optionally type the amount, and the top card appears with what it earns, why, and anything to watch (activation, caps, Visa-only stores, foreign fees). Every other card in the wallet is ranked below it. "I used it" logs the purchase so caps and welcome-bonus goals stay current.
+- **Pay** is the whole point: pick the store (search, quick buttons, or location), optionally type the amount, and the card to use appears drawn big, as if just pulled out of the wallet, with what it earns, why, and anything to watch (activation, caps, Visa-only stores, foreign fees). Every other card in the wallet is ranked below it in a stitched pocket, best first. "I used it" logs the purchase so caps and welcome-bonus goals stay current.
 - **Where you are standing.** With location on, the app looks up the stores around you every time it opens, and again when you come back to it after a minute or more, then shows "You're at" and the store's name with the best card for it, before any amount is typed. The stores next door are one tap away ("Not here?"). A store picked by hand in the last three minutes is kept, so switching to a payment app and back never moves you, and a new store clears the old amount. If the lookup fails, the last store comes back. The Pay screen asks once, at the top, whether to turn location on.
 - **Fast lookups.** Two position requests start together, a quick one from Wi-Fi and cell towers and a precise one from GPS; the first usable fix answers (one rougher than 150 meters waits up to 4 seconds for a better one) and a clearly better or clearly different fix in the next 12 seconds corrects it. The stores found around a spot are kept on the phone for 30 days (`whichcard.places.v1`: where the lookup was made, to about 10 meters, and the named places within 120 meters), so a place you have been before is answered with no lookup; a spot older than 3 days is refreshed quietly. A new place asks overpass.private.coffee first and overpass-api.de as well if the first has not answered in 1.5 seconds; the first good answer wins, and after 9 seconds the app stops and says the map is slow. Turning location off or erasing the app clears the kept stores.
 - **Best card anywhere** sits under each answer: the card from the whole catalog that would earn the most at that store at the person's pace (a trips-a-year slider, prefilled from their logged purchases or a typical pace), shown as yearly dollars after the card's annual fee, with the trip count at which a fee card pays for itself. It judges cards on their everyday rates, ignoring rotating and time-limited bonuses, and says plainly when nothing beats what they already carry. It can be turned off under More.
@@ -20,11 +20,16 @@ The first open shows a welcome note from a goofy cartoon card: the app is built 
 
 The recommendation logic lives in `engine.js` and has no DOM dependencies; `tests/engine.test.js` covers caps, rotating quarters, exclusions, network acceptance, valuations and goals.
 
+## Look
+
+The idea is pulling the right card out of your wallet. The card to use is drawn big and tilted, the rest of the wallet sits in a plum pocket under it, and everything else stays quiet so the card colors carry the color. Palette: Mist #F5F2F8 (background), Ink #1E1328 (text), Plum #5B2E86 (actions), Pocket #2A1640 (the wallet) and Marigold #F6A623 (wins), with a dark version of each. Type is Archivo, one variable font used wide for names and headings and condensed for rates and dollar figures. The font ships with the app (`fonts/`), so no font service is contacted. The look follows the phone's light or dark setting unless one is picked under More.
+
 ## Files
 
 | Path | What it is |
 | --- | --- |
 | `index.html`, `app.css`, `app.js`, `engine.js` | The app. No build step, no framework. |
+| `fonts/` | Archivo variable font (SIL Open Font License, see `LICENSE-Archivo.txt`). |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Home-screen install and offline support. Shortcuts (long-press the icon on Android) open the app straight on Gas, Groceries, Dining or Amazon. |
 | `data/categories.json` | The spending categories the app understands. |
 | `data/merchants.json` | Stores and sites, their category, quirks (Costco is Visa only; Walmart is not a grocery store) and aliases for the location matcher. |
@@ -70,7 +75,7 @@ Phone checks in a headless browser (Playwright): `python3 tests/ui_check.py` wal
 
 ## Privacy
 
-The app stores the card names the person picks, their settings, goals and logged purchase amounts in the browser's local storage on that phone. Nothing is sent to a server. With location turned on, the phone's coordinates are sent to a public OpenStreetMap Overpass service (overpass.private.coffee, and overpass-api.de when the first is slow) each time the app opens at a place it has not seen in the last 30 days, to find the businesses within about 120 meters. The places found, and where the lookup was made to about 10 meters, stay on the phone for 30 days so a return visit is instant; turning location off or erasing the app clears them; no account or identifier goes with them. There is no analytics, no advertising and no referral link.
+The app stores the card names the person picks, their settings, goals and logged purchase amounts in the browser's local storage on that phone. Nothing is sent to a server. With location turned on, the phone's coordinates are sent to a public OpenStreetMap Overpass service (overpass.private.coffee, and overpass-api.de when the first is slow) each time the app opens at a place it has not seen in the last 30 days, to find the businesses within about 120 meters. The places found, and where the lookup was made to about 10 meters, stay on the phone for 30 days so a return visit is instant; turning location off or erasing the app clears them; no account or identifier goes with them. The font is part of the app, so no font service sees a visit. There is no analytics, no advertising and no referral link.
 
 ## Independent
 
