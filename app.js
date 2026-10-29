@@ -348,7 +348,7 @@
     if (!w && locating) {
       root.appendChild(h('div', { class: 'where-chip finding', role: 'status' },
         h('span', { class: 'ic' }, icon('pin')),
-        h('span', { class: 't' }, h('b', null, 'Finding where you are\u2026'), h('span', null, locateStage === 'map' ? 'Checking the stores around you' : 'Getting your position')),
+        h('span', { class: 't' }, h('b', null, 'Finding where you are\u2026'), h('span', null, locateStage === 'slow' ? 'The map is slow. Still looking\u2026' : locateStage === 'map' ? 'Checking the stores around you' : 'Getting your position')),
         h('button', { class: 'change', onclick: cancelLocate }, 'Pick it')));
       return;
     }
@@ -635,33 +635,45 @@
   // a minute or more away, names the store you are standing in, and answers for that store. A store
   // picked by hand in the last few minutes is kept, so a quick switch to pay never moves you.
   //
-  // Speed, in three parts:
+  // How it finds the store:
   // 1. Two position requests start together: a quick one from Wi-Fi and cell towers and a precise
   //    one from GPS. The first usable fix answers; a better fix in the next few seconds corrects it.
-  // 2. The stores found around a spot are kept on this phone for 30 days, so a place you have been
+  // 2. The map is asked for the named places around that fix. The search reaches past the 120 meters
+  //    the answer uses, by as much as the fix might be off, so a better fix that lands inside the
+  //    searched area is answered again from the same list, with no second lookup.
+  // 3. Three public map servers: two are asked at once, the third two seconds later or as soon as
+  //    one fails, and the first real answer wins. A busy server's "runtime error" is not an answer.
+  //    After 8 seconds the screen says the map is slow and keeps looking; after 30 it gives up.
+  // 4. The stores found around a spot are kept on this phone for 30 days, so a place you have been
   //    before is answered without asking the map again (refreshed quietly after 3 days).
-  // 3. A new place asks two public map servers; the second is asked too if the first has not
-  //    answered in 1.5 seconds, the first good answer wins, and after 9 seconds the app gives up
-  //    and says so instead of spinning.
+  // 5. The last lookup is written down (when, how good the fix was, which server answered and how
+  //    fast) and shown under More, so a lookup that went wrong can be reported exactly.
   var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix';
   var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
-  var AROUND = 120, REUSE = 60, MOVED = 40, PLACES_KEY = 'whichcard.places.v1', PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
-  var MAP_SERVERS = ['https://overpass.private.coffee/api/interpreter', 'https://overpass-api.de/api/interpreter'];
+  var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
+  var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
+  var MAP_SERVERS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
+  var MAP_THIRD = 2000, MAP_SLOW = 8000, MAP_LIMIT = 30000;
   var DAY = 24 * 60 * 60 * 1000;
+  // Version 1 of the saved stores could hold a busy server's empty answer as "no stores here". Drop it.
+  try { localStorage.removeItem('whichcard.places.v1'); } catch (e) { }
   function canLocate() { return !PREVIEW && 'geolocation' in navigator; }
   function pickedJustNow() { var lw = state.lastWhere; return !!(lw && !lw.located && Date.now() - (lw.at || 0) < PICK_HOLD); }
   function whereKey(w) { return w ? (w.merchant || '') + '|' + (w.merchant ? '' : (w.category || '') + '|' + (w.customName || w.name || '')) : ''; }
+  // How far around a fix to search: the 120 meters the answer uses, plus how far off the fix might be.
+  function searchRadius(acc) { return AROUND + (acc > REUSE ? Math.min(acc, ROUGH_REACH) : REUSE); }
 
   function locate() {
     if (!canLocate()) { toast('Location is not available here'); return; }
     if (locating) return;
-    var seq = ++locateSeq, answered = false, center = null, raw = null, autoKey = null, stopFix = null;
+    var seq = ++locateSeq, answered = false, center = null, raw = null, autoKey = null, stopFix = null, last = null, slowTimer = null;
+    var t0 = Date.now(), trace = { at: t0, fixMs: null, acc: null, source: null, servers: [], found: null, top: null, outcome: null };
     locating = true; locateStage = 'fix';
     var btn = document.getElementById('btn-locate'); btn.classList.add('busy');
     if (view === 'pay') { renderWhere(); renderAnswer(); }
     function live() { return seq === locateSeq; }
     function stage(name) { locateStage = name; if (view === 'pay' && locating && !ctx.merchant && !ctx.category) renderWhere(); }
-    function settle() { if (!live()) return false; locating = false; btn.classList.remove('busy'); return true; }
+    function settle() { if (!live()) return false; locating = false; clearTimeout(slowTimer); btn.classList.remove('busy'); return true; }
     function putBack() {
       var prev = locatePrev; locatePrev = null;
       if (prev && !ctx.merchant && !ctx.category) { ctx.merchant = prev.merchant; ctx.category = prev.category; ctx.customName = prev.customName; ctx.located = prev.located; }
@@ -669,21 +681,25 @@
     function fail(msg) {
       if (stopFix) stopFix();
       if (!settle()) return;
+      trace.outcome = msg; saveLookup(trace);
       putBack(); toast(msg); renderPay();
     }
     // Answer from the stores around the spot; a later, better fix only moves the answer if the person has not touched it.
     function answer(lat, lon) {
       var list = rankPlaces(raw, lat, lon);
+      trace.found = list.length; trace.top = list.length ? list[0].name : null;
       if (!answered) {
         answered = true;
         if (!settle()) return;
         nearby = list;
+        trace.outcome = list.length ? 'found' : 'none'; saveLookup(trace);
         if (!list.length) { putBack(); toast('No store found right here. Pick it above.'); renderPay(); return; }
         if (ctx.merchant || ctx.category) { locatePrev = null; renderPay(); return; }
         showFound(list[0]);
         return;
       }
       if (!live() || !list.length) return;
+      saveLookup(trace);
       nearby = list;
       var top = list[0], key = whereKey({ merchant: top.merchant, category: top.category, name: top.name });
       var shown = whereKey({ merchant: ctx.merchant, category: ctx.category, name: ctx.customName });
@@ -699,33 +715,45 @@
       applyNearby(top, true);
       announce('You’re at ' + top.name + '.');
     }
-    function lookUp(lat, lon) {
+    function lookUp(lat, lon, acc) {
       var spot = cachedSpot(lat, lon);
       if (spot) {
-        raw = spot.places; center = { lat: spot.lat, lon: spot.lon };
-        answer(lat, lon);
-        if (Date.now() - spot.at > PLACES_FRESH_DAYS * DAY) fetchPlaces(lat, lon).then(function (fresh) { rememberSpot(lat, lon, fresh); }, function () { });
+        raw = spot.places; center = { lat: spot.lat, lon: spot.lon, radius: spot.radius };
+        trace.source = 'saved'; trace.servers = [];
+        answer(last.lat, last.lon);
+        if (Date.now() - spot.at > PLACES_FRESH_DAYS * DAY) fetchPlaces(spot.lat, spot.lon, spot.radius, []).then(function (fresh) { rememberSpot(spot.lat, spot.lon, spot.radius, fresh); }, function () { });
         return;
       }
-      center = { lat: lat, lon: lon };
+      var radius = searchRadius(acc), here = { lat: lat, lon: lon, radius: radius };
+      center = here;
+      trace.source = 'map'; trace.servers = [];
       stage('map');
-      fetchPlaces(lat, lon).then(function (fresh) {
+      clearTimeout(slowTimer);
+      slowTimer = setTimeout(function () { if (live() && locating && !answered) stage('slow'); }, MAP_SLOW);
+      fetchPlaces(lat, lon, radius, trace.servers).then(function (fresh) {
         if (!live()) return;
-        rememberSpot(lat, lon, fresh);
-        if (center.lat !== lat || center.lon !== lon) return;
-        raw = fresh; answer(lat, lon);
+        rememberSpot(lat, lon, radius, fresh);
+        if (center !== here) return;
+        raw = fresh; answer(last.lat, last.lon);
       }, function () {
-        if (!live() || answered) return;
-        fail('The map is slow right now. Pick the store above.');
+        if (!live() || answered || center !== here) return;
+        fail('The map did not answer. Pick the store above.');
       });
     }
-    stopFix = watchFix(function (lat, lon) {
+    stopFix = watchFix(function (lat, lon, acc) {
       if (!live()) { stopFix && stopFix(); return; }
-      if (!center) { lookUp(lat, lon); return; }
-      if (haversine(lat, lon, center.lat, center.lon) >= MOVED) { lookUp(lat, lon); return; }
+      if (trace.fixMs === null) trace.fixMs = Date.now() - t0;
+      trace.acc = Math.round(acc);
+      last = { lat: lat, lon: lon };
+      if (!center) { lookUp(lat, lon, acc); return; }
+      var d = haversine(lat, lon, center.lat, center.lon);
+      // Still inside the area already searched: answer again from the same list, no new lookup.
+      if (d + AROUND <= center.radius) { if (raw) answer(lat, lon); return; }
+      if (d >= MOVED) { lookUp(lat, lon, acc); return; }
       if (raw) answer(lat, lon);
     }, function (err) {
       if (!live() || answered) return;
+      trace.fixMs = null;
       fail(err && err.code === 1 ? 'Location is off for this app in your phone settings' : 'Could not get your location. Pick the store above.');
     });
   }
@@ -766,31 +794,48 @@
   }
 
   // Stores found around a spot, kept on this phone only: where the lookup was made (to about 10 meters),
-  // when, and the named places within 120 meters. Turning location off or erasing the app clears them.
+  // how far around it, when, and the named places found. Turning location off or erasing the app clears them.
   function loadPlaces() { try { var p = JSON.parse(localStorage.getItem(PLACES_KEY) || 'null'); return p && p.spots ? p : { spots: [] }; } catch (e) { return { spots: [] }; } }
-  function forgetPlaces() { try { localStorage.removeItem(PLACES_KEY); } catch (e) { } }
+  function forgetPlaces() { try { localStorage.removeItem(PLACES_KEY); localStorage.removeItem(LOOKUP_KEY); } catch (e) { } }
+  // A saved spot answers for a new fix only when the 120 meters around the new fix were all searched.
   function cachedSpot(lat, lon) {
     var cutoff = Date.now() - PLACES_DAYS * DAY, best = null;
     loadPlaces().spots.forEach(function (s) {
-      if (!(s.at >= cutoff)) return;
+      if (!(s.at >= cutoff) || !s.radius) return;
       var d = haversine(lat, lon, s.lat, s.lon);
-      if (d <= REUSE && (!best || d < best.d)) best = { s: s, d: d };
+      if (d + AROUND <= s.radius + 1 && (!best || d < best.d)) best = { s: s, d: d };
     });
     return best ? best.s : null;
   }
-  function rememberSpot(lat, lon, places) {
+  function rememberSpot(lat, lon, radius, places) {
     var p = loadPlaces(), cutoff = Date.now() - PLACES_DAYS * DAY;
     p.spots = p.spots.filter(function (s) { return s.at >= cutoff && haversine(lat, lon, s.lat, s.lon) > REUSE / 2; });
-    p.spots.unshift({ lat: Math.round(lat * 1e4) / 1e4, lon: Math.round(lon * 1e4) / 1e4, at: Date.now(), places: places });
+    p.spots.unshift({ lat: Math.round(lat * 1e4) / 1e4, lon: Math.round(lon * 1e4) / 1e4, radius: Math.round(radius), at: Date.now(), places: places });
     p.spots = p.spots.slice(0, PLACES_MAX);
     try { localStorage.setItem(PLACES_KEY, JSON.stringify(p)); } catch (e) { }
   }
+  // The last lookup in one line under More: if the store is wrong or missing, this says why.
+  function lookupNote() {
+    var t = loadLookup(); if (!t || !t.at) return null;
+    var when = new Date(t.at), today = new Date().toDateString() === when.toDateString();
+    var stamp = (today ? 'today' : when.toLocaleDateString([], { month: 'short', day: 'numeric' })) + ' at ' + when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    var bits = [];
+    bits.push(typeof t.fixMs === 'number' ? 'Position in ' + (t.fixMs / 1000).toFixed(1) + ' s, within ' + t.acc + ' m.' : 'No position from the phone.');
+    if (t.source === 'saved') bits.push('Stores from this phone, saved on an earlier visit.');
+    else if (t.servers && t.servers.length) bits.push('Map: ' + t.servers.filter(Boolean).map(function (sv) { return sv.host + ' ' + sv.text + (typeof sv.ms === 'number' && sv.text !== 'not needed' ? (/^answered/.test(sv.text) ? ' in ' : ' after ') + (sv.ms / 1000).toFixed(1) + ' s' : ''); }).join('; ') + '.');
+    bits.push(t.outcome === 'found' ? 'Found ' + t.top + '.' : t.outcome === 'none' ? 'No store within 120 m.' : (t.outcome || 'Still looking.'));
+    return h('p', { class: 'small muted lookup-note' }, 'Last lookup, ' + stamp + '. ' + bits.join(' '));
+  }
+  function saveLookup(trace) { try { localStorage.setItem(LOOKUP_KEY, JSON.stringify(trace)); } catch (e) { } }
+  function loadLookup() { try { return JSON.parse(localStorage.getItem(LOOKUP_KEY) || 'null'); } catch (e) { return null; } }
 
-  // The named places around a point, from the first public map server to answer.
-  function fetchPlaces(lat, lon) {
-    var at = lat.toFixed(5) + ',' + lon.toFixed(5);
-    var q = '[out:json][timeout:6];nw(around:' + AROUND + ',' + at + ')[name]->.a;(nw.a[shop];nw.a[amenity];nw.a[leisure];nw.a[tourism];);out center tags 30;';
-    return askMap(q, 9000).then(function (j) {
+  // The named places around a point, from the first public map server to answer. The same query the
+  // app has used since it first looked up stores: four plain searches, one per kind of place.
+  function fetchPlaces(lat, lon, radius, log) {
+    var at = lat.toFixed(5) + ',' + lon.toFixed(5), r = Math.round(radius);
+    var parts = ['shop', 'amenity', 'leisure', 'tourism'].map(function (k) { return 'nwr(around:' + r + ',' + at + ')[name][' + k + '];'; }).join('');
+    var q = '[out:json][timeout:15];(' + parts + ');out center tags 80;';
+    return askMap(q, log).then(function (j) {
       var out = [];
       (j.elements || []).forEach(function (el) {
         var t = el.tags || {}, la = el.lat || (el.center && el.center.lat), lo = el.lon || (el.center && el.center.lon);
@@ -802,28 +847,44 @@
       return out;
     });
   }
-  function askMap(q, limit) {
+  function hostOf(u) { try { return new URL(u).hostname; } catch (e) { return u; } }
+  function askMap(q, log) {
+    log = log || [];
     return new Promise(function (resolve, reject) {
-      var done = false, failed = 0, started = 0, controllers = [], timers = [];
+      var done = false, failed = 0, started = 0, controllers = [], timers = [], t0 = Date.now();
       function finish(ok, value) {
         if (done) return; done = true;
         timers.forEach(clearTimeout);
         controllers.forEach(function (c) { try { c.abort(); } catch (e) { } });
+        log.forEach(function (l) { if (l.ms === null) l.text = ok ? 'not needed' : 'no answer in ' + Math.round(MAP_LIMIT / 1000) + ' s'; });
         if (ok) resolve(value); else reject(value);
       }
-      function ask(i) {
-        if (done || i !== started || i >= MAP_SERVERS.length) return;
-        started++;
+      function note(i, text) { log[i] = { host: hostOf(MAP_SERVERS[i]), ms: Date.now() - t0, text: text }; }
+      function next() {
+        if (done || started >= MAP_SERVERS.length) return;
+        var i = started++;
         var c = typeof AbortController === 'function' ? new AbortController() : null;
         if (c) controllers.push(c);
+        log[i] = { host: hostOf(MAP_SERVERS[i]), ms: null, text: 'asked' };
         fetch(MAP_SERVERS[i], { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: c ? c.signal : undefined })
-          .then(function (r) { if (!r.ok) throw new Error('map ' + r.status); return r.json(); })
-          .then(function (j) { if (!j || !j.elements) throw new Error('map answer'); finish(true, j); })
-          .catch(function (e) { if (done) return; if (++failed >= MAP_SERVERS.length) finish(false, e); else ask(started); });
+          .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); })
+          .then(function (j) {
+            if (!j || !Array.isArray(j.elements)) throw new Error('not a map answer');
+            // A busy server can answer with no places and a note that the search ran out of time. That is not "no stores here".
+            if (j.remark && /error|timed? ?out/i.test(j.remark)) throw new Error('busy');
+            if (done) return;
+            note(i, 'answered with ' + j.elements.length + (j.elements.length === 1 ? ' place' : ' places'));
+            finish(true, j);
+          })
+          .catch(function (e) {
+            if (done) return;
+            note(i, e && e.name === 'TypeError' ? 'no answer (blocked or offline)' : (e && e.message) || 'failed');
+            if (++failed >= MAP_SERVERS.length) finish(false, e); else next();
+          });
       }
-      ask(0);
-      timers.push(setTimeout(function () { ask(1); }, 1500));
-      timers.push(setTimeout(function () { finish(false, new Error('slow')); }, limit));
+      next(); next();
+      timers.push(setTimeout(next, MAP_THIRD));
+      timers.push(setTimeout(function () { finish(false, new Error('slow')); }, MAP_LIMIT));
     });
   }
   // The places within 120 meters of where you are, matched to the store list, closest first.
@@ -1465,6 +1526,8 @@
       h('button', { class: 'switch' + (state.prefs.payMethod === 'wallet' ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.payMethod === 'wallet' ? 'true' : 'false', 'aria-label': 'Pay with phone by default', onclick: function () { state.prefs.payMethod = state.prefs.payMethod === 'wallet' ? 'card' : 'wallet'; ctx.payMethod = state.prefs.payMethod; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Find my store when I open the app'), h('span', null, PREVIEW ? 'Available in the installed app, not in this preview.' : 'Looks up the stores around you each time you open it. The stores it finds stay on this phone for 30 days.')),
       h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) relocate(); else forgetPlaces(); } })));
+    var note = state.prefs.location ? lookupNote() : null;
+    if (note) ps.appendChild(note);
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
       h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I am outside the US'), h('span', null, 'Counts foreign transaction fees against each card.')),

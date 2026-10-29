@@ -1,5 +1,5 @@
 """Opening the app at a store: with location on, it says where you are standing and answers for that store,
-fast. The phone's position and both public map servers are faked, so this runs anywhere.
+fast. The phone's position and the three public map servers are faked, so this runs anywhere.
 Run from the repo root: python3 tests/location_check.py [outdir]"""
 import functools
 import http.server
@@ -34,6 +34,8 @@ SHELL = {'type': 'node', 'lat': 41.87861, 'lon': -87.63589, 'tags': {'name': 'Sh
 JEWEL = {'type': 'way', 'center': {'lat': 41.87920, 'lon': -87.63630}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
 JEWEL_THERE = {'type': 'way', 'center': {'lat': 41.88131, 'lon': -87.63590}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
 ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE]})
+# What a busy server sends: a 200 with no places and a note that the search ran out of time.
+BUSY = json.dumps({'elements': [], 'remark': 'runtime error: Query timed out in "query" at line 1 after 16 seconds.'})
 WALLET = ['citi-costco-anywhere-visa', 'amex-blue-cash-preferred', 'wells-fargo-active-cash']
 MINUTE = 60 * 1000
 
@@ -59,17 +61,24 @@ with sync_playwright() as p:
     browser = p.chromium.launch()
     ctx = browser.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2, is_mobile=True, has_touch=True,
                               geolocation=HERE, permissions=['geolocation'])
-    # How each map server behaves: ok, fail (an error page), or hang (never answers).
-    mode = {'coffee': 'ok', 'de': 'ok'}
+    # How each map server behaves: ok, fail (an error page), busy (a 200 with no places and a timeout note),
+    # or hang (never answers).
+    mode = {'de': 'ok', 'coffee': 'ok', 'kumi': 'ok'}
     asked, held = [], []
 
+    def all_modes(m):
+        mode.update(de=m, coffee=m, kumi=m)
+
     def map_server(route):
-        host = 'coffee' if 'private.coffee' in route.request.url else 'de'
+        url = route.request.url
+        host = 'coffee' if 'private.coffee' in url else 'kumi' if 'kumi.systems' in url else 'de'
         asked.append(host)
         if mode[host] == 'hang':
             held.append(route)
         elif mode[host] == 'fail':
             route.fulfill(status=504, body='busy')
+        elif mode[host] == 'busy':
+            route.fulfill(status=200, content_type='application/json', body=BUSY)
         else:
             route.fulfill(status=200, content_type='application/json', body=ANSWER)
     ctx.route('**/api/interpreter', map_server)
@@ -162,15 +171,15 @@ with sync_playwright() as p:
     check(winner() == 'Amex Blue Cash Preferred', 'it answers for the new store')
     ctx.set_geolocation(HERE)
 
-    # 6. The first map server is down: the second one answers.
-    mode.update(coffee='fail', de='ok')
+    # 6. Two map servers are asked at once; when one is down, the other answers.
+    mode.update(de='fail', coffee='ok', kumi='ok')
     del asked[:]
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
-    check('Shell' in where_text() and asked[:2] == ['coffee', 'de'], 'when the first map server fails, the second one answers')
+    check('Shell' in where_text() and sorted(asked[:2]) == ['coffee', 'de'], 'two map servers are asked at once, and when one fails the other answers')
 
-    # 7. The first map server hangs: the second one is asked after a moment and its answer is used.
-    mode.update(coffee='hang', de='ok')
+    # 7. One hangs: the other's answer is used within seconds.
+    mode.update(de='hang', coffee='ok', kumi='ok')
     del asked[:]
     seed(state(True))
     t0 = time.time()
@@ -178,28 +187,49 @@ with sync_playwright() as p:
     page.wait_for_selector('.where-chip.here', timeout=8000)
     took = time.time() - t0
     release_held()
-    check('Shell' in where_text() and took < 4.0, 'when the first map server hangs, the second answers within seconds (took %.1f)' % took)
+    check('Shell' in where_text() and took < 4.0, 'when one map server hangs, another answers within seconds (took %.1f)' % took)
 
-    # 8. Both map servers fail: the app says so at once and the last store comes back.
-    mode.update(coffee='fail', de='fail')
+    # 8. The first two fail: the third is asked at once and answers.
+    mode.update(de='fail', coffee='fail', kumi='ok')
+    del asked[:]
+    open_with(state(True))
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    check('Shell' in where_text() and 'kumi' in asked, 'when two map servers fail, the third answers')
+
+    # 9. A busy server's "timed out" answer is not taken as "no stores here".
+    mode.update(de='busy', coffee='ok', kumi='ok')
+    open_with(state(True))
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    check('Shell' in where_text(), 'a busy server\'s empty "timed out" answer is skipped and the real answer is used')
+    all_modes('busy')
+    open_with(state(True))
+    page.wait_for_selector('.toast:has-text("did not answer")', timeout=8000)
+    saved = page.evaluate('JSON.parse(localStorage.getItem("whichcard.places.v2") || "{\\"spots\\":[]}").spots.length')
+    check(saved == 0, 'when every server is busy, it says the map did not answer and saves nothing')
+
+    # 10. All three fail: the app says so at once and the last store comes back.
+    all_modes('fail')
     old = {'merchant': 'chipotle', 'category': None, 'customName': '', 'located': True, 'at': int(time.time() * 1000) - 5 * MINUTE}
     open_with(state(True, old))
     page.wait_for_timeout(600)
-    check('Chipotle' in where_text(), 'when both map servers fail, the last store comes back')
+    check('Chipotle' in where_text(), 'when every map server fails, the last store comes back')
 
-    # 9. Both hang: the app gives up after 9 seconds instead of spinning, and says so.
-    mode.update(coffee='hang', de='hang')
+    # 11. All hang: after 8 seconds it says the map is slow and keeps looking; after 30 it gives up.
+    all_modes('hang')
     seed(state(True))
     page.goto(BASE, wait_until='domcontentloaded')
     page.wait_for_selector('.where-chip.finding', timeout=5000)
     t0 = time.time()
-    page.wait_for_selector('.toast:has-text("map is slow")', timeout=15000)
+    page.wait_for_selector('.where-chip.finding:has-text("map is slow")', timeout=15000)
+    slow = time.time() - t0
+    page.wait_for_selector('.toast:has-text("did not answer")', timeout=40000)
     took = time.time() - t0
     release_held()
-    check(took < 11 and page.locator('#store-search').count() == 1, 'when the map never answers, it stops after about 9 seconds (took %.1f) and shows the store search' % took)
+    check(6 < slow < 10, 'after about 8 seconds it says the map is slow and keeps looking (took %.1f)' % slow)
+    check(27 < took < 33 and page.locator('#store-search').count() == 1, 'after about 30 seconds it gives up and shows the store search (took %.1f)' % took)
 
-    # 10. "Pick it" stops the lookup and opens the store search; a late answer is ignored.
-    mode.update(coffee='hang', de='hang')
+    # 12. "Pick it" stops the lookup and opens the store search; a late answer is ignored.
+    all_modes('hang')
     seed(state(True))
     page.goto(BASE, wait_until='domcontentloaded')
     page.wait_for_selector('.where-chip.finding', timeout=8000)
@@ -216,18 +246,21 @@ with sync_playwright() as p:
     page.wait_for_timeout(800)
     check(page.locator('#store-search').count() == 1 and not page.locator('.where-chip.here').count(), '"Pick it" stops the lookup and shows the store search')
 
-    # 11. Turning location off forgets the stores this phone remembered.
-    mode.update(coffee='ok', de='ok')
+    # 13. More shows the last lookup; turning location off forgets the stores this phone remembered.
+    all_modes('ok')
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
-    kept = page.evaluate('!!localStorage.getItem("whichcard.places.v1")')
+    kept = page.evaluate('!!localStorage.getItem("whichcard.places.v2")')
     page.click('.tabs button[data-view="more"]')
+    note = page.locator('.lookup-note').inner_text() if page.locator('.lookup-note').count() else ''
+    check('Found Shell' in note and 'Position in' in note and ('places' in note or 'saved on an earlier visit' in note), 'More shows the last lookup: %s' % note[:160])
+    page.screenshot(path=os.path.join(OUT, 'loc-4-more.png'))
     page.click('button[aria-label="Use location"]')
     page.wait_for_timeout(200)
-    gone = page.evaluate('!localStorage.getItem("whichcard.places.v1")')
+    gone = page.evaluate('!localStorage.getItem("whichcard.places.v2") && !localStorage.getItem("whichcard.lookup.v1")')
     check(kept and gone, 'stores found nearby are kept on the phone, and turning location off forgets them')
 
-    # 12. Only a rough fix (cell towers, 400 meters): it waits a few seconds for better, then answers anyway.
+    # 14. Only a rough fix (cell towers, 400 meters): it waits a few seconds for better, then answers anyway.
     ctx.set_geolocation(dict(HERE, accuracy=400))
     seed(state(True))
     t0 = time.time()
@@ -235,6 +268,19 @@ with sync_playwright() as p:
     page.wait_for_selector('.where-chip.here', timeout=10000)
     took = time.time() - t0
     check(3.5 < took < 7, 'a rough fix waits about 4 seconds for a better one, then answers (took %.1f)' % took)
+    ctx.set_geolocation(HERE)
+
+    # 15. A rough first fix 80 meters off, then a precise one: answered again from the same list, no second lookup.
+    OFF = {'latitude': 41.87932, 'longitude': -87.63590, 'accuracy': 120}
+    ctx.set_geolocation(OFF)
+    del asked[:]
+    seed(state(True))
+    page.goto(BASE, wait_until='domcontentloaded')
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    first = len(asked)
+    ctx.set_geolocation(HERE)
+    page.wait_for_timeout(2500)
+    check(len(asked) == first and 'Shell' in where_text(), 'a better fix inside the searched area answers again without a second lookup (%d then %d requests, at %s)' % (first, len(asked), where_text()[:40]))
     ctx.set_geolocation(HERE)
 
     browser.close()
