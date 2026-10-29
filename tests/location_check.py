@@ -214,7 +214,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(600)
     check('Chipotle' in where_text(), 'when every map server fails, the last store comes back')
 
-    # 11. All hang: after 8 seconds it says the map is slow and keeps looking; after 30 it gives up.
+    # 11. All hang: after 8 seconds it says the map is slow and keeps looking; after 60 it gives up.
     all_modes('hang')
     seed(state(True))
     page.goto(BASE, wait_until='domcontentloaded')
@@ -222,11 +222,15 @@ with sync_playwright() as p:
     t0 = time.time()
     page.wait_for_selector('.where-chip.finding:has-text("map is slow")', timeout=15000)
     slow = time.time() - t0
-    page.wait_for_selector('.toast:has-text("did not answer")', timeout=40000)
+    page.click('.tabs button[data-view="more"]')
+    note = page.locator('.lookup-note').inner_text() if page.locator('.lookup-note').count() else ''
+    check('Position in' in note and 'asked' in note and 'Not finished' in note, 'while it looks, More already shows the lookup so far: %s' % note[:140])
+    page.click('.tabs button[data-view="pay"]')
+    page.wait_for_selector('.toast:has-text("did not answer")', timeout=70000)
     took = time.time() - t0
     release_held()
     check(6 < slow < 10, 'after about 8 seconds it says the map is slow and keeps looking (took %.1f)' % slow)
-    check(27 < took < 33 and page.locator('#store-search').count() == 1, 'after about 30 seconds it gives up and shows the store search (took %.1f)' % took)
+    check(56 < took < 64 and page.locator('#store-search').count() == 1, 'after about 60 seconds it gives up and shows the store search (took %.1f)' % took)
 
     # 12. "Pick it" stops the lookup and opens the store search; a late answer is ignored.
     all_modes('hang')
@@ -270,7 +274,22 @@ with sync_playwright() as p:
     check(3.5 < took < 7, 'a rough fix waits about 4 seconds for a better one, then answers (took %.1f)' % took)
     ctx.set_geolocation(HERE)
 
-    # 15. A rough first fix 80 meters off, then a precise one: answered again from the same list, no second lookup.
+    # 15. The location test under More runs each step on the phone and reports it.
+    all_modes('ok')
+    page.route('**/photon.komoot.io/**', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'features': [{'properties': {'name': 'Shell', 'osm_key': 'amenity', 'osm_value': 'fuel'}, 'geometry': {'coordinates': [-87.63589, 41.87861]}}]})))
+    open_with(state(True))
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    page.click('.tabs button[data-view="more"]')
+    page.click('button:has-text("Test location on this phone")')
+    page.wait_for_selector('.test-lines p:has-text("Done.")', timeout=60000)
+    report = page.locator('.test-lines').inner_text()
+    check('Permission: granted' in report and 'Position in' in report and 'overpass-api.de: 3 places' in report and 'Shell (1 m)' in report and 'photon.komoot.io' in report,
+          'the location test reports the permission, the position, each map server and the comparison source: ' + report.replace(chr(10), ' | ')[:600])
+    page.screenshot(path=os.path.join(OUT, 'loc-5-test.png'))
+    page.click('.sheet .close')
+    page.unroute('**/photon.komoot.io/**')
+
+    # 16. A rough first fix 80 meters off, then a precise one: answered again from the same list, no second lookup.
     OFF = {'latitude': 41.87932, 'longitude': -87.63590, 'accuracy': 120}
     ctx.set_geolocation(OFF)
     del asked[:]

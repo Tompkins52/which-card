@@ -643,7 +643,7 @@
   //    searched area is answered again from the same list, with no second lookup.
   // 3. Three public map servers: two are asked at once, the third two seconds later or as soon as
   //    one fails, and the first real answer wins. A busy server's "runtime error" is not an answer.
-  //    After 8 seconds the screen says the map is slow and keeps looking; after 30 it gives up.
+  //    After 8 seconds the screen says the map is slow and keeps looking; after 60 it gives up.
   // 4. The stores found around a spot are kept on this phone for 30 days, so a place you have been
   //    before is answered without asking the map again (refreshed quietly after 3 days).
   // 5. The last lookup is written down (when, how good the fix was, which server answered and how
@@ -653,7 +653,7 @@
   var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
   var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
   var MAP_SERVERS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
-  var MAP_THIRD = 2000, MAP_SLOW = 8000, MAP_LIMIT = 30000;
+  var MAP_THIRD = 2000, MAP_SLOW = 8000, MAP_LIMIT = 60000;
   var DAY = 24 * 60 * 60 * 1000;
   // Version 1 of the saved stores could hold a busy server's empty answer as "no stores here". Drop it.
   try { localStorage.removeItem('whichcard.places.v1'); } catch (e) { }
@@ -669,6 +669,7 @@
     var seq = ++locateSeq, answered = false, center = null, raw = null, autoKey = null, stopFix = null, last = null, slowTimer = null;
     var t0 = Date.now(), trace = { at: t0, fixMs: null, acc: null, source: null, servers: [], found: null, top: null, outcome: null };
     locating = true; locateStage = 'fix';
+    saveLookup(trace);
     var btn = document.getElementById('btn-locate'); btn.classList.add('busy');
     if (view === 'pay') { renderWhere(); renderAnswer(); }
     function live() { return seq === locateSeq; }
@@ -730,7 +731,7 @@
       stage('map');
       clearTimeout(slowTimer);
       slowTimer = setTimeout(function () { if (live() && locating && !answered) stage('slow'); }, MAP_SLOW);
-      fetchPlaces(lat, lon, radius, trace.servers).then(function (fresh) {
+      fetchPlaces(lat, lon, radius, trace.servers, function () { if (live()) saveLookup(trace); }).then(function (fresh) {
         if (!live()) return;
         rememberSpot(lat, lon, radius, fresh);
         if (center !== here) return;
@@ -743,7 +744,7 @@
     stopFix = watchFix(function (lat, lon, acc) {
       if (!live()) { stopFix && stopFix(); return; }
       if (trace.fixMs === null) trace.fixMs = Date.now() - t0;
-      trace.acc = Math.round(acc);
+      trace.acc = Math.round(acc); saveLookup(trace);
       last = { lat: lat, lon: lon };
       if (!center) { lookUp(lat, lon, acc); return; }
       var d = haversine(lat, lon, center.lat, center.lon);
@@ -753,7 +754,7 @@
       if (raw) answer(lat, lon);
     }, function (err) {
       if (!live() || answered) return;
-      trace.fixMs = null;
+      trace.fixMs = null; trace.fixError = err && err.code === 1 ? 'denied' : err && err.code === 2 ? 'unavailable' : 'timed out';
       fail(err && err.code === 1 ? 'Location is off for this app in your phone settings' : 'Could not get your location. Pick the store above.');
     });
   }
@@ -820,10 +821,10 @@
     var when = new Date(t.at), today = new Date().toDateString() === when.toDateString();
     var stamp = (today ? 'today' : when.toLocaleDateString([], { month: 'short', day: 'numeric' })) + ' at ' + when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     var bits = [];
-    bits.push(typeof t.fixMs === 'number' ? 'Position in ' + (t.fixMs / 1000).toFixed(1) + ' s, within ' + t.acc + ' m.' : 'No position from the phone.');
+    bits.push(typeof t.fixMs === 'number' ? 'Position in ' + (t.fixMs / 1000).toFixed(1) + ' s, within ' + t.acc + ' m.' : t.fixError ? 'No position from the phone (' + t.fixError + ').' : t.outcome ? 'No position from the phone.' : 'Waiting for a position.');
     if (t.source === 'saved') bits.push('Stores from this phone, saved on an earlier visit.');
     else if (t.servers && t.servers.length) bits.push('Map: ' + t.servers.filter(Boolean).map(function (sv) { return sv.host + ' ' + sv.text + (typeof sv.ms === 'number' && sv.text !== 'not needed' ? (/^answered/.test(sv.text) ? ' in ' : ' after ') + (sv.ms / 1000).toFixed(1) + ' s' : ''); }).join('; ') + '.');
-    bits.push(t.outcome === 'found' ? 'Found ' + t.top + '.' : t.outcome === 'none' ? 'No store within 120 m.' : (t.outcome || 'Still looking.'));
+    bits.push(t.outcome === 'found' ? 'Found ' + t.top + '.' : t.outcome === 'none' ? 'No store within 120 m.' : (t.outcome || 'Not finished.'));
     return h('p', { class: 'small muted lookup-note' }, 'Last lookup, ' + stamp + '. ' + bits.join(' '));
   }
   function saveLookup(trace) { try { localStorage.setItem(LOOKUP_KEY, JSON.stringify(trace)); } catch (e) { } }
@@ -831,11 +832,11 @@
 
   // The named places around a point, from the first public map server to answer. The same query the
   // app has used since it first looked up stores: four plain searches, one per kind of place.
-  function fetchPlaces(lat, lon, radius, log) {
+  function fetchPlaces(lat, lon, radius, log, tick) {
     var at = lat.toFixed(5) + ',' + lon.toFixed(5), r = Math.round(radius);
     var parts = ['shop', 'amenity', 'leisure', 'tourism'].map(function (k) { return 'nwr(around:' + r + ',' + at + ')[name][' + k + '];'; }).join('');
     var q = '[out:json][timeout:15];(' + parts + ');out center tags 80;';
-    return askMap(q, log).then(function (j) {
+    return askMap(q, log, tick).then(function (j) {
       var out = [];
       (j.elements || []).forEach(function (el) {
         var t = el.tags || {}, la = el.lat || (el.center && el.center.lat), lo = el.lon || (el.center && el.center.lon);
@@ -848,7 +849,7 @@
     });
   }
   function hostOf(u) { try { return new URL(u).hostname; } catch (e) { return u; } }
-  function askMap(q, log) {
+  function askMap(q, log, tick) {
     log = log || [];
     return new Promise(function (resolve, reject) {
       var done = false, failed = 0, started = 0, controllers = [], timers = [], t0 = Date.now();
@@ -857,21 +858,22 @@
         timers.forEach(clearTimeout);
         controllers.forEach(function (c) { try { c.abort(); } catch (e) { } });
         log.forEach(function (l) { if (l.ms === null) l.text = ok ? 'not needed' : 'no answer in ' + Math.round(MAP_LIMIT / 1000) + ' s'; });
+        if (tick) tick();
         if (ok) resolve(value); else reject(value);
       }
-      function note(i, text) { log[i] = { host: hostOf(MAP_SERVERS[i]), ms: Date.now() - t0, text: text }; }
+      function note(i, text) { log[i] = { host: hostOf(MAP_SERVERS[i]), ms: Date.now() - t0, text: text }; if (tick) tick(); }
       function next() {
         if (done || started >= MAP_SERVERS.length) return;
         var i = started++;
         var c = typeof AbortController === 'function' ? new AbortController() : null;
         if (c) controllers.push(c);
-        log[i] = { host: hostOf(MAP_SERVERS[i]), ms: null, text: 'asked' };
+        log[i] = { host: hostOf(MAP_SERVERS[i]), ms: null, text: 'asked' }; if (tick) tick();
         fetch(MAP_SERVERS[i], { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: c ? c.signal : undefined })
           .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); })
           .then(function (j) {
             if (!j || !Array.isArray(j.elements)) throw new Error('not a map answer');
             // A busy server can answer with no places and a note that the search ran out of time. That is not "no stores here".
-            if (j.remark && /error|timed? ?out/i.test(j.remark)) throw new Error('busy');
+            if (j.remark && /error|timed? ?out/i.test(j.remark)) throw new Error('busy: ' + String(j.remark).slice(0, 80));
             if (done) return;
             note(i, 'answered with ' + j.elements.length + (j.elements.length === 1 ? ' place' : ' places'));
             finish(true, j);
@@ -1202,6 +1204,82 @@
     return box;
   }
 
+  /* ---------- Location test ---------- */
+  // Runs the real steps of a lookup on this phone, one at a time, and shows each result as it comes:
+  // the permission, the position, then each map server. For when the store does not show up.
+  function buildLine() {
+    var m = document.querySelector('meta[name="build"]'), v = m && m.getAttribute('content') || '';
+    var parts = v.split(' '), when = parts[1] ? new Date(parts[1]) : null;
+    if (!parts[0] || parts[0] === 'dev') return 'Development build.';
+    return 'Build ' + parts[0].replace(/^wc-/, '') + (when && !isNaN(when) ? ', ' + when.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '') + '.';
+  }
+  function openLocationTest() {
+    var lines = h('div', { class: 'box small test-lines' });
+    var out = [];
+    function say(text) { out.push(text); lines.appendChild(h('p', null, text)); }
+    var copyBtn = h('button', { class: 'btn block', onclick: function () { copyText(out.join('\n')).then(function () { toast('Copied'); }, function () { toast('Could not copy'); }); } }, 'Copy the results');
+    openSheet('Location test', [h('p', { class: 'muted' }, 'Each step runs on this phone and shows what came back. Send a screenshot of this if the store does not show up.'), lines, copyBtn]);
+    say(buildLine() + ' ' + (navigator.standalone || matchMedia('(display-mode: standalone)').matches ? 'Opened from the home screen.' : 'Opened in the browser.'));
+    say('Location setting in the app: ' + (state.prefs.location ? 'on' : 'off') + '.');
+    var t0 = Date.now();
+    function secs() { return ((Date.now() - t0) / 1000).toFixed(1) + ' s'; }
+    var perm = navigator.permissions && navigator.permissions.query ? navigator.permissions.query({ name: 'geolocation' }).then(function (r) { say('Permission: ' + r.state + '.'); }, function () { say('Permission: could not read.'); }) : Promise.resolve(say('Permission: could not read.'));
+    perm.then(function () {
+      if (!('geolocation' in navigator)) { say('This browser has no location.'); return; }
+      say('Asking the phone for a position (up to 20 s)…');
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        var c = pos.coords;
+        say('Position in ' + secs() + ': ' + c.latitude.toFixed(3) + ', ' + c.longitude.toFixed(3) + ', within ' + Math.round(c.accuracy) + ' m.');
+        testServers(c.latitude, c.longitude, Math.round(searchRadius(c.accuracy)));
+      }, function (err) {
+        say('No position after ' + secs() + ': ' + (err && err.code === 1 ? 'permission denied (check the phone settings for this app and for Chrome)' : err && err.code === 2 ? 'position unavailable (is location on in the phone?)' : 'timed out') + '.');
+        say('Trying the map servers from a fixed spot instead…');
+        testServers(41.8786, -87.6359, 150);
+      }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+    });
+    function testServers(lat, lon, radius) {
+      var at = lat.toFixed(5) + ',' + lon.toFixed(5);
+      var parts = ['shop', 'amenity', 'leisure', 'tourism'].map(function (k) { return 'nwr(around:' + radius + ',' + at + ')[name][' + k + '];'; }).join('');
+      var q = '[out:json][timeout:15];(' + parts + ');out center tags 80;';
+      say('Asking each map server for the named places within ' + radius + ' m, one at a time…');
+      var i = 0;
+      function one() {
+        if (i >= MAP_SERVERS.length) { photon(); return; }
+        var url = MAP_SERVERS[i++], host = hostOf(url), s0 = Date.now();
+        function took() { return ((Date.now() - s0) / 1000).toFixed(1) + ' s'; }
+        var c = typeof AbortController === 'function' ? new AbortController() : null;
+        var timer = setTimeout(function () { if (c) c.abort(); }, 30000);
+        fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: c ? c.signal : undefined })
+          .then(function (r) {
+            if (!r.ok) return r.text().then(function (t) { say(host + ': error ' + r.status + ' after ' + took() + (t ? ': ' + t.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120) : '') + '.'); });
+            return r.json().then(function (j) {
+              var els = j && j.elements || [], names = [];
+              els.forEach(function (el) { var n = el.tags && (el.tags.name || el.tags.brand); if (n && names.indexOf(n) < 0 && names.length < 6) names.push(n); });
+              say(host + ': ' + els.length + (els.length === 1 ? ' place' : ' places') + ' in ' + took() + (j && j.remark ? ' (server note: ' + String(j.remark).slice(0, 100) + ')' : '') + (names.length ? ': ' + names.join(', ') : '') + '.');
+              if (els.length) { var list = rankPlaces(els.map(function (el) { var t = el.tags || {}; return { t: t, lat: el.lat || (el.center && el.center.lat), lon: el.lon || (el.center && el.center.lon) }; }).filter(function (x) { return x.lat && x.lon; }), lat, lon); say('Of those, within 120 m and known to the app: ' + (list.length ? list.slice(0, 4).map(function (x) { return x.name + ' (' + Math.round(x.dist) + ' m)'; }).join(', ') : 'none') + '.'); }
+            });
+          })
+          .catch(function (e) { say(host + ': ' + (e && e.name === 'AbortError' ? 'no answer in 30 s' : 'could not connect (' + ((e && e.message) || 'blocked or offline') + ')') + ' after ' + took() + '.'); })
+          .then(function () { clearTimeout(timer); one(); });
+      }
+      // One more source, for comparison only: the app does not use it yet.
+      function photon() {
+        var s0 = Date.now(), c = typeof AbortController === 'function' ? new AbortController() : null;
+        var timer = setTimeout(function () { if (c) c.abort(); }, 15000);
+        fetch('https://photon.komoot.io/reverse?lat=' + lat.toFixed(5) + '&lon=' + lon.toFixed(5) + '&radius=' + (radius / 1000).toFixed(2) + '&limit=30', { signal: c ? c.signal : undefined })
+          .then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); })
+          .then(function (j) {
+            var fs = j && j.features || [], names = [];
+            fs.forEach(function (f) { var pr = f.properties || {}; if (pr.name && names.length < 8) names.push(pr.name + ' [' + (pr.osm_key || '?') + '=' + (pr.osm_value || '?') + ']'); });
+            say('photon.komoot.io (for comparison): ' + fs.length + ' results in ' + ((Date.now() - s0) / 1000).toFixed(1) + ' s' + (names.length ? ': ' + names.join(', ') : '') + '.');
+          })
+          .catch(function (e) { say('photon.komoot.io (for comparison): ' + (e && e.name === 'AbortError' ? 'no answer in 15 s' : (e && e.message) || 'could not connect') + '.'); })
+          .then(function () { clearTimeout(timer); say('Done.'); });
+      }
+      one();
+    }
+  }
+
   /* ---------- Card detail ---------- */
   function openCardDetail(cardId) {
     var card = E.cardById(data, cardId); if (!card) return;
@@ -1528,6 +1606,7 @@
       h('button', { class: 'switch' + (state.prefs.location ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.location ? 'true' : 'false', 'aria-label': 'Use location', disabled: PREVIEW ? true : null, onclick: function () { state.prefs.location = !state.prefs.location; state.locationAsked = true; saveState(); renderMore(); if (state.prefs.location) relocate(); else forgetPlaces(); } })));
     var note = state.prefs.location ? lookupNote() : null;
     if (note) ps.appendChild(note);
+    if (!PREVIEW) ps.appendChild(h('button', { class: 'btn block', onclick: openLocationTest }, 'Test location on this phone'));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
       h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I am outside the US'), h('span', null, 'Counts foreign transaction fees against each card.')),
@@ -1562,7 +1641,8 @@
         h('p', { style: 'margin-top:8px', class: 'pledge' }, 'Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life.'),
         h('p', { style: 'margin-top:8px' }, h('b', null, 'About the card pictures. '), 'Drawn, not real. Partly because we are cheap asses, mostly because the real designs are trademarked and we are not spending eternity in court over a picture. The sites with the real pictures have a deal with the bank and get paid when you click. We get squat, on purpose.'),
         h('p', { style: 'margin-top:8px' }, 'Independent of every bank and card network. No bank pays for placement, no referral links, no sponsored cards; the ranking is arithmetic on your own cards. Rates and terms change; the issuer’s agreement wins. Point values are estimates.'),
-        h('p', { style: 'margin-top:8px' }, 'Questions or a wrong number: ', h('a', { href: 'mailto:' + CONTACT }, CONTACT))));
+        h('p', { style: 'margin-top:8px' }, 'Questions or a wrong number: ', h('a', { href: 'mailto:' + CONTACT }, CONTACT)),
+        h('p', { style: 'margin-top:8px', class: 'muted' }, buildLine())));
     as.appendChild(h('button', { class: 'btn block', onclick: openDisclaimer }, 'See the welcome note again'));
     as.appendChild(h('button', { class: 'btn danger block', onclick: function () { confirmReset(); } }, 'Erase everything on this phone'));
     root.appendChild(as);

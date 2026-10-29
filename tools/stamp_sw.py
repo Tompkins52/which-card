@@ -4,7 +4,10 @@
    would make every phone's update fail, so the deploy stops here instead.
 2. VERSION becomes a hash of those files, so any change to the app shell is a new service
    worker and every phone picks up the whole new shell at once. Nobody has to remember to bump it.
+3. The same hash and the deploy time go into index.html (<meta name="build">), and the app shows
+   them under About, so a phone can say exactly which build it has.
 """
+import datetime
 import hashlib
 import os
 import re
@@ -36,7 +39,14 @@ def main(folder):
     if n != 1:
         sys.exit('stamp_sw: no VERSION line in sw.js')
     open(sw_path, 'w', encoding='utf-8').write(stamped)
-    print('stamp_sw: %d shell files present, VERSION %s' % (len(shell), version))
+    index_path = os.path.join(folder, 'index.html')
+    index = open(index_path, encoding='utf-8').read()
+    when = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    index, m = re.subn(r'<meta name="build" content="[^"]*">', '<meta name="build" content="%s %s">' % (version, when), index, count=1)
+    if m != 1:
+        sys.exit('stamp_sw: no build meta in index.html')
+    open(index_path, 'w', encoding='utf-8').write(index)
+    print('stamp_sw: %d shell files present, VERSION %s, built %s' % (len(shell), version, when))
 
 
 if __name__ == '__main__':

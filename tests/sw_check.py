@@ -7,6 +7,7 @@ new styles, no mix of the two)."""
 import functools
 import http.server
 import os
+import re
 import shutil
 import socketserver
 import subprocess
@@ -29,7 +30,7 @@ def assemble():
     out = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'stamp_sw.py'), SITE], capture_output=True, text=True)
     if out.returncode:
         sys.exit(out.stdout + out.stderr)
-    return out.stdout.strip().split()[-1]
+    return re.search(r'VERSION (wc-[0-9a-f]+)', out.stdout).group(1)
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -98,7 +99,7 @@ with sync_playwright() as pw:
     with open(os.path.join(SITE, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(html.replace('<title>Witch Card</title>', '<title>Witch Card</title><meta name="deploy" content="two">', 1))
     shutil.copy(os.path.join(ROOT, 'sw.js'), SITE)
-    second = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'stamp_sw.py'), SITE], capture_output=True, text=True).stdout.strip().split()[-1]
+    second = re.search(r'VERSION (wc-[0-9a-f]+)', subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'stamp_sw.py'), SITE], capture_output=True, text=True).stdout).group(1)
     check(second != first, 'a changed shell gets a new version')
     page.goto(BASE + '?source=pwa', wait_until='networkidle')
     took_over = wait_until(page, "caches.keys().then(k => k.length === 1 && k[0] === %r)" % second) and \
