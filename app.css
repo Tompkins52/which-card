@@ -127,6 +127,10 @@ main { padding-block: 6px 28px; }
 .nearby { display: flex; gap: 8px; flex-wrap: wrap; }
 .nearby button { padding: 7px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: .85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; min-height: 36px; }
 .nearby button svg { width: 14px; height: 14px; color: var(--accent); }
+.nearby button small { font-size: .78rem; font-weight: 500; color: var(--muted); }
+.near-label { display: flex; align-items: center; gap: 5px; margin: 2px 2px 8px; font-size: .9rem; font-weight: 640; color: var(--accent); }
+.near-label svg { width: 14px; height: 14px; }
+.picker .nearby { margin-bottom: 12px; }
 
 .picker { display: flex; flex-direction: column; gap: 12px; }
 .search { position: relative; }

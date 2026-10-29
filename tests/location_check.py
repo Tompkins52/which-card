@@ -31,12 +31,17 @@ threading.Thread(target=server.serve_forever, daemon=True).start()
 HERE = {'latitude': 41.87860, 'longitude': -87.63590, 'accuracy': 15}
 THERE = {'latitude': 41.88130, 'longitude': -87.63590, 'accuracy': 15}
 SHELL = {'type': 'node', 'lat': 41.87861, 'lon': -87.63589, 'tags': {'name': 'Shell', 'brand': 'Shell', 'amenity': 'fuel'}}
-JEWEL = {'type': 'way', 'center': {'lat': 41.87920, 'lon': -87.63630}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
+JEWEL = {'type': 'way', 'bounds': {'minlat': 41.87900, 'minlon': -87.63660, 'maxlat': 41.87940, 'maxlon': -87.63600}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
+# A big warehouse: 220 m by 160 m, its center 130 m from the west door.
+COSTCO = {'type': 'way', 'bounds': {'minlat': 41.89000, 'minlon': -87.65000, 'maxlat': 41.89144, 'maxlon': -87.64735}, 'tags': {'name': 'Costco', 'shop': 'wholesale'}}
+AT_COSTCO_DOOR = {'latitude': 41.89072, 'longitude': -87.64995, 'accuracy': 12}
+ACROSS = {'latitude': 41.87980, 'longitude': -87.63590, 'accuracy': 20}  # 45 m north of Jewel's edge, 130 m from Shell
 JEWEL_THERE = {'type': 'way', 'center': {'lat': 41.88131, 'lon': -87.63590}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
-ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE]})
+ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE, COSTCO]})
 PHOTON = json.dumps({'features': [
     {'properties': {'name': 'Shell', 'osm_key': 'amenity', 'osm_value': 'fuel'}, 'geometry': {'coordinates': [-87.63589, 41.87861]}},
-    {'properties': {'name': 'Jewel-Osco', 'osm_key': 'shop', 'osm_value': 'supermarket'}, 'geometry': {'coordinates': [-87.63630, 41.87920]}},
+    {'properties': {'name': 'Jewel-Osco', 'osm_key': 'shop', 'osm_value': 'supermarket', 'extent': [-87.63660, 41.87940, -87.63600, 41.87900]}, 'geometry': {'coordinates': [-87.63630, 41.87920]}},
+    {'properties': {'name': 'Costco', 'osm_key': 'shop', 'osm_value': 'wholesale', 'extent': [-87.65000, 41.89144, -87.64735, 41.89000]}, 'geometry': {'coordinates': [-87.64868, 41.89072]}},
     {'properties': {'name': 'Wacker Drive', 'osm_key': 'highway', 'osm_value': 'primary'}, 'geometry': {'coordinates': [-87.63600, 41.87870]}}]})
 EMPTY = json.dumps({'elements': []})
 # What a busy server sends: a 200 with no places and a note that the search ran out of time.
@@ -313,6 +318,31 @@ with sync_playwright() as p:
     check(3.5 < took < 7, 'a rough fix waits about 4 seconds for a better one, then answers (took %.1f)' % took)
     ctx.set_geolocation(HERE)
 
+    # 14b. Across the street from the nearest store: not sure, so the stores near you are offered to tap.
+    all_modes('ok')
+    ctx.set_geolocation(ACROSS)
+    open_with(state(True))
+    page.wait_for_selector('.near-label', timeout=8000)
+    chips = page.locator('.picker .nearby button')
+    first = chips.first.inner_text().replace('\n', ' ') if chips.count() else ''
+    check(not page.locator('.where-chip.here').count() and 'Tap the one' in page.locator('.near-label').inner_text() and first.startswith('Jewel-Osco') and 'ft' in first,
+          'across the street it does not claim a store; it offers the ones near you, closest first (%s)' % first)
+    check(page.locator('.winner').count() == 1 and 'For everything else' in page.locator('.winner').inner_text(), 'until you pick one, the answer is the everything-else card')
+    page.screenshot(path=os.path.join(OUT, 'loc-6-near.png'))
+    chips.first.click()
+    page.wait_for_timeout(300)
+    check('Jewel-Osco' in where_text() and "You’re at" in where_text() and winner() == 'Amex Blue Cash Preferred', 'tapping a store near you makes it the store')
+
+    # 14c. Inside a big store, far from its center: sure, because the position is inside its footprint.
+    ctx.set_geolocation(AT_COSTCO_DOOR)
+    open_with(state(True))
+    page.wait_for_selector('.where-chip.here', timeout=8000)
+    check('Costco' in where_text(), 'inside a big store, 130 m from its center, it still says you are at it (footprint)')
+    page.click('.tabs button[data-view="more"]')
+    note = page.locator('.lookup-note').inner_text() if page.locator('.lookup-note').count() else ''
+    check('Found Costco' in note, 'the lookup note says so: %s' % note[-60:])
+    ctx.set_geolocation(HERE)
+
     # 15. The location test under More runs each step on the phone and reports it.
     all_modes('ok')
     mode.update(de='fail')
@@ -322,8 +352,8 @@ with sync_playwright() as p:
     page.click('button:has-text("Test location on this phone")')
     page.wait_for_selector('.test-lines p:has-text("Done.")', timeout=60000)
     report = page.locator('.test-lines').inner_text()
-    check('Permission: granted' in report and 'Position in' in report and 'photon.komoot.io: 2 places' in report and 'overpass-api.de: error 502' in report
-          and 'at capacity' in report and 'overpass.private.coffee: 3 places' in report and 'Shell (1 m)' in report,
+    check('Permission: granted' in report and 'Position in' in report and 'photon.komoot.io: 3 places' in report and 'overpass-api.de: error 502' in report
+          and 'at capacity' in report and 'overpass.private.coffee: 4 places' in report and 'Shell (1 m)' in report and 'Sure enough' in report,
           'the location test reports the permission, the position and each map service: ' + report.replace(chr(10), ' | ')[:700])
     page.screenshot(path=os.path.join(OUT, 'loc-5-test.png'))
     page.click('.sheet .close')
