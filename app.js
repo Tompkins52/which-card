@@ -413,17 +413,78 @@
       return h('li', null, h('button', { onclick: function () { setWhere(x.m.id, null, ''); } }, icon(c.icon), x.m.name, h('span', { class: 'cat' }, c.name)));
     });
     catHits.slice(0, 3).forEach(function (c) { items.push(h('li', null, h('button', { onclick: function () { setWhere(null, c.id, ''); } }, icon(c.icon), c.name, h('span', { class: 'cat' }, 'category')))); });
-    // A name the app does not know: ask what kind of place it is, so the right rates apply.
+    // A name the app does not know: guess what kind of place it is (clues in the name at once, then a
+    // name search of the map), offer the guess as one tap, and the other kinds under it.
     if (!items.length) {
       var name = q.replace(/\s+/g, ' ').trim(), shown = name.charAt(0).toUpperCase() + name.slice(1);
+      var guessRow = h('li', { class: 'guess' }), seq = ++kindSeq;
+      function showGuess(g) {
+        clear(guessRow);
+        if (!g) { guessRow.appendChild(h('p', { class: 'muted' }, h('b', null, shown), ' is not on the list yet. What kind of place is it?')); return; }
+        var c = cat(g.category);
+        guessRow.appendChild(h('button', { style: '--tint:' + tintFor(c.id), onclick: function () { setWhere(null, c.id, g.name || shown); } },
+          icon(c.icon), h('span', { class: 'gname' }, g.name || shown, h('small', null, c.name + (g.how === 'map' ? ', from the map' : ', a guess from the name'))), h('span', { class: 'cat' }, 'Use it')));
+      }
+      var clue = guessKind(name);
+      showGuess(clue ? { category: clue, how: 'name' } : null);
+      if (name.length >= 3) lookupKind(name).then(function (g) { if (seq === kindSeq && g) showGuess(g); }, function () { });
       var kinds = h('div', { class: 'kinds', role: 'group', 'aria-label': 'What kind of place is it' });
       data.categories.filter(function (c) { return c.quick && c.id !== 'other'; }).concat([cat('other')]).forEach(function (c) {
         kinds.appendChild(h('button', { style: '--tint:' + tintFor(c.id), onclick: function () { setWhere(null, c.id, shown); } }, icon(c.icon), c.id === 'other' ? 'Something else' : c.short || c.name));
       });
-      items.push(h('li', { class: 'kind' }, h('p', null, h('b', null, shown), ' is not on the list yet. What kind of place is it?'), kinds));
+      items.push(guessRow);
+      items.push(h('li', { class: 'kind' }, h('p', null, 'Or pick the kind:'), kinds));
     }
     items.forEach(function (li) { ul.appendChild(li); });
     ul.hidden = false;
+  }
+
+  // What kind of place a name is. First clues in the name itself, instant and offline; then a name
+  // search of the map, biased to where the phone is, which often knows a place under that name
+  // somewhere nearby even when it is missing at this spot. The typed name goes to photon.komoot.io.
+  var kindSeq = 0;
+  var NAME_CLUES = [
+    [/\b(steak ?house|grill(e)?|bar|pub|tavern|taproom|brew(ery|ing|house)|cantina|bistro|kitchen|diner|cafe|café|coffee|espresso|bakery|donuts?|doughnuts?|bagels?|pizza|pizzeria|taco|taqueria|burrito|sushi|ramen|noodle|pho|thai|wok|bbq|barbecue|burger|wings|chicken|seafood|oyster|crab|lobster|ristorante|trattoria|osteria|cucina|eatery|restaurant|lounge|cocktail|wine bar|winery|distillery|ice cream|gelato|frozen yogurt|smoothie|juice|tea house|boba|creamery|chophouse|cheesesteak|deli|sandwich|subs?|hot dogs?|waffle|pancake|breakfast|brunch|buffet|food hall|food court)\b/i, 'dining'],
+    [/\b(gas|fuel|petroleum|petrol|service station|travel center|truck stop)\b/i, 'gas'],
+    [/\b(super ?market|grocery|groceries|market|foods?|produce|farmers market|mercado|bodega|co-?op)\b/i, 'groceries'],
+    [/\b(pharmacy|drug ?store|drugs|apothecary|rx)\b/i, 'drugstore'],
+    [/\b(hardware|lumber|home center|building supply|paint|garden center|nursery)\b/i, 'home-improvement'],
+    [/\b(hotel|inn|suites|resort|motel|lodge|hostel|b ?& ?b)\b/i, 'hotels'],
+    [/\b(cinema|theat(er|re)|movies|arcade|bowling|golf|mini golf|amusement|escape room|aquarium|museum|zoo|stadium|arena)\b/i, 'entertainment'],
+    [/\b(gym|fitness|crossfit|yoga|pilates|athletic club|climbing)\b/i, 'fitness'],
+    [/\b(warehouse club|wholesale)\b/i, 'warehouse'],
+    [/\b(rent-?a-?car|car rental)\b/i, 'rental-car'],
+    [/\b(charging|supercharger|ev station)\b/i, 'ev-charging'],
+    [/\b(airport|airlines?|airways)\b/i, 'flights'],
+    [/\b(parking|garage|transit|metro|railway|rail|bus)\b/i, 'transit']
+  ];
+  function guessKind(name) {
+    for (var i = 0; i < NAME_CLUES.length; i++) if (NAME_CLUES[i][0].test(name)) return NAME_CLUES[i][1];
+    return null;
+  }
+  function kindFromTags(t) {
+    var found = null;
+    Object.keys(t).some(function (k) { var kv = k + '=' + t[k]; return OSM_MAP.some(function (m) { if (m[0].test(kv)) { found = m[1]; return true; } return false; }); });
+    return found;
+  }
+  function lookupKind(name) {
+    var url = 'https://photon.komoot.io/api/?q=' + encodeURIComponent(name) + '&limit=6' + (lastFix ? '&lat=' + lastFix.lat.toFixed(4) + '&lon=' + lastFix.lon.toFixed(4) : '');
+    var c = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (c) c.abort(); }, 6000);
+    return fetch(url, { signal: c ? c.signal : undefined }).then(function (r) { if (!r.ok) throw new Error('error ' + r.status); return r.json(); }).then(function (j) {
+      clearTimeout(timer);
+      var want = name.toLowerCase().replace(/[^a-z0-9]/g, ''), best = null;
+      (j && j.features || []).forEach(function (f) {
+        if (best) return;
+        var pr = f.properties || {}; if (!pr.name || ['shop', 'amenity', 'leisure', 'tourism'].indexOf(pr.osm_key) < 0) return;
+        var have = String(pr.name).toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (have.indexOf(want) < 0 && want.indexOf(have) < 0) return;
+        var t = {}; t[pr.osm_key] = pr.osm_value || 'yes';
+        var category = matchMerchant(pr.name, t) ? matchMerchant(pr.name, t).category : kindFromTags(t);
+        if (category) best = { category: category, name: pr.name, how: 'map' };
+      });
+      return best;
+    }, function (e) { clearTimeout(timer); throw e; });
   }
 
   function setWhere(merchantId, categoryId, customName, located, quiet) {

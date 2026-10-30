@@ -370,19 +370,41 @@ with sync_playwright() as p:
     all_modes('ok')
     ctx.set_geolocation(HERE)
 
-    # 14e. Typing a name the app does not know asks what kind of place it is; the right rates follow.
+    # 14e. Typing a name the app does not know: it guesses the kind from the name, or from a map name
+    # search, and offers that as one tap; the other kinds sit under it.
     all_modes('ok')
+    searched = []
+    def name_search(route):
+        url = route.request.url
+        searched.append(url)
+        if 'norman' in url.lower():
+            route.fulfill(status=200, content_type='application/json', body=json.dumps({'features': [
+                {'properties': {'name': "Norman's", 'osm_key': 'amenity', 'osm_value': 'restaurant'}, 'geometry': {'coordinates': [-81.43, 28.40]}}]}))
+        else:
+            route.fulfill(status=200, content_type='application/json', body=json.dumps({'features': []}))
+    page.route('**/photon.komoot.io/api/**', name_search)
     ctx.set_geolocation(ACROSS)
     open_with(state(True))
     page.wait_for_selector('.near-label', timeout=8000)
     page.fill('#store-search', "norman's")
-    page.wait_for_selector('.suggest .kinds', timeout=3000)
-    check("Norman's" in page.locator('.suggest li.kind').inner_text() and 'What kind of place' in page.locator('.suggest li.kind').inner_text(), 'an unknown name asks what kind of place it is')
+    page.wait_for_selector('.suggest li.guess button', timeout=4000)
+    guess = page.locator('.suggest li.guess').inner_text().replace('\n', ' ')
+    check("Norman's" in guess and 'Dining' in guess and 'from the map' in guess and 'lat=' in searched[-1], 'a map name search tells it Norman\'s is a restaurant: %s' % guess)
     page.screenshot(path=os.path.join(OUT, 'loc-8-kind.png'))
-    page.click('.suggest .kinds button:has-text("Dining")')
+    page.click('.suggest li.guess button')
     page.wait_for_timeout(300)
-    check("Norman's" in where_text() and 'Dining' in where_text() and winner() == 'Costco Anywhere Visa', 'picking Dining makes it a restaurant with the dining rates: %s' % where_text()[:50])
+    check("Norman's" in where_text() and 'Dining' in where_text() and winner() == 'Costco Anywhere Visa', 'one tap makes it a restaurant with the dining rates: %s' % where_text()[:50])
     check(page.locator('.note.remember input').input_value() == "Norman's", 'and the remember line already has the name')
+    # A clue in the name works at once, with no map at all
+    page.click('.where-chip')
+    page.fill('#store-search', "Big Bob's Steakhouse")
+    page.wait_for_timeout(300)
+    guess = page.locator('.suggest li.guess').inner_text().replace('\n', ' ')
+    check('Dining' in guess and 'from the name' in guess, 'a clue in the name is enough: %s' % guess)
+    page.fill('#store-search', "Zorblax")
+    page.wait_for_timeout(600)
+    check('What kind of place' in page.locator('.suggest li.guess').inner_text() and page.locator('.suggest .kinds button').count() >= 10, 'with no clue and no map match it asks, with the kinds to pick')
+    page.unroute('**/photon.komoot.io/api/**')
     ctx.set_geolocation(HERE)
 
     # 15. The location test under More runs each step on the phone and reports it.

@@ -144,8 +144,14 @@ main { padding-block: 6px 28px; }
 .suggest li:last-child > button { border-bottom: 0; }
 .suggest .cat { color: var(--muted); font-size: .85rem; margin-left: auto; white-space: nowrap; }
 .suggest svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
+.suggest li.guess > p { margin: 0; padding: 12px 14px; font-size: .92rem; }
+.suggest li.guess > p b { color: var(--fg); }
+.suggest li.guess > button svg { color: var(--tint, var(--accent)); }
+.suggest li.guess .gname { font-weight: 650; }
+.suggest li.guess .gname small { display: block; font-weight: 500; color: var(--muted); }
+.suggest li.guess .cat { color: var(--accent); font-weight: 650; }
 .suggest li.kind { padding: 12px 14px 14px; }
-.suggest li.kind p { margin: 0 0 10px; font-size: .92rem; color: var(--muted); }
+.suggest li.kind p { margin: 0 0 10px; font-size: .88rem; color: var(--muted); }
 .suggest li.kind p b { color: var(--fg); }
 .kinds { display: flex; flex-wrap: wrap; gap: 8px; }
 .kinds button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); font-size: .86rem; font-weight: 620; min-height: 36px; }
