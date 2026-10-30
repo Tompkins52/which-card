@@ -370,6 +370,21 @@ with sync_playwright() as p:
     all_modes('ok')
     ctx.set_geolocation(HERE)
 
+    # 14e. Typing a name the app does not know asks what kind of place it is; the right rates follow.
+    all_modes('ok')
+    ctx.set_geolocation(ACROSS)
+    open_with(state(True))
+    page.wait_for_selector('.near-label', timeout=8000)
+    page.fill('#store-search', "norman's")
+    page.wait_for_selector('.suggest .kinds', timeout=3000)
+    check("Norman's" in page.locator('.suggest li.kind').inner_text() and 'What kind of place' in page.locator('.suggest li.kind').inner_text(), 'an unknown name asks what kind of place it is')
+    page.screenshot(path=os.path.join(OUT, 'loc-8-kind.png'))
+    page.click('.suggest .kinds button:has-text("Dining")')
+    page.wait_for_timeout(300)
+    check("Norman's" in where_text() and 'Dining' in where_text() and winner() == 'Costco Anywhere Visa', 'picking Dining makes it a restaurant with the dining rates: %s' % where_text()[:50])
+    check(page.locator('.note.remember input').input_value() == "Norman's", 'and the remember line already has the name')
+    ctx.set_geolocation(HERE)
+
     # 15. The location test under More runs each step on the phone and reports it.
     all_modes('ok')
     mode.update(de='fail')

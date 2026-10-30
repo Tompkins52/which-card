@@ -376,9 +376,9 @@
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        var first = suggest.querySelector('button');
+        var first = suggest.querySelector('li:not(.kind) button');
         if (first) first.click();
-        else if (input.value.trim()) { setWhere(null, 'other', input.value.trim()); }
+        else if (suggest.querySelector('.kinds')) input.blur();
       }
     });
     var near = nearby.length ? [h('p', { class: 'near-label' }, icon('pin'), nearState ? 'Near you. Tap the one you\u2019re at:' : 'Near you:'),
@@ -413,7 +413,15 @@
       return h('li', null, h('button', { onclick: function () { setWhere(x.m.id, null, ''); } }, icon(c.icon), x.m.name, h('span', { class: 'cat' }, c.name)));
     });
     catHits.slice(0, 3).forEach(function (c) { items.push(h('li', null, h('button', { onclick: function () { setWhere(null, c.id, ''); } }, icon(c.icon), c.name, h('span', { class: 'cat' }, 'category')))); });
-    if (!items.length) items.push(h('li', null, h('button', { onclick: function () { setWhere(null, 'other', q); } }, icon('dots'), 'Use "' + q + '" as everything else')));
+    // A name the app does not know: ask what kind of place it is, so the right rates apply.
+    if (!items.length) {
+      var name = q.replace(/\s+/g, ' ').trim(), shown = name.charAt(0).toUpperCase() + name.slice(1);
+      var kinds = h('div', { class: 'kinds', role: 'group', 'aria-label': 'What kind of place is it' });
+      data.categories.filter(function (c) { return c.quick && c.id !== 'other'; }).concat([cat('other')]).forEach(function (c) {
+        kinds.appendChild(h('button', { style: '--tint:' + tintFor(c.id), onclick: function () { setWhere(null, c.id, shown); } }, icon(c.icon), c.id === 'other' ? 'Something else' : c.short || c.name));
+      });
+      items.push(h('li', { class: 'kind' }, h('p', null, h('b', null, shown), ' is not on the list yet. What kind of place is it?'), kinds));
+    }
     items.forEach(function (li) { ul.appendChild(li); });
     ul.hidden = false;
   }
