@@ -207,3 +207,29 @@ console.log('membership tests passed');
   assert.notStrictEqual(aw.best.card.id, 'flex', 'a rotating 5% is not a reason to get a card');
   console.log('best anywhere tests passed');
 })();
+
+
+// ---- Reading a card from the letters on it (against the real catalog) ----
+(function () {
+  var real = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'cards.json'), 'utf8'));
+  var catalog = real.cards || real;
+  var reads = {
+    'CHASE AOO Z SAPPHIRE PREFERRED VISA': 'chase-sapphire-preferred',
+    'CHASE a Freedom Flex VISA': 'chase-freedom-flex',
+    'AMERICAN EXPRESS ANOO BLUE CASH PREFERRED': 'amex-blue-cash-preferred',
+    'ciTl A S O Costc o Anywhere Visa VISA': 'citi-costco-anywhere-visa',
+    'CAPITAL ONE Venture X VISA': 'capital-one-venture-x',
+    'WELLS FARGO A Active Cash VISA': 'wells-fargo-active-cash',
+    'DISCOVER it CASH BACK': 'discover-it-cash-back',
+    'citi DOUBLE CASH MASTERCARD': 'citi-double-cash'
+  };
+  Object.keys(reads).forEach(function (text) {
+    var m = E.matchCardText(text, catalog);
+    assert(m.length && m[0].card.id === reads[text], 'scan "' + text + '" should read ' + reads[text] + ', got ' + (m.length ? m[0].card.id : 'nothing'));
+  });
+  assert(E.matchCardText('MEMBER SINCE VALID THRU 4000 1234', catalog).length === 0, 'card boilerplate alone matches nothing');
+  assert(E.matchCardText('', catalog).length === 0, 'empty text matches nothing');
+  var flex = E.matchCardText('CHASE FREEDOM FLEX', catalog);
+  assert(flex[0].card.id === 'chase-freedom-flex' && flex[1].score < flex[0].score, 'the whole name beats a shared word');
+  console.log('card scan matching tests passed');
+})();

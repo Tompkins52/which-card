@@ -1213,6 +1213,8 @@
     drawChips(); drawList();
     var nodes = [];
     if (intro) nodes.push(h('div', { class: 'hero-copy' }, h('div', { class: 'steps' }, h('i', { class: 'on' }), h('i')), h('p', { class: 'muted' }, 'Tap every card you carry. Just the names, never a card number.')));
+    var scanBox = h('div', { class: 'scan' });
+    if (!PREVIEW) nodes.push(h('button', { class: 'btn block scan-btn', onclick: function () { scanCard(scanBox, drawList); } }, icon('camera'), 'Scan a card with the camera'), scanBox);
     nodes.push(search, chips, list,
       h('div', { class: 'note buddy' }, h('b', null, 'Why do the cards look like that? '), 'Yeah, those are not the real card pictures. Is it because we are cheap asses? Partially. Mostly it is because every one of those designs is trademarked, and the banks would keep our asses in court until the sun burns out. That should tell you something, though: the sites with the real pictures have a deal with the bank and get paid every time you click. We get squat. Nobody pays for a spot here, nobody buys your info, and the only thing we want from you is 99 cents and a good pump story.'),
       h('button', { class: 'btn block', onclick: function () { openCustomCard(null, intro); } }, icon('plus'), 'My card isn\u2019t here'),
@@ -1458,6 +1460,89 @@
       }
       one();
     }
+  }
+
+  /* ---------- Scan a card ---------- */
+  // Point the camera at a card: the photo is read on this phone (tesseract.js, loaded from the
+  // app's own folder the first time), letters only, never digits; the words are matched to the
+  // card list and the photo and the words are dropped. Nothing is sent anywhere.
+  var ocrWorker = null, ocrLoading = null;
+  function loadOcr(onProgress) {
+    if (ocrWorker) return Promise.resolve(ocrWorker);
+    if (ocrLoading) return ocrLoading;
+    var base = new URL('vendor/tesseract/', location.href).toString();
+    ocrLoading = new Promise(function (resolve, reject) {
+      if (window.Tesseract) return resolve();
+      var sc = document.createElement('script'); sc.src = base + 'tesseract.min.js'; sc.onload = function () { resolve(); }; sc.onerror = function () { reject(new Error('reader')); };
+      document.head.appendChild(sc);
+    }).then(function () {
+      return window.Tesseract.createWorker('eng', 1, {
+        workerPath: base + 'worker.min.js', corePath: base, langPath: base.replace(/\/$/, ''), gzip: true, workerBlobURL: false,
+        logger: function (m) { if (onProgress) onProgress(m); }
+      });
+    }).then(function (w) {
+      return w.setParameters({ tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&' ", tessedit_pageseg_mode: '11' }).then(function () { ocrWorker = w; ocrLoading = null; return w; });
+    }, function (e) { ocrLoading = null; throw e; });
+    return ocrLoading;
+  }
+  // A photo, shrunk and turned to high-contrast gray, which reads better and is quicker.
+  function cardCanvas(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var k = Math.min(1, 1400 / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        var g = c.getContext('2d'); g.drawImage(img, 0, 0, c.width, c.height);
+        var d = g.getImageData(0, 0, c.width, c.height), px = d.data, lo = 255, hi = 0, i, v;
+        for (i = 0; i < px.length; i += 4) { v = (px[i] * 299 + px[i + 1] * 587 + px[i + 2] * 114) / 1000; px[i] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
+        var span = Math.max(1, hi - lo);
+        for (i = 0; i < px.length; i += 4) { v = Math.round((px[i] - lo) * 255 / span); px[i] = px[i + 1] = px[i + 2] = v; }
+        g.putImageData(d, 0, 0);
+        resolve(c);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('photo')); };
+      img.src = url;
+    });
+  }
+  function scanCard(box, afterAdd) {
+    var input = h('input', { type: 'file', accept: 'image/*', capture: 'environment', style: 'display:none' });
+    input.addEventListener('change', function () {
+      var file = input.files && input.files[0]; if (!file) return;
+      clear(box);
+      var status = h('p', { class: 'muted scan-status' }, 'Reading the card…');
+      box.appendChild(status);
+      var firstTime = !ocrWorker;
+      loadOcr(function (m) {
+        if (firstTime && m && /loading/.test(m.status || '')) status.textContent = 'Getting the reader ready, first time only (about 6 MB)…';
+        else if (m && m.status === 'recognizing text') status.textContent = 'Reading the card… ' + Math.round((m.progress || 0) * 100) + '%';
+      }).then(function (w) {
+        return cardCanvas(file).then(function (canvas) { return w.recognize(canvas); });
+      }).then(function (res) {
+        var text = res && res.data ? res.data.text : '';
+        var matches = E.matchCardText(text, data.cards);
+        text = null;
+        clear(box);
+        if (!matches.length) {
+          box.appendChild(h('div', { class: 'note' }, h('b', null, 'Could not read a card name. '), 'Try again with the card flat, in good light, filling the picture. Or search for it by name below.'));
+          box.appendChild(h('button', { class: 'btn block', onclick: function () { scanCard(box, afterAdd); } }, icon('camera'), 'Try again'));
+          return;
+        }
+        box.appendChild(h('p', { class: 'scan-label' }, matches.length === 1 ? 'Looks like this card:' : 'Looks like one of these:'));
+        var ul = h('div', { class: 'card-list' });
+        matches.slice(0, 3).forEach(function (m) {
+          var c = m.card, inWallet = !!walletEntry(c.id);
+          ul.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : ''), style: '--card:' + c.color, onclick: function () { if (!walletEntry(c.id)) { toggleCard(c); toast('Added ' + c.name); } clear(box); if (afterAdd) afterAdd(); } },
+            cardArt(c, 56), h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ', $' + c.annualFee + ' a year' : ', no annual fee'))), h('span', { class: 'add' }, inWallet ? 'Added' : 'Add')));
+        });
+        box.appendChild(ul);
+        box.appendChild(h('p', { class: 'small muted' }, 'Not it? ', h('button', { class: 'link', onclick: function () { scanCard(box, afterAdd); } }, 'Scan again'), ' or search by name below. The photo stayed on this phone and is gone now.'));
+      }).catch(function (e) {
+        clear(box);
+        box.appendChild(h('div', { class: 'note' }, h('b', null, e && e.message === 'reader' ? 'Could not load the card reader. ' : 'Could not read that photo. '), e && e.message === 'reader' ? 'It downloads once, about 6 MB; check the connection and try again.' : 'Try again, or search for the card by name below.'));
+      });
+    });
+    document.body.appendChild(input); input.click(); setTimeout(function () { if (input.parentNode) input.parentNode.removeChild(input); }, 60000);
   }
 
   /* ---------- Card detail ---------- */
@@ -1826,7 +1911,7 @@
     var as = h('div', { class: 'section' }, h('h2', null, 'About'),
       h('div', { class: 'box small' },
         h('p', null, h('b', null, 'Witch Card'), ' by Tompkins Software Systems. The witch is for fun; the answers are arithmetic on your own cards. No magic. Just math.'),
-        h('p', { style: 'margin-top:8px' }, 'Nothing to sign up for. Your card list, purchases and settings stay on this phone. The only thing that leaves it is an anonymous nearby-places lookup when you use location, and the stores it finds are remembered on this phone for 30 days so a return visit is instant.'),
+        h('p', { style: 'margin-top:8px' }, 'Nothing to sign up for. Your card list, purchases and settings stay on this phone. The only thing that leaves it is an anonymous nearby-places lookup when you use location, and the stores it finds are remembered on this phone for 30 days so a return visit is instant. Scanning a card happens on this phone too: letters only, never the number, and the photo is dropped as soon as the card is matched.'),
         h('p', { style: 'margin-top:8px', class: 'pledge' }, 'Made by a cardholder, not a bank. No sponsors. No ads, ever. No subscription, ever. 99 cents once, for life.'),
         h('p', { style: 'margin-top:8px' }, h('b', null, 'About the card pictures. '), 'Drawn, not real. Partly because we are cheap asses, mostly because the real designs are trademarked and we are not spending eternity in court over a picture. The sites with the real pictures have a deal with the bank and get paid when you click. We get squat, on purpose.'),
         h('p', { style: 'margin-top:8px' }, 'Independent of every bank and card network. No bank pays for placement, no referral links, no sponsored cards; the ranking is arithmetic on your own cards. Rates and terms change; the issuer’s agreement wins. Point values are estimates.'),

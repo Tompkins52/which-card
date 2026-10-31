@@ -275,6 +275,12 @@ a.btn { text-decoration: none; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .badge.warn { background: #3A2A0B; color: #FFC04D; } }
 
 .card-list { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.scan-btn svg { color: var(--accent); }
+.scan:empty { display: none; }
+.scan { display: grid; gap: 10px; }
+.scan-status { padding: 4px 2px; }
+.scan-label { font-weight: 650; color: var(--accent); font-size: .95rem; margin: 0 2px; }
+button.link { all: unset; cursor: pointer; color: var(--accent); font-weight: 650; text-decoration: underline; }
 .card-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 11px 14px; width: 100%; text-align: left; border-bottom: 1px solid var(--line); }
 .card-list > .card-row:last-child, .card-list > :last-child .card-row { border-bottom: 0; }
 .card-row b { display: block; font-size: .96rem; font-weight: 680; }

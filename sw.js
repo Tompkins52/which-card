@@ -15,9 +15,12 @@ self.addEventListener('install', function (e) {
     return c.addAll(SHELL.map(function (u) { return new Request(u, { cache: 'reload' }); }));
   }).then(function () { return self.skipWaiting(); }));
 });
+// The card reader (vendor/tesseract, about 6 MB) is fetched the first time Scan a card is used and
+// then kept in its own cache across versions, so scanning works offline from then on.
+var VENDOR = 'wc-vendor-1';
 self.addEventListener('activate', function (e) {
   e.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.filter(function (k) { return k !== VERSION; }).map(function (k) { return caches.delete(k); }));
+    return Promise.all(keys.filter(function (k) { return k !== VERSION && k !== VENDOR; }).map(function (k) { return caches.delete(k); }));
   }).then(function () { return self.clients.claim(); }));
 });
 self.addEventListener('fetch', function (e) {
@@ -31,6 +34,12 @@ self.addEventListener('fetch', function (e) {
       if (r.ok) { var copy = r.clone(); caches.has(VERSION).then(function (has) { if (has) caches.open(VERSION).then(function (c) { c.put(withoutQuery(req.url), copy); }); }); }
       return r;
     }).catch(function () { return caches.match(withoutQuery(req.url)); }));
+    return;
+  }
+  if (url.pathname.indexOf('/vendor/') >= 0) {
+    e.respondWith(caches.open(VENDOR).then(function (c) {
+      return c.match(req).then(function (hit) { return hit || fetch(req).then(function (r) { if (r.ok) c.put(req, r.clone()); return r; }); });
+    }));
     return;
   }
   // Every page, including the home-screen start address (?source=pwa) and the shortcut links

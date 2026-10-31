@@ -42,7 +42,7 @@ jobs:
         run: |
           mkdir -p site
           cp index.html app.css app.js engine.js sw.js manifest.webmanifest .nojekyll site/
-          cp -r icons data fonts site/
+          cp -r icons data fonts vendor site/
           rm -f site/data/source-hashes.json
       - name: Check the service worker's files and stamp its version
         run: python3 tools/stamp_sw.py site
