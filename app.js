@@ -360,12 +360,11 @@
         h('span', { class: 't' }, ctx.located ? h('span', { class: 'here-label' }, icon('pin'), 'You\u2019re at') : null, h('b', null, w.title), h('span', null, w.sub)),
         h('span', { class: 'change' }, 'Change')));
       var rn = rememberNote(w); if (rn) root.appendChild(rn);
-      if (nearby.length > 1) {
-        root.appendChild(h('div', { class: 'nearby', style: 'margin-top:8px' }, nearby.slice(0, 5).map(function (n) {
-          var same = n.merchant ? n.merchant === ctx.merchant : (!ctx.merchant && n.category === ctx.category && n.name === ctx.customName);
-          if (same) return null;
-          return h('button', { onclick: function () { applyNearby(n); } }, 'Not here? ' + n.name);
-        })));
+      var others = nearby.filter(function (n) { return !(n.merchant ? n.merchant === ctx.merchant : (!ctx.merchant && n.category === ctx.category && n.name === ctx.customName)); }).slice(0, 3);
+      if (others.length) {
+        root.appendChild(h('div', { class: 'nearby', style: 'margin-top:8px' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n) {
+          return h('button', { onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge)));
+        }))));
       }
       return;
     }
@@ -387,10 +386,13 @@
     picker.appendChild(h('div', { class: 'search' }, icon('search'), input,
       PREVIEW ? null : h('button', { class: 'locate', 'aria-label': 'Find my store with location', onclick: locate }, icon('pin'))));
     picker.appendChild(suggest);
-    var quick = h('div', { class: 'quick', role: 'group', 'aria-label': 'Quick picks' });
-    data.categories.filter(function (c) { return c.quick; }).forEach(function (c) {
+    // Kinds of place as compact pills, the common eight first; More opens the rest.
+    var quick = h('div', { class: 'quick', role: 'group', 'aria-label': 'Kinds of place' });
+    var kindsAll = data.categories.filter(function (c) { return c.quick; }), QUICK_SHOWN = 8;
+    kindsAll.slice(0, quickAll ? kindsAll.length : QUICK_SHOWN).forEach(function (c) {
       quick.appendChild(h('button', { style: '--tint:' + tintFor(c.id), onclick: function () { setWhere(null, c.id, ''); } }, h('span', { class: 'qi' }, icon(c.icon)), h('span', null, c.short)));
     });
+    if (!quickAll && kindsAll.length > QUICK_SHOWN) quick.appendChild(h('button', { class: 'more', onclick: function () { quickAll = true; renderWhere(); } }, h('span', { class: 'qi' }, icon('dots')), h('span', null, 'More')));
     picker.appendChild(quick);
     root.appendChild(picker);
   }
@@ -746,7 +748,7 @@
   //    it a name, and the spot is saved on this phone. From then on, standing there says "You're at".
   // 7. The last lookup is written down (when, how good the fix was, which server answered and how
   //    fast) and shown under More, so a lookup that went wrong can be reported exactly.
-  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix', nearState = false, lastFix = null, rememberLater = '';
+  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix', nearState = false, lastFix = null, rememberLater = '', quickAll = false;
   var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
   var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
   var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
@@ -1126,17 +1128,20 @@
     [/^amenity=(car_wash|veterinary|dentist|clinic|doctors)$/, 'other'],
     [/^shop=/, 'other']
   ];
+  // Kinds of merchant that are never a place on the map (airlines, websites, services).
+  var NOT_A_PLACE = { flights: 1, online: 1, streaming: 1, phone: 1, utilities: 1, rent: 1, 'portal-travel': 1, travel: 1, 'select-merchants': 1, 'wallet-pay': 1 };
   function matchMerchant(name, tags) {
-    var n = name.toLowerCase().replace(/[^a-z0-9& ]/g, ' ').replace(/\s+/g, ' ').trim();
+    var n = ' ' + name.toLowerCase().replace(/[^a-z0-9& ]/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
     var fuel = tags && tags.amenity === 'fuel';
     var best = null;
     data.merchants.forEach(function (m) {
+      if (tags && NOT_A_PLACE[m.category]) return;
       [m.name].concat(m.aliases || []).forEach(function (a) {
         a = a.toLowerCase().replace(/[^a-z0-9& ]/g, ' ').replace(/\s+/g, ' ').trim();
         if (!a) return;
-        if (n === a || n.indexOf(a + ' ') === 0 || n.indexOf(' ' + a) >= 0 || (a.length > 4 && n.indexOf(a) >= 0)) {
-          if (!best || a.length > best.len) best = { len: a.length, m: m };
-        }
+        // Whole words only: "ba" must not match "bar". An alias under four letters must be the whole name.
+        var hit = a.length < 4 ? n === ' ' + a + ' ' : n.indexOf(' ' + a + ' ') >= 0;
+        if (hit && (!best || a.length > best.len)) best = { len: a.length, m: m };
       });
     });
     if (!best) return null;

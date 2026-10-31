@@ -37,11 +37,13 @@ COSTCO = {'type': 'way', 'bounds': {'minlat': 41.89000, 'minlon': -87.65000, 'ma
 AT_COSTCO_DOOR = {'latitude': 41.89072, 'longitude': -87.64995, 'accuracy': 12}
 ACROSS = {'latitude': 41.87980, 'longitude': -87.63590, 'accuracy': 20}  # 45 m north of Jewel's edge, 130 m from Shell
 JEWEL_THERE = {'type': 'way', 'center': {'lat': 41.88131, 'lon': -87.63590}, 'tags': {'name': 'Jewel-Osco', 'shop': 'supermarket'}}
-ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE, COSTCO]})
+TIKI = {'type': 'node', 'lat': 41.87865, 'lon': -87.63585, 'tags': {'name': 'Tiki Bar', 'amenity': 'bar'}}
+ANSWER = json.dumps({'elements': [SHELL, JEWEL, JEWEL_THERE, COSTCO, TIKI]})
 PHOTON = json.dumps({'features': [
     {'properties': {'name': 'Shell', 'osm_key': 'amenity', 'osm_value': 'fuel'}, 'geometry': {'coordinates': [-87.63589, 41.87861]}},
     {'properties': {'name': 'Jewel-Osco', 'osm_key': 'shop', 'osm_value': 'supermarket', 'extent': [-87.63660, 41.87940, -87.63600, 41.87900]}, 'geometry': {'coordinates': [-87.63630, 41.87920]}},
     {'properties': {'name': 'Costco', 'osm_key': 'shop', 'osm_value': 'wholesale', 'extent': [-87.65000, 41.89144, -87.64735, 41.89000]}, 'geometry': {'coordinates': [-87.64868, 41.89072]}},
+    {'properties': {'name': 'Tiki Bar', 'osm_key': 'amenity', 'osm_value': 'bar'}, 'geometry': {'coordinates': [-87.63585, 41.87865]}},
     {'properties': {'name': 'Wacker Drive', 'osm_key': 'highway', 'osm_value': 'primary'}, 'geometry': {'coordinates': [-87.63600, 41.87870]}}]})
 EMPTY = json.dumps({'elements': []})
 # What a busy server sends: a 200 with no places and a note that the search ran out of time.
@@ -143,6 +145,10 @@ with sync_playwright() as p:
     page.click('.nearby button:has-text("Jewel-Osco")')
     page.wait_for_timeout(300)
     check('Jewel-Osco' in where_text() and winner() == 'Amex Blue Cash Preferred', 'tapping the store next door answers for it')
+
+    # 1b. A bar is a bar, not British Airways: short aliases match whole names only, and airlines are never places.
+    names = page.evaluate("[...document.querySelectorAll('#where .nearby button')].map(b => b.textContent)")
+    check(any(n.startswith('Tiki Bar') for n in names) and not any('British' in n for n in names), 'a place called Tiki Bar stays a bar, with the dining rates (%s)' % ', '.join(names))
 
     # 2. Location on: opening the app looks right away, even with a store from ten minutes ago.
     old = {'merchant': 'jewel-osco', 'category': None, 'customName': '', 'located': True, 'at': int(time.time() * 1000) - 10 * MINUTE}
@@ -416,8 +422,8 @@ with sync_playwright() as p:
     page.click('button:has-text("Test location on this phone")')
     page.wait_for_selector('.test-lines p:has-text("Done.")', timeout=60000)
     report = page.locator('.test-lines').inner_text()
-    check('Permission: granted' in report and 'Position in' in report and 'photon.komoot.io: 3 places' in report and 'overpass-api.de: error 502' in report
-          and 'at capacity' in report and 'overpass.private.coffee: 4 places' in report and 'Shell (1 m)' in report and 'Sure enough' in report,
+    check('Permission: granted' in report and 'Position in' in report and 'photon.komoot.io: 4 places' in report and 'overpass-api.de: error 502' in report
+          and 'at capacity' in report and 'overpass.private.coffee: 5 places' in report and 'Shell (1 m)' in report and 'Sure enough' in report,
           'the location test reports the permission, the position and each map service: ' + report.replace(chr(10), ' | ')[:700])
     page.screenshot(path=os.path.join(OUT, 'loc-5-test.png'))
     page.click('.sheet .close')
