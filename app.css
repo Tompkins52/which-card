@@ -396,18 +396,29 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* ---------- Sheets ---------- */
-.sheet-backdrop { position: fixed; inset: 0; background: rgba(19, 11, 27, .55); z-index: 20; animation: fade .2s; }
+.sheet-backdrop, .backdrop-out { position: fixed; inset: 0; background: rgba(19, 11, 27, .55); z-index: 20; animation: fade .2s; }
 @keyframes fade { from { opacity: 0; } }
-.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; background: var(--bg); border-radius: 26px 26px 0 0; max-height: calc(100% - 36px - env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; animation: up .28s cubic-bezier(.2, .8, .2, 1); box-shadow: 0 -12px 40px rgba(19, 11, 27, .3); }
-@keyframes up { from { transform: translateY(40px); opacity: 0; } }
-.sheet .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 10px auto 0; flex: none; }
-.sheet .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 8px; }
-.sheet .sheet-head h2 { font-size: 1.35rem; }
-.sheet .sheet-head.quiet { justify-content: flex-end; padding-block: 2px 0; }
-.sheet .sheet-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
-.sheet .wrap { width: 100%; }
-.sheet .close { width: 38px; height: 38px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; flex: none; }
-.sheet .close svg { width: 18px; height: 18px; }
+.sheet, .sheet-out { position: fixed; left: 0; right: 0; bottom: 0; z-index: 21; background: var(--bg); border-radius: 26px 26px 0 0; max-height: calc(100% - 36px - env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; animation: up .42s cubic-bezier(.16, 1, .3, 1); box-shadow: 0 -12px 40px rgba(19, 11, 27, .3); }
+@keyframes up { from { transform: translateY(100%); } }
+.sheet.swap, .sheet-backdrop.swap { animation: none; }
+.sheet.swap .sheet-body { animation: fade .2s ease-out; }
+.sheet-out { animation: down .26s cubic-bezier(.4, 0, 1, 1) forwards; pointer-events: none; }
+.backdrop-out { animation: fade .26s reverse forwards; pointer-events: none; }
+@keyframes down { to { transform: translateY(100%); } }
+/* What a sheet holds rises in, one piece after another. */
+.sheet:not(.swap) .stack > * { animation: rowin .42s cubic-bezier(.2, .8, .2, 1) both; }
+.sheet:not(.swap) .stack > :nth-child(2) { animation-delay: .05s; }
+.sheet:not(.swap) .stack > :nth-child(3) { animation-delay: .1s; }
+.sheet:not(.swap) .stack > :nth-child(4) { animation-delay: .15s; }
+.sheet:not(.swap) .stack > :nth-child(n+5) { animation-delay: .2s; }
+:is(.sheet, .sheet-out) .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 10px auto 0; flex: none; }
+:is(.sheet, .sheet-out) .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 8px; }
+:is(.sheet, .sheet-out) .sheet-head h2 { font-size: 1.35rem; }
+:is(.sheet, .sheet-out) .sheet-head.quiet { justify-content: flex-end; padding-block: 2px 0; }
+:is(.sheet, .sheet-out) .sheet-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+:is(.sheet, .sheet-out) .wrap { width: 100%; }
+:is(.sheet, .sheet-out) .close { width: 38px; height: 38px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; flex: none; }
+:is(.sheet, .sheet-out) .close svg { width: 18px; height: 18px; }
 @media (min-width: 600px) { .sheet { left: 50%; right: auto; width: 540px; transform: translateX(-50%); } }
 
 /* ---------- Card detail ---------- */
@@ -545,21 +556,91 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 @keyframes wait { to { background-position: -200% 0; } }
 
 /* ---------- Motion ---------- */
-/* Each tab eases in when you switch to it, and its icon gives a small hop. */
-.view.enter { animation: viewin .28s cubic-bezier(.2, .8, .2, 1); }
+/* Motion shows what changed, never just decoration, and all of it stops under reduced motion. */
+/* Tabs: the tab you switch to eases in, its icon hops, and the pill behind it slides over. */
+.view.enter { animation: viewin .3s cubic-bezier(.2, .8, .2, 1); }
 @keyframes viewin { from { opacity: 0; transform: scale(.985); } }
-.tabs button.on svg { animation: hop .4s cubic-bezier(.2, .9, .3, 1.5); }
-@keyframes hop { 40% { transform: translateY(-4px) scale(1.08); } }
+.tabs .in { position: relative; }
+.tabs .pill { position: absolute; left: 0; top: 0; width: 54px; height: 30px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 15%, transparent); transition: transform .42s cubic-bezier(.3, 1.35, .45, 1), width .3s; pointer-events: none; }
+.tabs .pill.still { transition: none; }
+.tabs button.on svg { background: none; animation: hop .42s cubic-bezier(.2, .9, .3, 1.5); }
+@keyframes hop { 40% { transform: translateY(-4px) scale(1.1); } }
+.tabs button { transition: color .25s; }
+.tabs button.dot::after { animation: dotping 1.8s ease-out 3; }
+@keyframes dotping { 0% { box-shadow: 0 0 0 2px var(--surface), 0 0 0 2px rgba(246, 166, 35, .55); } 100% { box-shadow: 0 0 0 2px var(--surface), 0 0 0 11px rgba(246, 166, 35, 0); } }
+
+/* Finding where you are: rings ripple out from the pin like radar. Found: the store's icon pops. */
+.where-chip.finding .ic { position: relative; animation: none; }
+.where-chip.finding .ic::before, .where-chip.finding .ic::after { content: ""; position: absolute; inset: 0; border-radius: 14px; border: 2px solid var(--accent); animation: ripple 1.7s ease-out infinite; }
+.where-chip.finding .ic::after { animation-delay: .85s; }
+@keyframes ripple { from { opacity: .55; transform: scale(.92); } to { opacity: 0; transform: scale(1.65); } }
+.where-chip.found .ic { animation: icpop .55s cubic-bezier(.2, .9, .3, 1.6); }
+@keyframes icpop { from { transform: scale(.6) rotate(-12deg); opacity: 0; } }
+.where-chip.found .here-label { animation: found .5s .08s cubic-bezier(.2, .8, .2, 1) both; }
+
+/* The card to use: pulled out, the hat lands, sparks fly, a shine runs across it, the rate lands. */
+.winner.reveal .card-art .sweep, .detail-hero .card-art .sweep { animation: sweep 1.15s .5s cubic-bezier(.45, 0, .25, 1) both; }
+@keyframes sweep { from { transform: translateX(0); } to { transform: translateX(600px); } }
+.winner .rate > span:first-child { display: inline-block; transform-origin: 0 80%; }
+.winner .rate > span.pop { animation: ratepop .4s cubic-bezier(.2, .9, .3, 1.7); }
+@keyframes ratepop { 45% { transform: scale(1.1); } }
+.winner .w-text { animation: textin .45s .12s cubic-bezier(.2, .8, .2, 1) both; }
+.winner:not(.reveal) .w-text { animation: none; }
+@keyframes textin { from { opacity: 0; transform: translateX(10px); } }
+.winner .w-go { transition: transform .2s; }
+.winner:active .w-go { transform: translateX(3px); }
+#answer-more > * { animation: fade .35s .2s both; }
+.detail-hero .hero-art { animation: pullout .5s cubic-bezier(.2, .9, .3, 1.12) both; }
+
+/* The wallet: cards are dealt into the pocket one after another, tilting a little as they settle. */
+.pocket.slide .others li { animation: deal .5s calc(.15s + var(--i, 0) * 70ms) cubic-bezier(.2, .9, .3, 1.15) both; }
+.pocket.slide .others li:nth-child(even) { --tilt: 1.6deg; }
+@keyframes deal { from { opacity: 0; transform: translateY(-18px) rotate(var(--tilt, -1.6deg)); } }
+.pocket .fold { animation: fade .4s .5s both; }
+
 /* Stores near you pop in one after another. */
-.nearby button { animation: chipin .35s calc(var(--i, 0) * 55ms) cubic-bezier(.2, .9, .3, 1.3) both; }
-#where > .nearby { margin-top: 10px; }
+.nearby button { animation: chipin .38s calc(var(--i, 0) * 60ms) cubic-bezier(.2, .9, .3, 1.35) both; }
 @keyframes chipin { from { opacity: 0; transform: scale(.85) translateY(6px); } }
-/* The scanner frame breathes while it looks. */
-.cam-frame { animation: breathe 1.8s ease-in-out infinite; }
+#where > .nearby { margin-top: 10px; }
+
+/* Compare: on opening the tab, each scale fills in from the left and its dot slides to its place;
+   the offers rise in rank order. */
+.view.enter .scale-bar { animation: wipe .55s calc(var(--i, 0) * 45ms) cubic-bezier(.3, .7, .3, 1) both; }
+@keyframes wipe { from { clip-path: inset(-12px 100% -12px -12px round 999px); } to { clip-path: inset(-12px -12px -12px -12px round 999px); } }
+.scale-bar .dot { animation: none; }
+.view.enter .scale-bar .dot { animation: dotin .9s calc(.2s + var(--i, 0) * 45ms) cubic-bezier(.2, .9, .25, 1.12) both; }
+.chips button { transition: background .2s, color .2s, border-color .2s, transform .12s; }
+.chips button:active { transform: scale(.94); }
+.chips button.on { animation: chippick .3s cubic-bezier(.2, .9, .3, 1.6); }
+@keyframes chippick { 50% { transform: scale(1.08); } }
+
+/* Wallet tab: the cards rise in when you open it. */
+.view.enter .tile { animation: rowin .45s calc(var(--i, 0) * 50ms) cubic-bezier(.2, .8, .2, 1) both; }
+.view.enter .reminders > * { animation: rowin .45s cubic-bezier(.2, .8, .2, 1) both; }
+
+/* Adding a card: its row flashes and "Added" pops. Settings: switches spring, the pick ticks in. */
+.card-row.just { animation: justadded .9s ease-out; }
+@keyframes justadded { from { background: color-mix(in srgb, var(--good) 22%, var(--surface)); } }
+.card-row.just .add { display: inline-block; animation: addpop .45s cubic-bezier(.2, .9, .3, 1.7); }
+@keyframes addpop { from { transform: scale(.5); opacity: 0; } }
+.switch::after { transition: transform .34s cubic-bezier(.3, 1.4, .5, 1), background .2s; }
+.opt.on .tick { animation: addpop .4s cubic-bezier(.2, .9, .3, 1.7); }
+
+/* The scanner frame breathes gold while it looks, and flashes when it has the card. */
+.cam-frame { animation: breathe 1.8s ease-in-out infinite; transition: transform .25s, border-color .2s, box-shadow .25s; }
 @keyframes breathe { 50% { border-color: var(--gold); box-shadow: 0 0 0 999px rgba(14, 13, 17, .42), 0 0 18px rgba(246, 166, 35, .55); } }
+.cam.got .cam-frame { animation: none; border-color: var(--gold); transform: translateY(-50%) scale(1.04); box-shadow: 0 0 0 999px rgba(14, 13, 17, .6), 0 0 30px rgba(246, 166, 35, .85); }
+
+/* Toasts spring up and slip away. */
+.toast { animation: toastin .34s cubic-bezier(.2, .9, .3, 1.25); }
+@keyframes toastin { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+.toast.out { animation: toastout .24s ease-in forwards; pointer-events: none; }
+@keyframes toastout { to { opacity: 0; transform: translateY(12px) scale(.98); } }
+
 /* Buttons and pills give a little under the thumb. */
-.btn, .quick button, .nearby button, .scale-link, .best-row, .tile { transition: transform .12s ease; }
-.btn:active, .quick button:active, .nearby button:active, .best-row:active, .tile:active { transform: scale(.97); }
+.btn, .quick button, .nearby button, .scale-row, .best-row, .tile, .card-row { transition: transform .12s ease, background .2s; }
+.btn:active, .quick button:active, .nearby button:active, .best-row:active, .tile:active, .card-row:active { transform: scale(.97); }
+.scale-row:active { transform: scale(.985); }
 
 /* Short screens (an iPhone SE from the home screen): a little tighter, so Pay still fits with no scrolling. */
 @media (max-height: 700px) {

@@ -145,6 +145,7 @@
       '<clipPath id="' + id + 'k"><rect width="' + W + '" height="' + H + '" rx="18"/></clipPath></defs>' +
       '<g clip-path="url(#' + id + 'k)"><rect width="' + W + '" height="' + H + '" fill="url(#' + id + 'g)"/>' +
       '<path d="M-40 0 L140 0 L60 200 L-120 200 Z" fill="url(#' + id + 's)"/>' +
+      (opts.shine ? '<path class="sweep" d="M-150 0 L-96 0 L-176 200 L-230 200 Z" fill="#fff" fill-opacity=".32"/>' : '') +
       (finish === 'silver' || finish === 'gold' || finish === 'metal' ? '<path d="M0 120 Q160 60 320 150 L320 200 L0 200 Z" fill="#000" fill-opacity=".07"/>' : '') +
       '</g>' +
       '<rect x="28" y="' + (big ? 70 : 62) + '" width="52" height="38" rx="7" fill="url(#' + id + 'c)"/><path d="M28 ' + (big ? 89 : 81) + ' h52 M54 ' + (big ? 70 : 62) + ' v38" stroke="' + chipB + '" stroke-opacity=".7" stroke-width="2" fill="none"/>' +
@@ -173,18 +174,29 @@
 
   /* ---------- toast ---------- */
   var toastTimer = null;
+  function motionOK() { return !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
   function toast(msg, action, fn) {
     var root = document.getElementById('toast-root'); clear(root);
-    var t = h('div', { class: 'toast', role: 'status' }, msg, action ? h('button', { onclick: function () { fn(); clear(root); } }, action) : null);
+    var t = h('div', { class: 'toast', role: 'status' }, msg, action ? h('button', { onclick: function () { fn(); dropToast(t); } }, action) : null);
     root.appendChild(t);
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { clear(root); }, action ? 6000 : 2600);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { dropToast(t); }, action ? 6000 : 2600);
+  }
+  // A toast slips away rather than vanishing.
+  function dropToast(t) {
+    if (!t.parentNode) return;
+    if (!motionOK()) { t.parentNode.removeChild(t); return; }
+    t.classList.add('out');
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 240);
   }
 
   /* ---------- sheet ---------- */
+  var swapping = false;
   function openSheet(title, bodyNodes, opts) {
     opts = opts || {};
     stopCamera();
-    var root = document.getElementById('sheet-root'); clear(root);
+    var root = document.getElementById('sheet-root');
+    var swap = swapping || !!root.querySelector('.sheet');
+    clear(root);
     var body = h('div', { class: 'sheet-body' }, h('div', { class: 'wrap stack' }, bodyNodes));
     var sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
       h('div', { class: 'grab' }),
@@ -192,11 +204,27 @@
       h('div', { class: 'wrap sheet-head' + (opts.quietHead ? ' quiet' : '') }, opts.quietHead ? null : h('h2', null, title), opts.noClose ? null : h('button', { class: 'close', 'aria-label': 'Close', onclick: closeSheet }, icon('x'))),
       body);
     var back = h('div', { class: 'sheet-backdrop', onclick: function () { if (!opts.noClose) closeSheet(); } });
+    if (swap) { sheet.classList.add('swap'); back.classList.add('swap'); }
     root.appendChild(back); root.appendChild(sheet);
     document.body.style.overflow = 'hidden';
     return { sheet: sheet, body: body };
   }
-  function closeSheet() { stopCamera(); clear(document.getElementById('sheet-root')); document.body.style.overflow = ''; if (typeof sheetOnClose === 'function') { var f = sheetOnClose; sheetOnClose = null; f(); } }
+  function closeSheet() {
+    stopCamera();
+    var root = document.getElementById('sheet-root'), sheet = root.querySelector('.sheet'), back = root.querySelector('.sheet-backdrop');
+    document.body.style.overflow = '';
+    if (typeof sheetOnClose === 'function') {
+      var f = sheetOnClose; sheetOnClose = null;
+      swapping = true;
+      try { f(); } finally { swapping = false; }
+      if (root.querySelector('.sheet') && root.querySelector('.sheet') !== sheet) return;  // another sheet took its place
+    }
+    if (!sheet) { clear(root); return; }
+    if (!motionOK()) { clear(root); return; }
+    // The sheet glides down and the dimming lifts; it no longer counts as a sheet or catches taps.
+    sheet.className = 'sheet-out'; if (back) back.className = 'backdrop-out';
+    setTimeout(function () { [sheet, back].forEach(function (el) { if (el && el.parentNode) el.parentNode.removeChild(el); }); }, 260);
+  }
   var sheetOnClose = null;
 
   /* ---------- first-run disclaimer ---------- */
@@ -268,9 +296,23 @@
       if (v === name && changing) { el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
     });
     document.querySelectorAll('.tabs button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name); });
+    movePill(!changing);
+    if (changing) { clearTimeout(enterTimer); enterTimer = setTimeout(function () { document.querySelectorAll('.view.enter').forEach(function (v) { v.classList.remove('enter'); }); }, 1600); }
     window.scrollTo(0, 0);
     renderView(name);
   }
+  // The pill behind the tab you are on slides to the one you pick.
+  var enterTimer = null;
+  function movePill(instant) {
+    var pill = document.querySelector('.tabs .pill'), on = document.querySelector('.tabs button.on svg');
+    if (!pill || !on) return;
+    var box = pill.parentNode.getBoundingClientRect(), r = on.getBoundingClientRect();
+    if (instant) pill.classList.add('still');
+    pill.style.transform = 'translate(' + Math.round(r.left - box.left) + 'px, ' + Math.round(r.top - box.top) + 'px)';
+    pill.style.width = Math.round(r.width) + 'px'; pill.style.height = Math.round(r.height) + 'px';
+    if (instant) { void pill.offsetWidth; pill.classList.remove('still'); }
+  }
+  window.addEventListener('resize', function () { movePill(true); });
   // A dot on the Wallet tab while a reminder there is waiting.
   function markTabs() {
     var probe = h('div'); renderReminder(probe, function () { });
@@ -540,7 +582,7 @@
     function step(t) {
       var k = Math.min(1, (t - start) / dur); k = 1 - Math.pow(1 - k, 3);
       el.textContent = rateText(target * (0.6 + 0.4 * k), unit);
-      if (k < 1) requestAnimationFrame(step); else el.textContent = rateText(target, unit);
+      if (k < 1) requestAnimationFrame(step); else { el.textContent = rateText(target, unit); el.classList.add('pop'); }
     }
     requestAnimationFrame(step);
   }
@@ -564,7 +606,7 @@
     if (best.entry.multiplier && best.entry.multiplier > 1) reasonTail += ' (with your ' + Math.round((best.entry.multiplier - 1) * 100) + '% boost)';
     var rateNum = h('span', null, rateText(best.effectiveRate, unit));
     // The card to use: its picture with the hat on it, its name and what it earns here. Tapping it opens the card.
-    var art = cardArt(card, 140, { bare: true }); art.setAttribute('aria-hidden', 'true');
+    var art = cardArt(card, 140, { bare: true, shine: true }); art.setAttribute('aria-hidden', 'true');
     var hat = h('span', { class: 'w-hat', 'aria-hidden': 'true' }); hat.innerHTML = hatSvg();
     top.appendChild(h('button', { class: 'winner' + (changed ? ' reveal' : '') + (where ? '' : ' nowhere'), onclick: function () { openCardDetail(card.id); } },
       h('span', { class: 'w-card' }, art, hat, changed ? sparkles() : null),
@@ -1231,7 +1273,7 @@
       var pc = perkCounts(card, entry, new Date());
       if (pc.toActivate) badges.push(h('span', { class: 'badge warn' }, pc.toActivate + (pc.toActivate === 1 ? ' perk' : ' perks') + ' to activate'));
       else if (pc.toUse) badges.push(h('span', { class: 'badge' }, pc.toUse + (pc.toUse === 1 ? ' credit' : ' credits') + ' to use'));
-      tiles.appendChild(h('button', { class: 'tile', style: '--card:' + card.color, onclick: function () { openCardDetail(card.id); } },
+      tiles.appendChild(h('button', { class: 'tile', style: '--card:' + card.color + ';--i:' + tiles.childNodes.length, onclick: function () { openCardDetail(card.id); } },
         cardArt(card, 64),
         h('span', { class: 't' }, h('b', null, entry.nickname || card.name), h('span', null, E.cardSummary(card, data)), badges.length ? h('span', { style: 'display:flex;gap:6px;margin-top:4px;flex-wrap:wrap' }, badges) : null),
         h('span', { class: 'chev' }, icon('chev'))));
@@ -1240,8 +1282,10 @@
     root.appendChild(h('p', { class: 'hint' }, 'Tap a card to see how to get the most from it.'));
   }
 
+  var justAdded = null;
   function openAddCards(intro) {
     var filter = { issuer: 'All', q: '' };
+    justAdded = null;
     var list = h('div', { class: 'card-list' });
     var issuers = ['All'];
     data.cards.forEach(function (c) { if (issuers.indexOf(c.issuer) < 0) issuers.push(c.issuer); });
@@ -1265,7 +1309,7 @@
       if (!shown.length) list.appendChild(h('p', { class: 'hint' }, 'No card matches. Try another name.'));
       shown.forEach(function (c) {
         var inWallet = !!walletEntry(c.id);
-        list.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : ''), style: '--card:' + c.color, onclick: function () { toggleCard(c); drawList(); } },
+        list.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : '') + (c.id === justAdded ? ' just' : ''), style: '--card:' + c.color, onclick: function () { justAdded = walletEntry(c.id) ? null : c.id; toggleCard(c); drawList(); } },
           cardArt(c, 56),
           h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ', $' + c.annualFee + ' a year' : ', no annual fee'))),
           h('span', { class: 'add' }, inWallet ? 'Added' : 'Add')));
@@ -1699,9 +1743,14 @@
       return Object.keys(seen).map(function (k) { return seen[k]; }).sort(function (a, b) { return b.wins - a.wins || b.score - a.score; });
     }
     function done(list) {
-      stopCamera();
+      alive = false;
       if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e) { } }
-      showScanResult(box, list, afterAdd, 'Not it? ', 'Scan again', function () { scanLive(box, afterAdd); }, 'The camera is off and nothing was saved.');
+      view.classList.add('got');
+      status.textContent = 'Got it.';
+      setTimeout(function () {
+        stopCamera();
+        showScanResult(box, list, afterAdd, 'Not it? ', 'Scan again', function () { scanLive(box, afterAdd); }, 'The camera is off and nothing was saved.');
+      }, motionOK() ? 420 : 0);
     }
   }
 
@@ -1774,7 +1823,7 @@
     var now = new Date(), q = E.quarterOf(now), nq = E.nextQuarterKey(now);
     var nodes = [];
     var hero = h('div', { class: 'detail-hero' },
-      cardArt(card, 300, { cls: 'hero-art', bare: true }),
+      cardArt(card, 300, { cls: 'hero-art', bare: true, shine: true }),
       h('div', { class: 'issuer' }, card.issuer + (card.network && card.network !== card.issuer ? ' ' + card.network : '') + (card.type === 'business' ? ', business card' : '')),
       h('h2', null, entry.nickname || card.name),
       h('div', { class: 'meta' },
