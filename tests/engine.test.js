@@ -209,6 +209,20 @@ console.log('membership tests passed');
 })();
 
 
+// ---- Best cards: a card you hold that ties for the top comes first (against the real catalog) ----
+(function () {
+  var fs = require('fs'), path = require('path');
+  function load(n) { return JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', n + '.json'), 'utf8')); }
+  var real = { categories: load('categories').categories, merchants: load('merchants').merchants, cards: load('cards').cards, bonuses: load('bonuses'), valuations: load('valuations') };
+  var st = { wallet: [{ cardId: 'chase-freedom-unlimited' }], prefs: { priority: 'cash', redeem: {} } };
+  // Walmart or Target, Chase cards only (the bank picks): Freedom Unlimited and Freedom Rise both earn 1.5%
+  var list = E.bestCards({ category: 'superstore' }, st, real, new Date('2026-10-31T12:00:00'), 80).filter(function (r) { return r.card.issuer === 'Chase'; });
+  var tied = list.filter(function (r) { return Math.abs(r.effectivePercent - list[0].effectivePercent) <= .005; });
+  assert(tied.length > 1, 'there is a tie at the top at Walmart or Target among Chase cards');
+  assert(list[0].card.id === 'chase-freedom-unlimited' && list[0].mine, 'the card you hold comes first in a tie for the top, got ' + list[0].card.id);
+  console.log('best cards tests passed');
+})();
+
 // ---- Reading a card from the letters on it (against the real catalog) ----
 (function () {
   var real = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'cards.json'), 'utf8'));

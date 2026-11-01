@@ -473,8 +473,9 @@
   }
 
   // The best cards for a store or a kind of place, yours and the rest, on their everyday rates (no
-  // rotating or time-window bonuses), best first; ties go to the lower fee. Store-only cards count
-  // only at their own store. mine marks the cards in the wallet.
+  // rotating or time-window bonuses), best first. In a tie a card you already hold goes first: you
+  // already have the best card there, and nothing should suggest getting another. Other ties go to
+  // the lower fee. Store-only cards count only at their own store. mine marks the cards in the wallet.
   function bestCards(ctx, state, data, now, limit) {
     now = now || new Date();
     var c = Object.assign({ amount: 100 }, ctx, { steady: true });
@@ -483,7 +484,11 @@
       if (!r.accepted || r.effectiveRate <= 0) return;
       r.mine = true; r.needs = r.needs || []; out.push(r);
     });
-    out.sort(byRate);
+    out.sort(function (a, b) {
+      if (Math.abs(b.effectivePercent - a.effectivePercent) > 0.005) return b.effectivePercent - a.effectivePercent;
+      if (!!a.mine !== !!b.mine) return a.mine ? -1 : 1;
+      return byRate(a, b);
+    });
     var seen = {};
     return out.filter(function (r) { if (seen[r.card.id]) return false; seen[r.card.id] = true; return true; }).slice(0, limit || 10);
   }
