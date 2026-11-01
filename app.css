@@ -1,6 +1,7 @@
 /* Which Card
-   The idea: pull the right card out of your wallet. On the Pay screen the card to use is drawn
-   big, as if just pulled out, and the rest of your cards sit in a stitched plum pocket under it.
+   The idea: pull the right card out of your wallet. On the Pay screen the card to use comes first,
+   pulled out with the hat on it beside its reward, and the rest of your cards sit in a stitched
+   plum pocket under it.
    Everything else stays quiet so the card colors carry the color.
    Palette: Mist (background), Ink (text), Plum (actions), Pocket (the wallet), Marigold (wins).
    Dark mode is near-black and neutral; purple is kept for actions, like a black leather wallet with gold stitching.
@@ -37,6 +38,7 @@
   --bad-bg: #FDE5E2;
   --lift: 0 22px 36px -14px rgba(42, 22, 64, .55), 0 4px 10px rgba(42, 22, 64, .16);
   --card-drop: drop-shadow(0 18px 16px rgba(42, 22, 64, .30)) drop-shadow(0 3px 4px rgba(42, 22, 64, .20));
+  --card-drop-sm: drop-shadow(0 8px 8px rgba(42, 22, 64, .26)) drop-shadow(0 2px 2px rgba(42, 22, 64, .18));
   --toast-bg: #1E1328; --toast-fg: #F5F2F8; --toast-act: #F6A623;
   --knob-on: #FFFFFF;
   --font: "Archivo WC", "Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
@@ -52,6 +54,7 @@
     --good: #4FD18F; --good-bg: #113324; --warn: #F2B94B; --warn-bg: #36270D; --bad: #F58C82; --bad-bg: #3B1814;
     --lift: 0 22px 36px -14px rgba(0, 0, 0, .8), 0 4px 10px rgba(0, 0, 0, .4); color-scheme: dark;
     --card-drop: drop-shadow(0 18px 16px rgba(0, 0, 0, .55)) drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
+    --card-drop-sm: drop-shadow(0 8px 8px rgba(0, 0, 0, .5)) drop-shadow(0 2px 2px rgba(0, 0, 0, .35));
     --toast-bg: #2B2A30; --toast-fg: #F3F1F6; --toast-act: #FFC04D; --knob-on: #1E1328;
   }
 }
@@ -62,6 +65,7 @@
   --good: #4FD18F; --good-bg: #113324; --warn: #F2B94B; --warn-bg: #36270D; --bad: #F58C82; --bad-bg: #3B1814;
   --lift: 0 22px 36px -14px rgba(0, 0, 0, .8), 0 4px 10px rgba(0, 0, 0, .4); color-scheme: dark;
   --card-drop: drop-shadow(0 18px 16px rgba(0, 0, 0, .55)) drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
+  --card-drop-sm: drop-shadow(0 8px 8px rgba(0, 0, 0, .5)) drop-shadow(0 2px 2px rgba(0, 0, 0, .35));
   --toast-bg: #2B2A30; --toast-fg: #F3F1F6; --toast-act: #FFC04D; --knob-on: #1E1328;
 }
 
@@ -125,21 +129,24 @@ main { padding-block: 6px 28px; }
 .where-chip.finding .change { background: none; border: 0; cursor: pointer; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 .nearby { display: flex; gap: 8px; flex-wrap: wrap; }
-.nearby button { padding: 7px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: .85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; min-height: 36px; }
+.nearby button { padding: 7px 13px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: .86rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; min-height: 40px; white-space: nowrap; }
 .nearby button svg { width: 14px; height: 14px; color: var(--accent); }
 .nearby button small { font-size: .78rem; font-weight: 500; color: var(--muted); }
-.nearby-label { align-self: center; font-size: .85rem; font-weight: 640; color: var(--muted); padding: 0 2px; }
-.near-label { display: flex; align-items: center; gap: 5px; margin: 2px 2px 8px; font-size: .9rem; font-weight: 640; color: var(--accent); }
+.nearby-label { align-self: center; font-size: .85rem; font-weight: 640; color: var(--muted); padding: 0 2px; white-space: nowrap; }
+.near { display: grid; gap: 8px; }
+.near-label { display: flex; align-items: center; gap: 5px; margin: 2px 2px 0; font-size: .9rem; font-weight: 640; color: var(--accent); }
 .near-label svg { width: 14px; height: 14px; }
-.picker .nearby { margin-bottom: 12px; }
+/* One row that scrolls sideways, edge to edge, fading out where more is waiting. */
+.scroll-row { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; margin: -4px -16px; padding: 4px 26px 4px 16px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 26px), transparent); mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 26px), transparent); }
+.scroll-row::-webkit-scrollbar { display: none; }
+.scroll-row > * { flex: none; }
 
 .picker { display: flex; flex-direction: column; gap: 12px; }
 .search { position: relative; }
-.search input { width: 100%; padding: 14px 46px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); font-size: 1rem; }
+.search input { width: 100%; padding: 13px 16px 13px 46px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); font-size: 1rem; }
 .search input::placeholder { color: var(--muted); }
 .search > svg { position: absolute; left: 15px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
-.search .locate { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--accent); }
-.search .locate svg { width: 20px; height: 20px; }
 .suggest { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
 .suggest li > button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); }
 .suggest li:last-child > button { border-bottom: 0; }
@@ -157,58 +164,65 @@ main { padding-block: 6px 28px; }
 .kinds { display: flex; flex-wrap: wrap; gap: 8px; }
 .kinds button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); font-size: .86rem; font-weight: 620; min-height: 36px; }
 .kinds button svg { width: 16px; height: 16px; color: var(--tint, var(--accent)); }
-.quick { display: flex; flex-wrap: wrap; gap: 8px; }
-.quick button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 6px 14px 6px 7px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; font-size: .9rem; font-weight: 640; transition: transform .1s; }
+.quick { display: flex; gap: 8px; }
+/* While a search shows its own list, the kinds row steps aside. */
+.suggest:not([hidden]) + .quick { display: none; }
+.quick button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 6px 14px 6px 7px; white-space: nowrap; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; font-size: .9rem; font-weight: 640; transition: transform .1s; }
 .quick button .qi { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--tint, var(--accent)) 15%, var(--surface)); color: var(--tint, var(--accent)); }
 .quick button svg { width: 17px; height: 17px; }
 .quick button:active { transform: scale(.96); }
-.quick button.more { color: var(--muted); }
-.quick button.more .qi { background: var(--surface-2); color: var(--muted); }
 
 /* ---------- Amount ---------- */
 .amount { display: block; }
-.amount-field { display: flex; align-items: baseline; gap: 4px; padding: 0 2px 4px; border-bottom: 2px solid var(--line); transition: border-color .15s; }
+.amount-field { display: flex; align-items: baseline; gap: 4px; padding: 0 2px 2px; border-bottom: 2px solid var(--line); transition: border-color .15s; }
 .amount-field:focus-within { border-bottom-color: var(--accent); }
-.amount-field .cur { font-size: 2.1rem; font-weight: 720; font-stretch: 75%; color: var(--muted); }
-.amount-field input { flex: 1; min-width: 0; border: 0; background: none; padding: 0; font-size: 3.2rem; font-weight: 820; font-stretch: 72%; line-height: 1.1; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.amount-field .cur { font-size: 1.5rem; font-weight: 720; font-stretch: 75%; color: var(--muted); }
+.amount-field input { flex: 1; min-width: 0; border: 0; background: none; padding: 0; font-size: 2.3rem; font-weight: 820; font-stretch: 72%; line-height: 1.15; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
 .amount-field input::placeholder { color: color-mix(in srgb, var(--muted) 45%, transparent); }
 .amount-field input:focus-visible { outline: none; }
 .amount-field .opt-note { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.amount-field .opt-note.val { color: var(--fg); font-size: 1.75rem; font-weight: 820; font-stretch: 72%; line-height: 1; }
+.amount-field .opt-note.val small { margin-left: 5px; font-size: .85rem; font-weight: 600; font-stretch: 100%; color: var(--muted); }
 .seg { display: inline-flex; background: var(--surface-2); border-radius: 14px; padding: 3px; flex: none; }
 .seg button { padding: 9px 12px; border-radius: 11px; font-size: .85rem; font-weight: 620; color: var(--muted); display: flex; align-items: center; gap: 4px; }
 .seg button svg { width: 16px; height: 16px; }
 .seg button.on { background: var(--surface); color: var(--fg); box-shadow: 0 1px 3px rgba(30, 19, 40, .14); }
 
-/* ---------- The answer: the card, pulled out ---------- */
-.winner { display: flex; flex-direction: column; gap: 9px; position: relative; }
-.winner .w-label { display: flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 650; font-size: .95rem; }
-.winner .w-label svg { width: 16px; height: 16px; }
-.winner .w-card { position: relative; align-self: flex-start; width: min(100%, 300px); margin: 0 0 4px 4px; }
-.winner .w-hat { position: absolute; right: -5%; top: 0; width: 25%; transform: translate(0, -56%) rotate(16deg); transform-origin: 50% 85%; pointer-events: none; }
-.winner .w-hat svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 6px rgba(42, 22, 64, .28)); }
-.winner.reveal .w-hat { animation: hatdrop .5s .32s cubic-bezier(.2, .9, .3, 1.25) both; }
-@keyframes hatdrop { from { opacity: 0; transform: translate(-10%, -150%) rotate(-12deg); } to { opacity: 1; transform: translate(0, -56%) rotate(16deg); } }
-@media (max-height: 720px) { .winner .w-card { width: min(100%, 240px); } }
-.winner .w-card .card-art { display: block; width: 100%; }
-.winner .w-card .card-art svg { width: 100%; height: auto; transform: rotate(-2deg); filter: var(--card-drop); }
-.winner.reveal .w-card { animation: pullout .5s cubic-bezier(.2, .9, .3, 1.12) both; }
-@keyframes pullout { from { opacity: 0; transform: translateY(46px) rotate(4deg) scale(.95); } to { opacity: 1; transform: none; } }
-.winner .name { font-size: 1.4rem; font-weight: 790; font-stretch: 106%; line-height: 1.12; letter-spacing: -.015em; }
-.winner .wrow { display: flex; align-items: flex-end; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; }
-.winner .rate { font-size: 4.2rem; font-weight: 830; font-stretch: 70%; line-height: .86; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
-.winner .rate small { display: block; margin-top: 6px; font-size: .85rem; font-weight: 600; font-stretch: 100%; letter-spacing: 0; color: var(--muted); line-height: 1.3; }
-.winner .value { text-align: right; font-size: 2.6rem; font-weight: 800; font-stretch: 72%; line-height: .9; font-variant-numeric: tabular-nums; }
-.winner .value span { display: block; margin-top: 6px; font-size: .85rem; font-weight: 600; font-stretch: 100%; color: var(--muted); line-height: 1.3; }
-.winner .why { color: var(--muted); font-size: .98rem; }
-.winner .edge { align-self: flex-start; font-weight: 680; font-size: .95rem; padding: 0 2px; background: linear-gradient(transparent 58%, var(--gold-wash) 58%); }
-.winner .flags { display: flex; flex-wrap: wrap; gap: 6px; }
+/* ---------- The answer: the card to use, first ---------- */
+/* Its picture with the hat on it beside its name and the big reward, short enough that the whole
+   answer is on the first screen in every state. The whole thing opens the card. */
+.winner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; width: 100%; padding: 2px 0; text-align: left; border-radius: 18px; }
+.winner .w-card { position: relative; width: clamp(108px, 34vw, 140px); margin: 12px 0 2px 2px; }
+.winner .w-card .card-art { display: block; width: 100%; transition: transform .12s; }
+.winner .w-card .card-art svg { width: 100%; height: auto; transform: rotate(-3deg); filter: var(--card-drop-sm); }
+.winner:active .card-art { transform: scale(.96); }
+.winner .w-hat { position: absolute; right: -7%; top: 0; width: 31%; transform: translate(0, -58%) rotate(16deg); transform-origin: 50% 85%; pointer-events: none; }
+.winner .w-hat svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4px 4px rgba(42, 22, 64, .28)); }
+.winner.reveal .w-card { animation: pullout .45s cubic-bezier(.2, .9, .3, 1.12) both; }
+@keyframes pullout { from { opacity: 0; transform: translateY(26px) rotate(5deg) scale(.94); } to { opacity: 1; transform: none; } }
+.winner.reveal .w-hat { animation: hatdrop .5s .3s cubic-bezier(.2, .9, .3, 1.25) both; }
+@keyframes hatdrop { from { opacity: 0; transform: translate(-10%, -150%) rotate(-12deg); } to { opacity: 1; transform: translate(0, -58%) rotate(16deg); } }
+.winner .w-text { display: flex; flex-direction: column; min-width: 0; }
+.winner .w-label { display: flex; align-items: center; gap: 5px; color: var(--accent); font-weight: 650; font-size: .85rem; }
+.winner .w-label svg { width: 14px; height: 14px; flex: none; }
+.winner.nowhere .w-label { color: var(--muted); }
+.winner .name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 3px; font-size: 1.2rem; font-weight: 790; font-stretch: 104%; line-height: 1.15; letter-spacing: -.015em; }
+.winner .w-go { color: var(--muted); margin-right: -4px; }
+.winner .w-go svg { display: block; width: 20px; height: 20px; }
+.winner .rate { display: block; margin-top: 8px; font-size: 3.4rem; font-weight: 830; font-stretch: 70%; line-height: .86; letter-spacing: -.01em; }
+.winner .rate small { display: block; margin-top: 6px; font-size: .84rem; font-weight: 600; font-stretch: 100%; letter-spacing: 0; color: var(--muted); line-height: 1.3; }
+.winner:focus-visible { outline-offset: 4px; }
+#answer-top:empty, #answer-more:empty, #where-more:empty { display: none; }
+#answer-more, #where-more { display: grid; gap: 10px; }
+.used-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.used-row .edge { font-weight: 650; font-size: .9rem; line-height: 1.35; }
+.used-row .hl { padding: 0 2px; background: linear-gradient(transparent 58%, var(--gold-wash) 58%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.used-row .btn { flex: none; min-height: 42px; padding: 9px 16px; }
+.flags { display: flex; flex-wrap: wrap; gap: 6px; }
 .flag { font-size: .8rem; font-weight: 620; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--fg); }
 .flag.warn { background: var(--warn-bg); color: var(--warn); }
 .flag.bad { background: var(--bad-bg); color: var(--bad); }
 .flag.good { background: var(--good-bg); color: var(--good); }
-.winner-actions { display: flex; gap: 10px; margin-top: 4px; }
-.winner-actions .btn { flex: 1; }
-.winner.nowhere .w-label { color: var(--muted); }
 
 /* ---------- Buttons ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 14px; font-weight: 700; font-size: .95rem; background: var(--surface); color: var(--fg); border: 1px solid var(--line); min-height: 46px; text-decoration: none; }
@@ -465,10 +479,11 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 .note.ask .ask-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 4px; }
 .note.ask .btn { background: transparent; color: var(--pocket-ink); border-color: rgba(246, 239, 252, .35); }
 .note.ask .btn.primary { background: var(--gold); color: #1E1328; border-color: var(--gold); }
-.answer-wait { display: grid; gap: 12px; }
+.answer-wait { display: grid; grid-template-columns: clamp(108px, 34vw, 140px) minmax(0, 1fr); gap: 10px 14px; align-items: center; padding: 14px 0 4px 2px; }
 .answer-wait span { display: block; height: 18px; border-radius: 10px; background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: wait 1.2s linear infinite; }
-.answer-wait span:first-child { width: min(100%, 340px); height: auto; aspect-ratio: 1.6; border-radius: 16px; }
-.answer-wait span:last-child { width: 60%; }
+.answer-wait span:first-child { grid-row: 1 / span 2; height: auto; aspect-ratio: 1.6; }
+.answer-wait span:nth-child(2) { width: 85%; height: 22px; align-self: end; }
+.answer-wait span:last-child { width: 45%; height: 46px; align-self: start; }
 @keyframes wait { to { background-position: -200% 0; } }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

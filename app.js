@@ -292,7 +292,7 @@
       root.hidden = false;
       root.appendChild(h('div', { class: 'note ask' },
         h('b', null, 'Let it find the store for you?'),
-        h('span', null, 'Turn on location and every time you open the app it shows the store you are standing in and the best card there. Your position is only used to look up the stores around you.'),
+        h('span', null, 'Each time you open the app, it names the store you\u2019re in and the card to use there. Your position is only used to find the stores around you.'),
         h('span', { class: 'ask-actions' },
           h('button', { class: 'btn', onclick: function () { state.locationAsked = true; saveState(); renderBanner(); } }, 'Not now'),
           h('button', { class: 'btn primary', onclick: function () { state.locationAsked = true; state.prefs.location = true; saveState(); renderBanner(); relocate(); } }, 'Use my location'))));
@@ -343,8 +343,13 @@
     return null;
   }
 
+  // The Pay screen, top to bottom: where you are, the card to use (#answer-top), the amount, then
+  // everything that can wait: "I used it" and the card's flags (#answer-more), other stores near you
+  // and "Remember this spot" (#where-more), reminders, the rest of the wallet and the best card
+  // anywhere (#answer). The card to use and its reward always fit on the first screen.
   function renderWhere() {
     var root = document.getElementById('where'); clear(root);
+    var more = document.getElementById('where-more'); clear(more);
     var w = currentWhere();
     if (!w && locating) {
       root.appendChild(h('div', { class: 'where-chip finding', role: 'status' },
@@ -359,13 +364,13 @@
         h('span', { class: 'ic', style: '--tint:' + tintFor(ctx.category || (ctx.merchant ? (E.merchantById(data, ctx.merchant) || {}).category : 'other')) }, icon(w.icon)),
         h('span', { class: 't' }, ctx.located ? h('span', { class: 'here-label' }, icon('pin'), 'You\u2019re at') : null, h('b', null, w.title), h('span', null, w.sub)),
         h('span', { class: 'change' }, 'Change')));
-      var rn = rememberNote(w); if (rn) root.appendChild(rn);
       var others = nearby.filter(function (n) { return !(n.merchant ? n.merchant === ctx.merchant : (!ctx.merchant && n.category === ctx.category && n.name === ctx.customName)); }).slice(0, 3);
       if (others.length) {
-        root.appendChild(h('div', { class: 'nearby', style: 'margin-top:8px' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n) {
+        more.appendChild(h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Other stores near you' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n) {
           return h('button', { onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge)));
         }))));
       }
+      var rn = rememberNote(w); if (rn) more.appendChild(rn);
       return;
     }
     var picker = h('div', { class: 'picker' });
@@ -380,19 +385,17 @@
         else if (suggest.querySelector('.kinds')) input.blur();
       }
     });
-    var near = nearby.length ? [h('p', { class: 'near-label' }, icon('pin'), nearState ? 'Near you. Tap the one you\u2019re at:' : 'Near you:'),
-      h('div', { class: 'nearby' }, nearby.slice(0, 4).map(function (n) { return h('button', { onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge))); }))] : [];
-    near.forEach(function (el) { picker.appendChild(el); });
-    picker.appendChild(h('div', { class: 'search' }, icon('search'), input,
-      PREVIEW ? null : h('button', { class: 'locate', 'aria-label': 'Find my store with location', onclick: locate }, icon('pin'))));
+    // Stores near you and kinds of place each sit on one row that scrolls sideways, so the picker
+    // stays short and the answer under it stays on screen. (The pin in the header looks again.)
+    if (nearby.length) picker.appendChild(h('div', { class: 'near' },
+      h('p', { class: 'near-label' }, icon('pin'), nearState ? 'Near you. Tap the one you\u2019re at:' : 'Near you:'),
+      h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Stores near you' }, nearby.slice(0, 4).map(function (n) { return h('button', { onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge))); }))));
+    picker.appendChild(h('div', { class: 'search' }, icon('search'), input));
     picker.appendChild(suggest);
-    // Kinds of place as compact pills, the common eight first; More opens the rest.
-    var quick = h('div', { class: 'quick', role: 'group', 'aria-label': 'Kinds of place' });
-    var kindsAll = data.categories.filter(function (c) { return c.quick; }), QUICK_SHOWN = 8;
-    kindsAll.slice(0, quickAll ? kindsAll.length : QUICK_SHOWN).forEach(function (c) {
+    var quick = h('div', { class: 'quick scroll-row', role: 'group', 'aria-label': 'Kinds of place' });
+    data.categories.filter(function (c) { return c.quick; }).forEach(function (c) {
       quick.appendChild(h('button', { style: '--tint:' + tintFor(c.id), onclick: function () { setWhere(null, c.id, ''); } }, h('span', { class: 'qi' }, icon(c.icon)), h('span', null, c.short)));
     });
-    if (!quickAll && kindsAll.length > QUICK_SHOWN) quick.appendChild(h('button', { class: 'more', onclick: function () { quickAll = true; renderWhere(); } }, h('span', { class: 'qi' }, icon('dots')), h('span', null, 'More')));
     picker.appendChild(quick);
     root.appendChild(picker);
   }
@@ -533,52 +536,66 @@
     requestAnimationFrame(step);
   }
 
+  function setAmountNote(value, what) {
+    var note = document.getElementById('amount-note'); if (!note) return;
+    clear(note);
+    if (value == null) { note.className = 'opt-note'; note.appendChild(document.createTextNode('Amount (optional)')); return; }
+    note.className = 'opt-note val num';
+    note.appendChild(document.createTextNode(value));
+    note.appendChild(h('small', null, what));
+  }
+
   function renderAnswer() {
-    var root = document.getElementById('answer'); clear(root);
+    var top = document.getElementById('answer-top'), mid = document.getElementById('answer-more'), root = document.getElementById('answer');
+    clear(top); clear(mid); clear(root);
+    setAmountNote(null);
     var amount = parseAmount(ctx.amount);
     var where = currentWhere();
-    if (!where && locating) { root.appendChild(h('div', { class: 'answer-wait', 'aria-hidden': 'true' }, h('span'), h('span'), h('span'))); return; }
+    if (!where && locating) { top.appendChild(h('div', { class: 'answer-wait', 'aria-hidden': 'true' }, h('span'), h('span'), h('span'))); return; }
     var rc = { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: amount, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad };
     var rec = E.recommend(rc, state, data);
     if (!rec.best) return;
     var best = rec.best, card = best.card;
-    var tone = textColorFor(card.color);
     var changed = lastWinner !== card.id;
     lastWinner = card.id;
-    var winner = h('div', { class: 'winner ' + tone + (changed ? ' reveal' : '') + (where ? '' : ' nowhere'), style: '--card:' + card.color });
     if (changed && interacted && navigator.vibrate) { try { navigator.vibrate(8); } catch (e) { } }
-    winner.appendChild(h('div', { class: 'w-label' }, icon('check'), where ? 'Use this card' : 'For everything else, use'));
-    var pulled = h('div', { class: 'w-card' }); pulled.appendChild(cardArt(card, 300, { bare: true }));
-    var hat = h('span', { class: 'w-hat' }); hat.innerHTML = hatSvg(); pulled.appendChild(hat);
-    winner.appendChild(pulled);
-    winner.appendChild(h('div', { class: 'name' }, best.entry.nickname || card.name));
-    var row = h('div', { class: 'wrow' });
     var unit = best.unit;
     // "4% on gas" reads as a big 4% with "on gas" under it.
     var reasonTail = String(best.reason || '').replace(/^\s*[\d.]+\s*(%|x)\s*/i, '');
     if (best.entry.multiplier && best.entry.multiplier > 1) reasonTail += ' (with your ' + Math.round((best.entry.multiplier - 1) * 100) + '% boost)';
     var rateNum = h('span', null, rateText(best.effectiveRate, unit));
-    var rateEl = h('div', { class: 'rate num' }, rateNum, h('small', null, reasonTail + (unit !== 'percent' ? ', ' + unit + ' worth ' + pctText(best.effectivePercent) : '')));
-    row.appendChild(rateEl);
+    // The card to use: its picture with the hat on it, its name and what it earns here, all on the
+    // first screen. Tapping it opens the card.
+    var art = cardArt(card, 140, { bare: true }); art.setAttribute('aria-hidden', 'true');
+    var hat = h('span', { class: 'w-hat', 'aria-hidden': 'true' }); hat.innerHTML = hatSvg();
+    top.appendChild(h('button', { class: 'winner' + (changed ? ' reveal' : '') + (where ? '' : ' nowhere'), onclick: function () { openCardDetail(card.id); } },
+      h('span', { class: 'w-card' }, art, hat),
+      h('span', { class: 'w-text' },
+        h('span', { class: 'w-label' }, where ? icon('check') : null, where ? 'Use this card' : 'For everything else'),
+        h('span', { class: 'name' }, best.entry.nickname || card.name),
+        h('span', { class: 'rate num' }, rateNum, h('small', null, reasonTail + (unit !== 'percent' ? ', ' + unit + ' worth ' + pctText(best.effectivePercent) : '')))),
+      h('span', { class: 'w-go', 'aria-hidden': 'true' }, icon('chev'))));
     if (changed) countUp(rateNum, best.effectiveRate, unit);
-    if (amount > 0) row.appendChild(h('div', { class: 'value num' }, (best.valueCents >= 0 ? cents(best.valueCents) : '-' + cents(-best.valueCents)), h('span', null, unit === 'percent' ? 'back' : 'in value')));
-    winner.appendChild(row);
-    if (amount > 0 && rec.results.length > 1 && rec.results[1].accepted) {
-      var edge = best.valueCents - rec.results[1].valueCents;
-      if (edge >= 1) winner.appendChild(h('div', { class: 'edge num' }, cents(edge) + ' more than your next best card'));
-      else if (edge < 1 && edge > -1) winner.appendChild(h('div', { class: 'edge num' }, 'Ties with ' + (rec.results[1].entry.nickname || rec.results[1].card.name)));
+    // What this purchase earns sits beside the amount typed.
+    if (amount > 0) setAmountNote(best.valueCents >= 0 ? cents(best.valueCents) : '-' + cents(-best.valueCents), unit === 'percent' ? 'back' : 'in value');
+
+    // Under the amount: how much more than the next card, "I used it", and the card's flags.
+    if (amount > 0) {
+      var edgeText = '';
+      if (rec.results.length > 1 && rec.results[1].accepted) {
+        var edge = best.valueCents - rec.results[1].valueCents;
+        if (edge >= 1) edgeText = cents(edge) + ' more than your next card';
+        else if (edge > -1) edgeText = 'Ties with ' + (rec.results[1].entry.nickname || rec.results[1].card.name);
+      }
+      mid.appendChild(h('div', { class: 'used-row' }, h('span', { class: 'edge num' }, edgeText ? h('span', { class: 'hl' }, edgeText) : null),
+        h('button', { class: 'btn primary', onclick: function () { logPurchase(best, amount); } }, icon('check'), 'I used it')));
     }
     var flags = h('div', { class: 'flags' });
     best.warnings.forEach(function (w) { flags.appendChild(h('span', { class: 'flag warn' }, w)); });
     if (best.goal) flags.appendChild(h('span', { class: 'flag good' }, best.goal.label + ': ' + money(best.goal.remaining) + ' to go'));
     if (best.cap && best.cap.left > 0 && best.cap.left < best.cap.cap) flags.appendChild(h('span', { class: 'flag' }, money(best.cap.left) + ' of cap left ' + best.cap.label));
     if (amount >= (state.prefs.protectionThreshold || 300)) best.protections.forEach(function (p) { flags.appendChild(h('span', { class: 'flag' }, p)); });
-    if (flags.childNodes.length) winner.appendChild(flags);
-    var actions = h('div', { class: 'winner-actions' });
-    if (amount > 0) actions.appendChild(h('button', { class: 'btn primary', onclick: function () { logPurchase(best, amount); } }, icon('check'), 'I used it'));
-    actions.appendChild(h('button', { class: 'btn', onclick: function () { openCardDetail(card.id); } }, 'Details'));
-    winner.appendChild(actions);
-    root.appendChild(winner);
+    if (flags.childNodes.length) mid.appendChild(flags);
     renderReminder(root);
 
     if (rec.results.length > 1) {
@@ -748,7 +765,7 @@
   //    it a name, and the spot is saved on this phone. From then on, standing there says "You're at".
   // 7. The last lookup is written down (when, how good the fix was, which server answered and how
   //    fast) and shown under More, so a lookup that went wrong can be reported exactly.
-  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix', nearState = false, lastFix = null, rememberLater = '', quickAll = false;
+  var locating = false, locateSeq = 0, locatePrev = null, justFound = false, hiddenAt = 0, locateStage = 'fix', nearState = false, lastFix = null, rememberLater = '';
   var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
   var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
   var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;

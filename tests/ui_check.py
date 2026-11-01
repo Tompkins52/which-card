@@ -92,7 +92,7 @@ with sync_playwright() as p:
     print('costco winner:', page.inner_text('.winner .name'))
     print('others:', page.inner_text('.others'))
 
-    page.click('.winner button:has-text("I used it")')
+    page.click('.used-row button:has-text("I used it")')
     page.wait_for_timeout(300)
     shot(page, os.path.join(OUT, '07-logged.png'))
 
@@ -174,7 +174,7 @@ with sync_playwright() as p:
     page.click('.tabs button[data-view=pay]')
     page.wait_for_timeout(200)
     assert 'Customized Cash' in page.inner_text('.winner .name'), 'goal card should lead in bonus mode'
-    assert 'to go' in page.inner_text('.winner'), 'goal flag missing'
+    assert 'to go' in page.inner_text('#answer-more'), 'goal flag missing'
 
     # Best card anywhere
     page.click('.tabs button[data-view=pay]')

@@ -120,6 +120,20 @@ with sync_playwright() as p:
         el = page.locator('.winner .name')
         return el.inner_text() if el.count() else ''
 
+    def answer_first(what):
+        # The card to use, its name and its reward are on the first screen, above the tab bar, with
+        # no scrolling: on this phone and on a small one (an iPhone SE opened from the home screen).
+        ok = True
+        for w, hgt in [(390, 844), (375, 647)]:
+            page.set_viewport_size({'width': w, 'height': hgt})
+            page.evaluate('window.scrollTo(0, 0)')
+            page.wait_for_timeout(100)
+            ok = ok and page.evaluate("""() => { const tabs = document.querySelector('.tabs').getBoundingClientRect().top;
+              const name = document.querySelector('.winner .name'), rate = document.querySelector('.winner .rate');
+              return !!name && !!rate && name.getBoundingClientRect().bottom <= tabs && rate.getBoundingClientRect().bottom <= tabs; }""")
+        page.set_viewport_size({'width': 390, 'height': 844})
+        check(ok, what)
+
     def release_held():
         # Routes the page has already moved on from are gone; aborting them is a no-op.
         for route in held:
@@ -133,6 +147,7 @@ with sync_playwright() as p:
     # 1. Location not asked yet: the question sits at the top of the Pay screen, and one tap finds the store.
     open_with(state(False, asked=False))
     check(page.locator('#banner .note.ask').is_visible(), 'the location question is at the top of the Pay screen')
+    answer_first('with the question showing, the card to use and its reward are still on the first screen')
     page.screenshot(path=os.path.join(OUT, 'loc-1-ask.png'))
     page.click('#banner button:has-text("Use my location")')
     page.wait_for_selector('.where-chip.here', timeout=8000)
@@ -141,13 +156,21 @@ with sync_playwright() as p:
     check(winner() == 'Costco Anywhere Visa', 'it answers for Shell before any amount is typed')
     check(page.locator('.nearby button:has-text("Jewel-Osco")').count() == 1, 'the store next door is one tap away')
     check(not page.locator('#banner .note.ask').count(), 'the question goes away once answered')
+    answer_first('at a store, the card to use and its reward are on the first screen, even on a small phone')
+    page.fill('#amount', '45')
+    page.wait_for_timeout(200)
+    check('$1.80' in page.inner_text('#amount-note') and page.locator('.used-row button:has-text("I used it")').count() == 1,
+          'typing an amount shows what it earns beside the amount, with "I used it" under it')
+    answer_first('with an amount typed, the answer is still on the first screen')
+    page.fill('#amount', '')
+    page.wait_for_timeout(200)
     page.screenshot(path=os.path.join(OUT, 'loc-2-found.png'))
     page.click('.nearby button:has-text("Jewel-Osco")')
     page.wait_for_timeout(300)
     check('Jewel-Osco' in where_text() and winner() == 'Amex Blue Cash Preferred', 'tapping the store next door answers for it')
 
     # 1b. A bar is a bar, not British Airways: short aliases match whole names only, and airlines are never places.
-    names = page.evaluate("[...document.querySelectorAll('#where .nearby button')].map(b => b.textContent)")
+    names = page.evaluate("[...document.querySelectorAll('#where-more .nearby button')].map(b => b.textContent)")
     check(any(n.startswith('Tiki Bar') for n in names) and not any('British' in n for n in names), 'a place called Tiki Bar stays a bar, with the dining rates (%s)' % ', '.join(names))
 
     # 2. Location on: opening the app looks right away, even with a store from ten minutes ago.
@@ -334,6 +357,7 @@ with sync_playwright() as p:
     check(not page.locator('.where-chip.here').count() and 'Tap the one' in page.locator('.near-label').inner_text() and first.startswith('Jewel-Osco') and 'ft' in first,
           'across the street it does not claim a store; it offers the ones near you, closest first (%s)' % first)
     check(page.locator('.winner').count() == 1 and 'For everything else' in page.locator('.winner').inner_text(), 'until you pick one, the answer is the everything-else card')
+    answer_first('with stores near you to pick from, the answer is still on the first screen')
     page.screenshot(path=os.path.join(OUT, 'loc-6-near.png'))
     chips.first.click()
     page.wait_for_timeout(300)
