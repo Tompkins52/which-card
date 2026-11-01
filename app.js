@@ -2374,9 +2374,40 @@
     else document.documentElement.setAttribute('data-theme', t);
   }
 
+  // The background: fine curvy lines, like the wavy line work printed on a card, drifting slowly
+  // sideways. Two layers: plum lines, and a few marigold ones moving the other way. Each path
+  // repeats every 400 units, so sliding a layer by half its 800-unit width loops seamlessly.
+  function waves() {
+    if (document.querySelector('.bg-lines')) return;
+    var K1 = 0.5123, K2 = 1.0708, Q = Math.PI / 2;
+    function wave(y, amp, len, shift) {  // a sine wave from cubic curves, a quarter at a time
+      var kx = len / (2 * Math.PI), x = -len - shift, d = 'M' + x.toFixed(1) + ' ' + y.toFixed(1);
+      for (var q = 0; x < 800 + len; q++, x += Q * kx) {
+        var up = q % 4 < 2 ? -1 : 1, rising = q % 2 === 0, a = amp * up;
+        var c1x = x + (rising ? K1 : Q - K2) * kx, c1y = y + (rising ? K1 * a : a);
+        var c2x = x + (rising ? K2 : Q - K1) * kx, c2y = y + (rising ? a : K1 * a);
+        var ex = x + Q * kx, ey = rising ? y + a : y;
+        d += ' C' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1) + ' ' + ex.toFixed(1) + ' ' + ey.toFixed(1);
+      }
+      return d;
+    }
+    function layer(cls, lines) {
+      return '<div class="layer ' + cls + '"><svg viewBox="0 0 800 1000" preserveAspectRatio="none" focusable="false">' + lines.join('') + '</svg></div>';
+    }
+    var plum = [], gold = [];
+    for (var i = 0; i < 22; i++) {  // a field of lines, each a little later in its wave than the one above
+      plum.push('<path d="' + wave(20 + i * 46, 18 + 14 * Math.sin(i / 3.2), 400, i * 26) + '"/>');
+    }
+    for (var j = 0; j < 4; j++) gold.push('<path d="' + wave(150 + j * 240, 26, 400, 140 + j * 90) + '"/>');
+    var bg = document.createElement('div'); bg.className = 'bg-lines'; bg.setAttribute('aria-hidden', 'true');
+    bg.innerHTML = layer('plum', plum) + layer('gold', gold);
+    document.body.insertBefore(bg, document.body.firstChild);
+  }
+
   function start() {
     bind();
     applyTheme();
+    waves();
     var fromParams = readParams();
     var lookFirst = !fromParams && state.prefs.location && canLocate() && !pickedJustNow();
     var lw = state.lastWhere;
