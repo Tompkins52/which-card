@@ -51,6 +51,25 @@ with sync_playwright() as p:
     page.click('.sheet button:has-text("I pay in full")')
     page.wait_for_selector('#btn-start')
     shot(page, os.path.join(OUT, '00-intro.png'))
+    # The intro fits one screen on every phone size: no scrolling, the button and the pledge above
+    # the tab bar, and the mascot by the moon whenever there is room for it.
+    bad = []
+    for w, hgt in [(390, 844), (393, 759), (375, 647), (340, 640)]:
+        page.set_viewport_size({'width': w, 'height': hgt})
+        page.evaluate('window.scrollTo(0, 0)')
+        page.wait_for_timeout(200)
+        r = page.evaluate("""() => { const tabs = document.querySelector('.tabs').getBoundingClientRect().top;
+          const btn = document.querySelector('#btn-start').getBoundingClientRect(), pl = document.querySelector('#pay-empty .pledge').getBoundingClientRect();
+          const art = document.querySelector('#pay-empty .intro-art'), img = art.querySelector('img');
+          return { over: document.documentElement.scrollHeight - innerHeight, below: btn.bottom > tabs || pl.bottom > tabs,
+                   art: !art.hidden && img && img.getAttribute('src').indexOf('witch-fly') >= 0 ? art.offsetHeight : 0 }; }""")
+        if r['over'] > 1 or r['below']:
+            bad.append('%dx%d %s' % (w, hgt, 'scrolls %dpx' % r['over'] if r['over'] > 1 else 'button under the tab bar'))
+        if (w, hgt) == (390, 844) and r['art'] < 150:
+            bad.append('390x844 mascot only %dpx tall' % r['art'])
+    page.set_viewport_size({'width': 390, 'height': 844})
+    page.wait_for_timeout(200)
+    assert not bad, 'intro does not fit one screen: ' + ', '.join(bad)
     page.click('#btn-start')
     page.wait_for_selector('.sheet')
     shot(page, os.path.join(OUT, '01-onboarding.png'))

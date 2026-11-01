@@ -312,7 +312,7 @@
   /* ---------- Pay ---------- */
   function renderPay() {
     var empty = document.getElementById('pay-empty'), body = document.getElementById('pay-body');
-    if (!state.wallet.length) { empty.hidden = false; body.hidden = true; return; }
+    if (!state.wallet.length) { empty.hidden = false; body.hidden = true; fitIntro(); return; }
     empty.hidden = true; body.hidden = false;
     renderBanner();
     renderWhere();
@@ -688,8 +688,26 @@
     });
     items[fits - 1].classList.add('end');
   }
-  window.addEventListener('resize', function () { fitPay(); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitPay(); });
+  // The empty-wallet intro fits one screen: the picture takes whatever room the words and the
+  // button leave above the tab bar, and steps aside on a phone too short for it.
+  function fitIntro() {
+    var box = document.getElementById('pay-empty'), tabs = document.querySelector('.tabs');
+    if (!box || box.hidden || view !== 'pay' || !tabs) return;
+    var art = box.querySelector('.intro-art'), MIN = 56;
+    box.style.minHeight = ''; art.hidden = false; art.style.height = '0px';
+    var space = window.innerHeight - tabs.offsetHeight - layoutTop(box) - 13;
+    var hgt = Math.min(220, Math.floor(space - box.offsetHeight));
+    if (hgt >= MIN) {
+      art.style.height = hgt + 'px';
+      var over = document.documentElement.scrollHeight - window.innerHeight;
+      if (over > 0) { hgt -= over; art.style.height = hgt + 'px'; }
+    }
+    if (hgt < MIN) art.hidden = true;
+    // Whatever room is left goes above the button, so it sits within thumb reach over the tab bar.
+    box.style.minHeight = Math.max(0, space) + 'px';
+  }
+  window.addEventListener('resize', function () { fitPay(); fitIntro(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitPay(); fitIntro(); });
   // The whole wallet ranked for where you are, the best card anywhere for it, and the best cards out there.
   function openCardsHere() {
     var where = currentWhere();
