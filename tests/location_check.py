@@ -169,7 +169,7 @@ with sync_playwright() as p:
     check('Jewel-Osco' in where_text() and winner() == 'Amex Blue Cash Preferred', 'tapping the store next door answers for it')
 
     # 1b. A bar is a bar, not British Airways: short aliases match whole names only, and airlines are never places.
-    names = page.evaluate("[...document.querySelectorAll('#where-more .nearby button')].map(b => b.textContent)")
+    names = page.evaluate("[...document.querySelectorAll('#where .nearby button')].map(b => b.textContent)")
     check(any(n.startswith('Tiki Bar') for n in names) and not any('British' in n for n in names), 'a place called Tiki Bar stays a bar, with the dining rates (%s)' % ', '.join(names))
 
     # 2. Location on: opening the app looks right away, even with a store from ten minutes ago.

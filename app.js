@@ -353,10 +353,9 @@
     return null;
   }
 
-  // The Pay screen, top to bottom: where you are, the card to use (#answer-top), the amount, then
-  // everything that can wait: "I used it" and the card's flags (#answer-more), other stores near you
-  // and "Remember this spot" (#where-more), reminders, the rest of the wallet and the best card
-  // anywhere (#answer). The card to use and its reward always fit on the first screen.
+  // The Pay screen, top to bottom, all on one screen: where you are with "Not here?" under it
+  // (#where), the card to use (#answer-top), its flags and a note about the store (#answer-more),
+  // "Remember this spot" (#where-more), and the rest of the wallet in its pocket (#answer).
   function renderWhere() {
     var root = document.getElementById('where'); clear(root);
     var more = document.getElementById('where-more'); clear(more);
@@ -376,7 +375,8 @@
         h('span', { class: 'change' }, 'Change')));
       var others = nearby.filter(function (n) { return !(n.merchant ? n.merchant === ctx.merchant : (!ctx.merchant && n.category === ctx.category && n.name === ctx.customName)); }).slice(0, 3);
       if (others.length) {
-        more.appendChild(h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Other stores near you' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n, i) {
+        // "Not here?" sits right under the store line, so a wrong store is fixed before reading the answer.
+        root.appendChild(h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Other stores near you' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n, i) {
           return h('button', { style: '--i:' + i, onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge)));
         }))));
       }
@@ -602,7 +602,9 @@
         r.warnings.length ? h('span', { class: r.accepted ? 'warn' : 'bad' }, r.warnings[0]) : null,
         r.goal ? h('span', { class: 'why' }, r.goal.label + ': ' + money(r.goal.remaining) + ' to go') : null),
       h('span', { class: 'r' }, r.accepted ? rateText(r.effectiveRate, r.unit) : '\u00d7',
-        r.accepted && r.unit !== 'percent' ? h('small', null, pctText(r.effectivePercent) + ' value') : null));
+        r.accepted && r.unit !== 'percent' ? h('small', null, pctText(r.effectivePercent) + ' value') : null),
+      h('span', { class: 'chip', 'aria-hidden': 'true', style: '--chipA:' + col.chipA + ';--chipB:' + col.chipB }),
+      h('span', { class: 'net', 'aria-hidden': 'true' }, ({ 'American Express': 'AMEX', Mastercard: 'MASTERCARD', Visa: 'VISA', Discover: 'DISCOVER' })[r.entry.network || r.card.network] || ''));
   }
   function bestHere() {
     var where = currentWhere();
@@ -613,7 +615,7 @@
   // The rest of the wallet in the stitched pocket, each card a strip in its own colors, best first;
   // each opens the card. "Best cards" opens the best cards out there for this place.
   function pocket(rec, where, changed) {
-    var box = h('div', { class: 'pocket compact' + (changed ? ' slide' : '') });
+    var box = h('div', { class: 'pocket fill' + (changed ? ' slide' : '') });
     var bh = bestHere();
     box.appendChild(h('div', { class: 'pocket-label' }, h('span', { 'aria-hidden': 'true' }, 'The rest of your wallet'),
       h('button', { class: 'more', 'aria-label': 'Best cards for ' + bh.label, onclick: function () { openBestCards(bh.where, bh.label); } }, 'Best cards', icon('chev'))));
@@ -625,28 +627,43 @@
     box.appendChild(ul);
     return box;
   }
-  // The Pay screen never scrolls: each card in the pocket is one line, and when they still do not
-  // all fit under the answer, the last ones fold into "+N more", which opens the whole wallet.
+  // Where an element sits on the page from layout alone, so cards still sliding into place do not count.
+  function layoutTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
+  // The pocket fills the screen down to the tab bar, so Pay never scrolls and never ends in empty
+  // space. Every card gets at least one line; the rest of the room goes by rank, the next best card
+  // the most and the worst the least, each up to a whole card, so a weak card never takes over the
+  // screen. A card with room shows its why, then its chip and network. When even one line each
+  // does not fit, the last cards fold into "+N more", which opens the whole wallet. Measured from
+  // layout, so it is right even while the cards are still sliding in.
+  var CARD_MIN = 34, FOLD_H = 34;
   function fitPay() {
     if (view !== 'pay') return;
-    var box = document.querySelector('#answer .pocket'); if (!box) return;
-    var items = [].slice.call(box.querySelectorAll('.others li')), fold = box.querySelector('.fold');
-    box.hidden = false; items.forEach(function (li) { li.hidden = false; li.classList.remove('end'); });
+    var box = document.querySelector('#answer .pocket.fill'), tabs = document.querySelector('.tabs');
+    if (!box || !tabs) return;
+    var ul = box.querySelector('.others'), items = [].slice.call(ul.children), fold = box.querySelector('.fold');
+    box.hidden = false;
+    items.forEach(function (li) { li.hidden = false; li.classList.remove('end'); li.style.removeProperty('--h'); });
     if (fold) fold.parentNode.removeChild(fold);
-    function over() { return document.documentElement.scrollHeight > window.innerHeight + 1; }
-    if (!over()) return;
-    fold = h('button', { class: 'fold', onclick: openCardsHere });
-    box.appendChild(fold);
-    var shown = items.length;
-    while (shown > 0) {
-      shown--; items[shown].hidden = true;
-      items.forEach(function (li, i) { li.classList.toggle('end', i === shown - 1); });
-      var n = items.length - shown;
-      fold.textContent = shown ? '+' + n + ' more ' + (n === 1 ? 'card' : 'cards') : 'Your ' + n + ' other ' + (n === 1 ? 'card' : 'cards');
-      if (!over()) break;
+    var avail = Math.floor(tabs.getBoundingClientRect().top - (layoutTop(ul) - (window.scrollY || 0)) - 26);
+    var n = items.length, fits = n;
+    while (fits > 0 && fits * CARD_MIN > avail - (fits < n ? FOLD_H : 0)) fits--;
+    if (fits < n) {
+      avail -= FOLD_H;
+      for (var i = fits; i < n; i++) items[i].hidden = true;
+      var k = n - fits;
+      box.appendChild(h('button', { class: 'fold', onclick: openCardsHere }, fits ? '+' + k + ' more ' + (k === 1 ? 'card' : 'cards') : 'Your ' + k + ' other ' + (k === 1 ? 'card' : 'cards')));
+      if (!fits && avail < 0) { box.hidden = true; return; }
     }
-    // A very short screen with the location question up: the pocket waits until there is room.
-    if (over()) box.hidden = true;
+    if (!fits) return;
+    var whole = Math.round(ul.clientWidth / 1.586), extra = avail - fits * CARD_MIN, shares = fits * (fits + 1) / 2, spill = 0;
+    items.slice(0, fits).forEach(function (li, i) {
+      var hgt = CARD_MIN + extra * (fits - i) / shares + spill; spill = 0;
+      if (hgt > whole) { spill = hgt - whole; hgt = whole; }
+      hgt = Math.floor(hgt);
+      li.style.setProperty('--h', hgt + 'px');
+      li.setAttribute('data-room', hgt >= 100 ? 'card' : hgt >= 56 ? 'why' : 'line');
+    });
+    items[fits - 1].classList.add('end');
   }
   window.addEventListener('resize', function () { fitPay(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitPay(); });
