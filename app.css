@@ -118,7 +118,7 @@ b, strong { font-weight: 680; }
 @keyframes sway { to { transform: translateY(2.2%); } }
 .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 6px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 820; font-stretch: 112%; font-size: 1.2rem; letter-spacing: -.015em; }
-.brand .mark { width: 37px; height: 34px; flex: none; margin: -6px -2px -2px -3px; filter: drop-shadow(0 3px 4px rgba(42, 22, 64, .3)); }
+.brand .mark { width: 32px; height: 32px; flex: none; margin: -2px 0 -2px -1px; filter: drop-shadow(0 2px 3px rgba(42, 22, 64, .3)); }
 .icon-btn { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: var(--fg); background: var(--surface); border: 1px solid var(--line); }
 .icon-btn svg { width: 22px; height: 22px; }
 .icon-btn.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
@@ -524,10 +524,28 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 
 /* ---------- Pledge and mascot ---------- */
 .pledge { font-weight: 700; color: var(--accent); font-size: .98rem; line-height: 1.4; }
-.mascot { display: flex; justify-content: center; padding: 6px 0 0; color: var(--fg); }
-.mascot-note { margin-top: -6px; text-align: center; font-weight: 760; font-stretch: 110%; color: var(--accent); letter-spacing: -.005em; }
-.mascot svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
-@keyframes bob { 0%, 100% { transform: rotate(-2deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-6px); } }
+.mascot { position: relative; }
+.mascot .sky { position: relative; height: 196px; border-radius: 20px; overflow: hidden; background: linear-gradient(#1D0F34, #2C1647 55%, #241238); }
+.mascot .sky > i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #FFE9B8; opacity: .75; animation: twinkle 2.4s ease-in-out infinite alternate; }
+.mascot .moon { position: absolute; width: 150px; height: 150px; border-radius: 50%; left: 56%; top: 50%; transform: translateY(-52%); background: radial-gradient(circle at 36% 30%, #FFD67E, #FDBD4C 58%, #EDA32C); box-shadow: 0 0 46px rgba(253, 189, 76, .38); }
+.mascot .moon::before, .mascot .moon::after { content: ""; position: absolute; border-radius: 50%; background: rgba(206, 138, 28, .45); }
+.mascot .moon::before { width: 26px; height: 26px; left: 24%; top: 58%; }
+.mascot .moon::after { width: 16px; height: 16px; left: 62%; top: 28%; }
+.mascot .cloud { position: absolute; left: -2%; width: 104%; height: 52px; fill: #7A55A8; opacity: .5; }
+.mascot .cloud.back { top: -10px; transform: scaleY(-1); }
+.mascot .cloud.front { bottom: -6px; fill: #A168B7; opacity: .85; }
+.mascot .flyer { position: absolute; width: 118px; left: 30%; top: 13%; animation: flyby 9.5s linear infinite; }
+.mascot .flyer img { display: block; width: 100%; height: auto; animation: flybob 1.7s ease-in-out infinite alternate; }
+.mascot .dust { position: absolute; left: -42px; top: 52%; }
+.mascot .dust i { position: absolute; width: 11px; height: 11px; background: #FFD98A; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: dust-tw 1.1s ease-in-out infinite alternate; }
+.mascot .dust i:nth-child(2) { left: -16px; top: 18px; transform: scale(.7); animation-delay: .3s; }
+.mascot .dust i:nth-child(3) { left: -30px; top: -6px; transform: scale(.55); animation-delay: .55s; }
+.mascot .dust i:nth-child(4) { left: -8px; top: 34px; transform: scale(.5); animation-delay: .8s; }
+@keyframes twinkle { to { opacity: .2; transform: scale(1.3); } }
+@keyframes flyby { 0% { left: -40%; } 46% { left: 106%; } 100% { left: 106%; } }
+@keyframes flybob { from { transform: translateY(-5px) rotate(-2.5deg); } to { transform: translateY(5px) rotate(2.5deg); } }
+@keyframes dust-tw { from { opacity: .95; } to { opacity: .2; } }
+.mascot-note { margin-top: 10px; text-align: center; font-weight: 760; font-stretch: 110%; color: var(--accent); letter-spacing: -.005em; }
 
 /* ---------- Best card anywhere ---------- */
 .anywhere { border-radius: 22px; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--line); }

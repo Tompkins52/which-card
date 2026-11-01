@@ -228,36 +228,17 @@
   var sheetOnClose = null;
 
   /* ---------- first-run disclaimer ---------- */
-  // The mascot: a goofy plum card dressed as a witch, riding a broom. Arms take the text color so they show in dark mode.
-  function mascotSvg() {
-    return '<svg viewBox="-40 -66 296 274" width="214" height="198" role="img" aria-label="A goofy cartoon credit card dressed as a witch, riding a broom">' +
-      '<defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A55C9"/><stop offset="1" stop-color="#3B1A60"/></linearGradient>' +
-      '<linearGradient id="mh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A2F6E"/><stop offset="1" stop-color="#170D20"/></linearGradient></defs>' +
-      '<path d="M4 172 L 244 138" stroke="#7A4A22" stroke-width="7" stroke-linecap="round"/>' +
-      '<path d="M11.2 165.1 L -26.8 156.2 Q -36 176 -21.2 195.8 L 12.8 176.9 Z" fill="#E8B04B"/>' +
-      '<path d="M11 168 L -28 164 M11.5 171 L -30 176 M12 174 L -26 188" stroke="#B9802A" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
-      '<path d="M9 163.5 L 17.5 162.3 L 19.2 178.2 L 10.6 179.4 Z" fill="#5B2E86"/>' +
-      '<g transform="rotate(-8 120 95)">' +
-      '<rect x="30" y="40" width="180" height="112" rx="14" fill="url(#mg)"/>' +
-      '<rect x="30" y="62" width="180" height="16" fill="#24103A" opacity=".9"/>' +
-      '<rect x="46" y="118" width="38" height="24" rx="5" fill="#F6A623"/><path d="M46 130h38M65 118v24" stroke="#B87400" stroke-width="2"/>' +
-      '<circle cx="104" cy="104" r="17" fill="#fff"/><circle cx="150" cy="100" r="22" fill="#fff"/>' +
-      '<circle cx="109" cy="106" r="7" fill="#101418"/><circle cx="144" cy="103" r="10" fill="#101418"/>' +
-      '<circle cx="111" cy="103" r="2.5" fill="#fff"/><circle cx="147" cy="99" r="3" fill="#fff"/>' +
-      '<path d="M90 86 q14 -10 26 -2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="M132 74 q18 -4 32 6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>' +
-      '<path d="M104 128 q30 22 60 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>' +
-      '<path d="M128 139 q8 14 2 24 q-10 -6 -2 -24z" fill="#E86A6A"/>' +
-      '<text x="198" y="57" text-anchor="end" fill="#fff" font-family="Archivo WC, Archivo, Helvetica, Arial, sans-serif" font-size="10.5" font-weight="800" font-style="italic" font-stretch="112%" letter-spacing=".6" opacity=".85">PAYS IN FULL</text>' +
-      '<g transform="rotate(-7 89 40) translate(-4 0) translate(89 40) scale(1.2) translate(-89 -40)">' +
-      '<path d="M64 39 Q 78 4 92 -22 Q 104 -42 126 -30 Q 129 -28 124 -26 Q 110 -28 104 -14 Q 98 8 114 39 Z" fill="url(#mh)" stroke="#6A4A96" stroke-width="1.2" stroke-linejoin="round"/>' +
-      '<path d="M67 32 Q 89 35.5 110.5 32 L 107.4 24 Q 89 27.5 70.2 24 Z" fill="#F6A623"/>' +
-      '<rect x="84" y="24.6" width="10" height="8.6" rx="1.6" fill="none" stroke="#1E1328" stroke-width="2"/>' +
-      '<ellipse cx="89" cy="40" rx="46" ry="8" fill="url(#mh)" stroke="#6A4A96" stroke-width="1.2"/>' +
-      '</g></g>' +
-      '<path d="M40 60 q-22 -4 -28 18" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="12" cy="80" r="7" fill="currentColor"/>' +
-      '<path d="M206 70 q22 -16 26 2" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="232" cy="72" r="7" fill="currentColor"/>' +
-      '</svg>';
+  // The welcome sky: the mascot (the cartoon card witch from the icon) flies across a gold moon
+  // on its broom, trailing gold dust, like the launch clip. Still, parked by the moon, under reduced motion.
+  function welcomeScene() {
+    var s = '<div class="sky">';
+    var pts = [[7, 16, 0], [20, 40, .9], [33, 9, 1.6], [47, 26, .4], [60, 12, 2.1], [74, 42, 1.2], [88, 9, .7], [93, 52, 1.8], [12, 68, 1.4], [84, 74, .3]];
+    for (var i = 0; i < pts.length; i++) s += '<i style="left:' + pts[i][0] + '%;top:' + pts[i][1] + '%;animation-delay:' + pts[i][2] + 's"></i>';
+    s += '<span class="moon"></span>';
+    s += '<svg class="cloud back" viewBox="0 0 200 60" preserveAspectRatio="none" focusable="false"><path d="M0 60 L0 34 Q16 20 32 30 Q42 12 60 20 Q74 6 90 18 Q108 10 118 24 Q136 14 148 28 Q166 20 178 32 Q190 26 200 36 L200 60 Z"/></svg>';
+    s += '<div class="flyer"><span class="dust"><i></i><i></i><i></i><i></i></span><img src="img/witch-fly.webp" alt=""></div>';
+    s += '<svg class="cloud front" viewBox="0 0 200 60" preserveAspectRatio="none" focusable="false"><path d="M0 60 L0 38 Q14 24 30 32 Q40 16 58 24 Q72 10 88 22 Q104 14 116 26 Q134 18 146 30 Q164 24 176 34 Q188 30 200 40 L200 60 Z"/></svg>';
+    return s + '</div>';
   }
   // The witch hat, on its own: it lands on the card to use. Same shape as the mascot's.
   var hatSeq = 0;
@@ -272,7 +253,7 @@
       '</svg>';
   }
   function openDisclaimer() {
-    var art = h('div', { class: 'mascot' }); art.innerHTML = mascotSvg();
+    var art = h('div', { class: 'mascot', 'aria-hidden': 'true' }); art.innerHTML = welcomeScene();
     var nodes = [
       art,
       h('p', { class: 'mascot-note' }, 'No magic. Just math.'),

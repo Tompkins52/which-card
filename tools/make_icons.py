@@ -1,63 +1,101 @@
-"""Draws the app icons. Run from the repo root: python3 tools/make_icons.py
+"""Draws the app icons and the flying mascot from the mascot art.
+Run from the repo root: python3 tools/make_icons.py [source-art]
 
-The main icon is an SVG, a marigold card wearing a witch hat on a plum tile, rendered by the
-headless browser the tests use (Playwright). The shortcut icons are drawn with Pillow."""
-from PIL import Image, ImageDraw
+The source is the cartoon mascot art (icons/mascot-1024.jpg, kept in the repo); pass the original
+higher-res picture instead to rebuild at best quality. The main icons are crops of it, and
+img/witch-fly.webp is the character cut out of the sky for the welcome animation. The four
+shortcut icons are drawn with Pillow. Needs Pillow, numpy and scipy."""
 import os
+import sys
 
-ROOT = os.path.join(os.path.dirname(__file__), '..', 'icons')
-os.makedirs(ROOT, exist_ok=True)
-# Witch Card's own colors: a plum tile, a marigold card, an ink witch hat with a lavender band.
+import numpy as np
+from PIL import Image, ImageDraw, ImageFilter
+from scipy import ndimage
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ICONS = os.path.normpath(os.path.join(HERE, '..', 'icons'))
+IMG = os.path.normpath(os.path.join(HERE, '..', 'img'))
+SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ICONS, 'mascot-1024.jpg')
+os.makedirs(IMG, exist_ok=True)
+
+im = Image.open(SRC).convert('RGB')
+a = np.asarray(im).astype(int)
+corner = a[2, 2]
+m = np.abs(a - corner).sum(2) > 60
+ys, xs = np.nonzero(m)
+tile = im.crop((int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1))
+W, H = tile.size
+ta = np.asarray(tile).astype(int)
+
+# The art's own rounded corners: how far in they reach along the top edge.
+row = ta[1]
+nz = np.nonzero(np.abs(row - corner).sum(1) > 60)[0]
+R_ART = int(nz.min()) if len(nz) and nz.min() > 2 else 0
+
+
+def rounded(s, frac=0.22):
+    """The tile at s px with our own rounded corners cut to transparency."""
+    img = tile.resize((s, s), Image.LANCZOS)
+    mk = Image.new('L', (s * 4, s * 4), 0)
+    ImageDraw.Draw(mk).rounded_rectangle([0, 0, s * 4 - 1, s * 4 - 1], radius=int(s * 4 * frac), fill=255)
+    mk = mk.resize((s, s), Image.LANCZOS)
+    out = Image.new('RGBA', (s, s), (0, 0, 0, 0))
+    out.paste(img, (0, 0), mk)
+    return out
+
+
+def cornerfilled(s):
+    """The tile at s px filling the whole square: the art's rounded corners get sky sampled nearby.
+    For the maskable icon and the apple touch icon, whose corners the platforms shape themselves."""
+    img = tile.resize((s, s), Image.LANCZOS)
+    if not R_ART:
+        return img
+    r = int(np.ceil(R_ART * s / W)) + 2
+    px = img.load()
+    for cx, cy, sx, sy in [(r, r, 1, 1), (s - 1 - r, r, -1, 1), (r, s - 1 - r, 1, -1), (s - 1 - r, s - 1 - r, -1, -1)]:
+        fill = px[int(cx - sx * r * .35), int(cy - sy * r * .35)]
+        for y in range(r + 2):
+            for x in range(r + 2):
+                px_x = (cx - sx * r) + sx * x
+                px_y = (cy - sy * r) + sy * y
+                if (px_x - cx) ** 2 + (px_y - cy) ** 2 > r * r:
+                    px[px_x, px_y] = fill
+    return img
+
+
+def cutout():
+    """The character (card, hat, limbs, broom) cut out of the sky, for the welcome animation.
+    The sky is flooded in from the edges; near-black outline pixels fence it off the character."""
+    dark = ta.max(2) < 55
+    barrier = ndimage.binary_dilation(dark, iterations=2)
+    lab, _ = ndimage.label(~barrier)
+    border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]])))
+    border.discard(0)
+    fg = ~np.isin(lab, list(border))
+    fg = ndimage.binary_opening(fg, iterations=2)
+    fg = ndimage.binary_closing(fg, iterations=2)
+    objs, n = ndimage.label(fg)
+    sizes = ndimage.sum(fg, objs, range(1, n + 1))
+    fg = objs == (np.argmax(sizes) + 1)  # the character is the one big connected piece
+    ys2, xs2 = np.nonzero(fg)
+    alpha = Image.fromarray((fg * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.1))
+    cut = tile.convert('RGBA')
+    cut.putalpha(alpha)
+    pad = 10
+    cut = cut.crop((max(0, xs2.min() - pad), max(0, ys2.min() - pad), min(W, xs2.max() + pad), min(H, ys2.max() + pad)))
+    w = 760
+    return cut.resize((w, int(cut.size[1] * w / cut.size[0])), Image.LANCZOS)
+
+
+# Witch Card's own colors for the shortcut icons: a plum tile with cream line art.
 PLUM_TOP = (88, 44, 132)
 PLUM = (42, 22, 64)
-INK = (30, 19, 40)
-MARIGOLD = (246, 166, 35)
 CREAM = (255, 236, 186)
-WHITE = (255, 255, 255)
-LAVENDER = (246, 239, 252)
 
 
-def icon_svg(maskable=False):
-    """The icon at 512 units. The maskable version fills the square and keeps the art inside the safe circle."""
-    tile = '<rect width="512" height="512" fill="url(#tg)"/>' if maskable else '<rect width="512" height="512" rx="112" fill="url(#tg)"/>'
-    scale = 0.86 if maskable else 1.0
-    return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">'
-        '<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5C2E8A"/><stop offset="1" stop-color="#2A1640"/></linearGradient>'
-        '<linearGradient id="ih" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3C2459"/><stop offset="1" stop-color="#140B1C"/></linearGradient></defs>'
-        + tile +
-        '<g transform="translate(256 256) scale(%s) translate(-256 -256)"><g transform="rotate(-10 250 300)">' % scale +
-        # the card, tilted as if just pulled out, with its shadow, chip, tap mark and a stripe
-        '<rect x="96" y="210" width="316" height="198" rx="26" fill="#000" opacity=".28" transform="translate(8 16)"/>'
-        '<rect x="96" y="210" width="316" height="198" rx="26" fill="#F6A623"/>'
-        '<rect x="128" y="276" width="62" height="48" rx="9" fill="#FFECBA"/>'
-        '<g fill="none" stroke="#1E1328" stroke-width="9" stroke-linecap="round" transform="translate(212 300)">'
-        '<path d="M0-16a22 22 0 0 1 0 32"/><path d="M14-28a38 38 0 0 1 0 56"/><path d="M28-40a54 54 0 0 1 0 80"/></g>'
-        '<rect x="128" y="358" width="140" height="16" rx="8" fill="#D6880A"/>'
-        # the witch hat
-        '<path d="M118 214 Q 150 120 186 52 Q 214 4 276 30 Q 284 36 270 40 Q 236 36 222 76 Q 206 140 246 214 Z" fill="url(#ih)" stroke="#B994EE" stroke-width="5" stroke-linejoin="round"/>'
-        '<path d="M124 190 Q 182 202 240 190 L 232 164 Q 182 175 134 164 Z" fill="#B994EE"/>'
-        '<ellipse cx="182" cy="214" rx="112" ry="22" fill="url(#ih)" stroke="#B994EE" stroke-width="5"/>'
-        '</g></g></svg>')
-
-
-def render_icons(jobs):
-    """jobs: (file name, size, maskable, opaque). Renders each with headless Chromium."""
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch()
-        page = browser.new_page(viewport={'width': 512, 'height': 512})
-        for name, size, maskable, opaque in jobs:
-            svg = icon_svg(maskable).replace('width="512" height="512"', 'width="%d" height="%d"' % (size, size), 1)
-            bg = '#2A1640' if opaque else 'transparent'
-            page.set_content('<html><body style="margin:0;background:%s">%s</body></html>' % (bg, svg))
-            page.screenshot(path=os.path.join(ROOT, name), clip={'x': 0, 'y': 0, 'width': size, 'height': size}, omit_background=not opaque)
-        browser.close()
-
-
-def plum_tile(s, rounded=True):
+def plum_tile(s, rounded_tile=True):
     """A plum square, lighter at the top, rounded unless it is the maskable icon."""
-    tile = Image.new('RGBA', (s, s), (0, 0, 0, 0))
+    tile_img = Image.new('RGBA', (s, s), (0, 0, 0, 0))
     grad = Image.new('RGBA', (1, s))
     for y in range(s):
         t = y / max(1, s - 1)
@@ -65,12 +103,12 @@ def plum_tile(s, rounded=True):
     grad = grad.resize((s, s))
     mask = Image.new('L', (s, s), 0)
     md = ImageDraw.Draw(mask)
-    if rounded:
+    if rounded_tile:
         md.rounded_rectangle([0, 0, s - 1, s - 1], radius=int(s * 0.22), fill=255)
     else:
         md.rectangle([0, 0, s, s], fill=255)
-    tile.paste(grad, (0, 0), mask)
-    return tile
+    tile_img.paste(grad, (0, 0), mask)
+    return tile_img
 
 
 def shortcut(name, size=96):
@@ -101,12 +139,13 @@ def shortcut(name, size=96):
     return img.resize((size, size), Image.LANCZOS)
 
 
-render_icons([
-    ('icon-192.png', 192, False, False),
-    ('icon-512.png', 512, False, False),
-    ('maskable-512.png', 512, True, True),
-    ('apple-touch-icon.png', 180, True, True),
-])
+if W > 1200:  # a fresh higher-res source: keep a 1024 copy in the repo as the standing source
+    tile.resize((1024, 1024), Image.LANCZOS).save(os.path.join(ICONS, 'mascot-1024.jpg'), quality=90)
+rounded(512).save(os.path.join(ICONS, 'icon-512.png'))
+rounded(192).save(os.path.join(ICONS, 'icon-192.png'))
+cornerfilled(512).save(os.path.join(ICONS, 'maskable-512.png'))
+cornerfilled(180).save(os.path.join(ICONS, 'apple-touch-icon.png'))
+cutout().save(os.path.join(IMG, 'witch-fly.webp'), quality=88, method=6)
 for n in ['gas', 'groceries', 'dining', 'online']:
-    shortcut(n).save(os.path.join(ROOT, 'shortcut-%s.png' % n))
-print('icons written to', os.path.abspath(ROOT))
+    shortcut(n).save(os.path.join(ICONS, 'shortcut-%s.png' % n))
+print('icons written to', ICONS, 'and', IMG)

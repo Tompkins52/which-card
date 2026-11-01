@@ -7,7 +7,7 @@
    reload. If any shell file is missing, the install fails and the phone keeps the version it has.
    Card data (data/*.json): network first, cached copy when offline. */
 var VERSION = 'wc-dev';
-var SHELL = ['./', './index.html', './app.css', './app.js', './engine.js', './manifest.webmanifest', './fonts/archivo-wdth.woff2', './icons/icon-192.png', './icons/icon-512.png'];
+var SHELL = ['./', './index.html', './app.css', './app.js', './engine.js', './manifest.webmanifest', './fonts/archivo-wdth.woff2', './icons/icon-192.png', './icons/icon-512.png', './img/witch-fly.webp'];
 
 self.addEventListener('install', function (e) {
   // cache: 'reload' skips the browser's own HTTP cache, so the new shell is the new shell, all of it.
