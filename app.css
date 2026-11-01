@@ -220,24 +220,29 @@ main { padding-block: 6px 14px; }
 .flag.good { background: var(--good-bg); color: var(--good); }
 
 /* ---------- Compare: the wallet on a scale ---------- */
-/* One scale per kind of place, red (weak) to green (great), with a black dot where the wallet's
-   best card sits. The dots slide into place when the tab opens. */
-.scale-list { display: flex; flex-direction: column; gap: 24px; margin-top: 8px; }
-.scale { display: grid; gap: 8px; }
-.scale-head { display: flex; align-items: center; gap: 10px; }
-.scale-head .qi { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--tint, var(--accent)) 15%, var(--surface)); color: var(--tint, var(--accent)); }
-.scale-head .qi svg { width: 17px; height: 17px; }
-.scale-head b { flex: 1; min-width: 0; font-size: 1.02rem; font-weight: 720; }
-.scale-rate { font-size: 1.35rem; font-weight: 820; font-stretch: 72%; line-height: 1; }
-.scale-bar { position: relative; height: 14px; margin: 4px 0; border-radius: 999px; background: linear-gradient(90deg, var(--weak), var(--fair) 50%, var(--great)); }
-.scale-bar .dot { position: absolute; top: 50%; left: calc(11px + (100% - 22px) * var(--p, 0)); width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #5A5560, #141217 62%); box-shadow: 0 0 0 3px #fff, 0 3px 8px rgba(20, 12, 28, .4);
-  animation: dotin .9s calc(.12s + var(--i, 0) * 55ms) cubic-bezier(.2, .9, .25, 1.12) both; }
-@keyframes dotin { from { left: 11px; transform: scale(.3); opacity: 0; } 25% { opacity: 1; transform: none; } }
-.scale-ticks { display: flex; justify-content: space-between; font-size: .76rem; font-weight: 600; color: var(--muted); }
-.scale-ticks .on { color: var(--fg); font-weight: 780; }
-.scale-note { font-size: .82rem; color: var(--muted); }
-.scale-link { justify-self: start; display: inline-flex; align-items: center; gap: 2px; padding: 4px 0; color: var(--accent); font-weight: 650; font-size: .9rem; }
-.scale-link svg { width: 16px; height: 16px; }
+/* One line per kind of place: icon, name, a red (weak) to green (great) scale with a black dot where
+   the wallet's best card sits, the rate, and a way into the best cards there. The labels sit once
+   above the scales. The dots slide into place when the tab opens. */
+.scale-list { display: flex; flex-direction: column; }
+.scale-row, .scale-legend { display: grid; grid-template-columns: 26px 6.4em minmax(0, 1fr) 2.8em 14px; align-items: center; gap: 9px; }
+.scale-row { width: 100%; min-height: 44px; padding: 5px 0; text-align: left; border-bottom: 1px solid var(--line); }
+.scale:last-child .scale-row { border-bottom: 0; }
+.scale-row .qi { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--tint, var(--accent)) 15%, var(--surface)); color: var(--tint, var(--accent)); }
+.scale-row .qi svg { width: 15px; height: 15px; }
+.scale-row .nm { min-width: 0; font-size: .88rem; font-weight: 680; line-height: 1.15; }
+.scale-row .nm small { display: block; margin-top: 1px; font-size: .68rem; font-weight: 600; color: var(--muted); }
+.scale-row > svg { width: 14px; height: 14px; color: var(--muted); }
+.scale-rate { text-align: right; font-size: 1.15rem; font-weight: 820; font-stretch: 72%; }
+.scale-bar { position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--weak), var(--fair) 50%, var(--great)); }
+.scale-bar .dot { position: absolute; top: 50%; left: calc(9px + (100% - 18px) * var(--p, 0)); width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #5A5560, #141217 62%); box-shadow: 0 0 0 2.5px #fff, 0 2px 6px rgba(20, 12, 28, .4);
+  animation: dotin .9s calc(.12s + var(--i, 0) * 45ms) cubic-bezier(.2, .9, .25, 1.12) both; }
+@keyframes dotin { from { left: 9px; transform: scale(.3); opacity: 0; } 25% { opacity: 1; transform: none; } }
+.scale-legend { padding-bottom: 2px; }
+.scale-legend .ticks { display: flex; justify-content: space-between; font-size: .7rem; font-weight: 650; color: var(--muted); }
+.bank-chips { margin: 2px -16px 0; padding: 2px 16px 6px; }
+.rot-list { display: flex; flex-direction: column; gap: 8px; }
+.rot-list li { font-size: .88rem; line-height: 1.4; color: var(--muted); }
+.rot-list li b { margin-right: 6px; color: var(--fg); font-weight: 700; }
 .best-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .best-list li { animation: rowin .4s calc(var(--i, 0) * 40ms) cubic-bezier(.2, .8, .2, 1) both; }
 .best-list li + li { border-top: 1px solid var(--line); }
@@ -444,13 +449,6 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 .perk-list li.done .perk-toggle { color: var(--good); }
 
 /* ---------- Compare ---------- */
-.offer { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 15px 16px; display: flex; flex-direction: column; gap: 6px; }
-.offer .h { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
-.offer .h b { font-size: 1rem; }
-.offer .bonus { font-weight: 800; font-stretch: 90%; font-size: 1.35rem; line-height: 1.15; }
-.offer .bonus .about { font-weight: 600; font-stretch: 100%; }
-.offer .req { color: var(--muted); font-size: .88rem; }
-.offer .foot { display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: .85rem; color: var(--muted); flex-wrap: wrap; }
 .gap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); text-align: left; width: 100%; }
 .gap b { display: block; font-weight: 700; }
 .gap span { color: var(--muted); font-size: .86rem; }

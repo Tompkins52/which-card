@@ -1811,6 +1811,18 @@
     rows.forEach(function (r) { earn.appendChild(h('li', null, h('span', { class: 'l' }, r[1], r[2] ? h('small', null, r[2]) : null), h('span', { class: 'r' }, r[0]))); });
     nodes.push(h('div', { class: 'box' }, h('h3', null, 'Earns'), earn));
 
+    // The sign-up offer, as the bank publishes it, with what it is worth to this person.
+    var offer = personalOffers().filter(function (x) { return x.o.cardId === cardId; })[0];
+    if (offer) {
+      var o = offer.o;
+      nodes.push(h('div', { class: 'box' }, h('h3', null, 'Sign-up offer'),
+        h('p', null, h('b', null, o.cashBonus ? money(o.cashBonus) + ' cash' : o.bonus), ' (about ' + dollarsOf(offer.worth) + ' to you)',
+          o.spend ? ' after spending ' + money(o.spend).replace(/\.00$/, '') + ' in ' + o.months + ' month' + (o.months === 1 ? '' : 's') : '', '. ',
+          o.annualFee ? '$' + o.annualFee + ' a year' + (o.firstYearFeeWaived ? ', waived the first year.' : '.') : 'No annual fee.'),
+        o.notes ? h('p', { class: 'small muted', style: 'margin-top:6px' }, o.notes) : null,
+        h('p', { class: 'small muted', style: 'margin-top:6px' }, 'As of ' + fmtLongDate(o.verified || (data.bonuses && data.bonuses.verified)) + '. ', o.sourceUrl ? h('a', { href: o.sourceUrl, target: '_blank', rel: 'noopener' }, 'The bank\u2019s page') : null)));
+    }
+
     // Rotating calendar
     if (card.rotating && card.rotating.calendar) {
       var cal = card.rotating.calendar;
@@ -2005,85 +2017,157 @@
   /* ---------- Offers ---------- */
   function renderOffers() {
     var root = document.getElementById('view-offers'); clear(root);
-    // The wallet, kind of place by kind of place: a red to green scale with a dot where its best
-    // card sits between a plain 1% card (weak) and the best card anyone can get there (great).
-    // No card is named here; each scale links to the best cards for that kind of place.
+    // 1. How the wallet does: one line per kind of place, a red to green scale with a dot where the
+    //    wallet's best card sits between a plain 1% card and the best card anyone can get. Tap a row
+    //    for the best cards there. Short, so it fits on about one screen.
     if (state.wallet.length) {
       var rows = E.walletScale(state, data), count = { great: 0, good: 0, weak: 0 };
       rows.forEach(function (r) { count[r.level]++; });
       var sec = h('div', { class: 'section scales' },
-        h('h2', null, 'How your wallet does'),
-        h('p', { class: 'small muted' }, 'Great in ' + count.great + ', good in ' + count.good + ', weak in ' + count.weak + '. Each dot is your best card there, between a plain 1% card and the best card anyone can get.'));
+        h('div', { class: 'section-head' }, h('h2', null, 'How your wallet does'), h('span', { class: 'small muted' }, 'Great in ' + count.great + ', good in ' + count.good + ', weak in ' + count.weak)));
       var list = h('ul', { class: 'scale-list' });
+      list.appendChild(h('li', { class: 'scale-legend', 'aria-hidden': 'true' }, h('span'), h('span'), h('span', { class: 'ticks' }, h('span', null, 'Weak'), h('span', null, 'Good'), h('span', null, 'Great')), h('span'), h('span')));
       rows.forEach(function (r, i) {
         var c = r.category, name = c.id === 'other' ? 'Everything else' : c.name, lower = c.id === 'other' ? 'everything else' : c.name.toLowerCase();
-        var word = { great: 'Great', good: 'Good', weak: 'Weak' }[r.level];
+        var word = { great: 'great', good: 'good', weak: 'weak' }[r.level];
         var until = r.rotating ? r.rotating.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
         list.appendChild(h('li', { class: 'scale ' + r.level, style: '--p:' + r.pos.toFixed(3) + ';--i:' + i + ';--tint:' + tintFor(c.id) },
-          h('div', { class: 'scale-head' }, h('span', { class: 'qi', 'aria-hidden': 'true' }, icon(c.icon)), h('b', null, name),
-            h('span', { class: 'scale-rate num' }, r.minePct > 0 ? pctText(r.minePct) : 'none')),
-          h('div', { class: 'scale-bar', role: 'img', 'aria-label': name + ': ' + word.toLowerCase() + ', ' + pctText(r.minePct) + ' with your best card; ' + pctText(r.topPct) + ' is the best out there' }, h('span', { class: 'dot' })),
-          h('div', { class: 'scale-ticks', 'aria-hidden': 'true' }, ['weak', 'good', 'great'].map(function (l) { return h('span', { class: l === r.level ? 'on' : '' }, { great: 'Great', good: 'Good', weak: 'Weak' }[l]); })),
-          r.rotating ? h('p', { class: 'scale-note' }, 'Includes a rotating bonus that ends ' + until + '.') : null,
-          h('button', { class: 'scale-link', onclick: function () { openBestCards({ category: c.id }, lower); } }, 'Best cards for ' + lower, icon('chev'))));
+          h('button', { class: 'scale-row', 'aria-label': name + ': ' + word + ', ' + pctText(r.minePct) + ' with your best card, ' + pctText(r.topPct) + ' is the best out there' + (until ? ', with a rotating bonus until ' + until : '') + '. Best cards for ' + lower + '.', onclick: function () { openBestCards({ category: c.id }, lower); } },
+            h('span', { class: 'qi', 'aria-hidden': 'true' }, icon(c.icon)),
+            h('span', { class: 'nm' }, name, until ? h('small', null, 'rotating, to ' + until) : null),
+            h('span', { class: 'scale-bar', 'aria-hidden': 'true' }, h('span', { class: 'dot' })),
+            h('span', { class: 'scale-rate num' }, r.minePct > 0 ? pctText(r.minePct) : '0%'),
+            icon('chev'))));
       });
       sec.appendChild(list);
+      sec.appendChild(h('p', { class: 'small muted' }, 'Each dot is your best card there, from a plain 1% card (weak) to the best card anyone can get (great). Tap a row for the best cards.'));
       root.appendChild(sec);
     }
 
-    var offers = (data.bonuses && data.bonuses.offers) || [];
-    var os = h('div', { class: 'section' }, h('div', { class: 'section-head' }, h('h2', null, 'Sign-up bonuses, as the banks publish them'), h('span', { class: 'small muted' }, 'as of ' + fmtLongDate(data.bonuses && data.bonuses.verified))));
-    var sorted = offers.slice().sort(function (a, b) { return (valueOf(b)) - (valueOf(a)); });
-    sorted.forEach(function (o) {
-      var card = E.cardById(data, o.cardId);
-      var have = !!walletEntry(o.cardId);
-      os.appendChild(h('div', { class: 'offer', style: '--card:' + (card ? card.color : '#777') },
-        h('div', { class: 'h' }, h('b', null, o.cardName), have ? h('span', { class: 'badge good' }, 'You have it') : null),
-        h('div', { class: 'bonus num' }, o.cashBonus ? money(o.cashBonus) + ' cash' : o.bonus, o.bonusValueCents && !o.cashBonus ? h('span', { class: 'about small muted' }, ' about ' + cents(o.bonusValueCents)) : null),
-        h('div', { class: 'req' }, o.spend ? 'Spend ' + money(o.spend) + ' in ' + o.months + ' month' + (o.months === 1 ? '' : 's') : 'No spend requirement', o.annualFee ? ', $' + o.annualFee + ' annual fee' + (o.firstYearFeeWaived ? ' (waived first year)' : '') : ', no annual fee'),
-        o.notes ? h('div', { class: 'small muted' }, o.notes) : null,
-        h('div', { class: 'foot' }, o.sourceUrl ? h('a', { href: o.sourceUrl, target: '_blank', rel: 'noopener' }, 'Issuer page') : h('span'), card ? h('button', { class: 'link', style: 'color:var(--accent);font-weight:600', onclick: function () { openCardDetail(card.id); } }, 'How it earns') : null)));
-    });
-    if (!offers.length) os.appendChild(h('p', { class: 'hint' }, 'Nothing on file.'));
-    os.appendChild(h('p', { class: 'small muted' }, 'Listed for reference only. Bonuses change often and some show only on the issuer site. Every link goes to the issuer; nobody pays for a spot here.'));
+    // 2. The best sign-up offers for this person: ranked by what the bonus is worth to them (cash,
+    //    or points at the value their goal gives them) after the first year's fee, cards they hold
+    //    left out, narrowed to the banks they pick (one, or a few that share points).
+    var os = h('div', { class: 'section offers' });
+    var goal = { cash: 'cash back', travel: 'points and miles', bonus: 'points and miles' }[state.prefs.priority || 'cash'] || 'cash back';
+    os.appendChild(h('div', { class: 'section-head' }, h('h2', null, 'Best sign-up offers for you'), h('span', { class: 'small muted' }, 'as of ' + fmtLongDate(data.bonuses && data.bonuses.verified))));
+    os.appendChild(h('p', { class: 'small muted' }, 'Ranked by what the bonus is worth to you as ' + goal + ', after the first year’s fee. Change what matters most under More.'));
+    var offerList = h('ol', { class: 'best-list offer-list' });
+    var held = 0;
+    function drawOffers() {
+      clear(offerList);
+      var banks = state.prefs.banks || [], shown = 0;
+      held = 0;
+      personalOffers().forEach(function (x) {
+        if (walletEntry(x.o.cardId)) { held++; return; }
+        if (banks.length && banks.indexOf(x.issuer) < 0) return;
+        var o = x.o, card = x.card, i = shown++;
+        var sub = [x.short, o.spend ? 'spend ' + money(o.spend).replace(/\.00$/, '') + ' in ' + o.months + ' month' + (o.months === 1 ? '' : 's') : 'no spend needed',
+          o.annualFee ? '$' + o.annualFee + ' a year' + (o.firstYearFeeWaived ? ' after the first' : '') : 'no annual fee'];
+        offerList.appendChild(h('li', { style: '--i:' + i }, h('button', { class: 'best-row', onclick: function () { openCardDetail(card.id); } },
+          h('span', { class: 'rank num', 'aria-hidden': 'true' }, String(i + 1)),
+          cardArt(card, 56),
+          h('span', { class: 't' }, h('b', null, o.cardName), h('span', null, sub.join(', '))),
+          h('span', { class: 'r num' }, dollarsOf(x.net)))));
+      });
+      if (!shown) offerList.appendChild(h('li', null, h('p', { class: 'hint', style: 'padding:14px' }, 'No offers on file from ' + (banks.length > 1 ? 'those banks' : 'that bank') + '.')));
+      heldNote.textContent = held ? (held === 1 ? 'One card you already have is left out. ' : held + ' cards you already have are left out. ') : '';
+    }
+    var heldNote = h('span');
+    os.appendChild(bankChips(personalOffers().map(function (x) { return x.issuer; }), drawOffers));
+    os.appendChild(offerList);
+    os.appendChild(h('p', { class: 'small muted' }, heldNote, 'Bonuses change often and some show only on the bank’s site. Nobody pays for a spot here.'));
+    drawOffers();
     root.appendChild(os);
 
-    var rot = data.cards.filter(function (c) { return c.rotating && c.rotating.calendar; });
+    // 3. This quarter's rotating 5%, one line per card.
+    var rot = data.cards.filter(function (c) { return c.rotating && c.rotating.calendar && c.rotating.calendar[E.quarterOf(new Date())]; });
     if (rot.length) {
-      var q = E.quarterOf(new Date()), nq = E.nextQuarterKey(new Date());
-      var rs = h('div', { class: 'section' }, h('h2', null, 'Rotating categories'));
+      var q = E.quarterOf(new Date());
+      var rs = h('div', { class: 'section' }, h('h2', null, 'Rotating 5% in ' + quarterLabel(q)));
+      var ul = h('ul', { class: 'rot-list' });
       rot.forEach(function (c) {
-        var cur = c.rotating.calendar[q], next = c.rotating.calendar[nq];
-        rs.appendChild(h('div', { class: 'box' }, h('h3', null, c.name),
-          h('p', null, h('b', null, quarterLabel(q) + ': '), cur ? (cur.label || (cur.categories || []).map(function (x) { return cat(x).name; }).join(', ')) : 'not on file'),
-          cur && cur.activateBy ? h('p', { class: 'small muted' }, 'Activate by ' + E.fmtDate(cur.activateBy)) : null,
-          h('p', { class: 'small muted', style: 'margin-top:6px' }, quarterLabel(nq) + ': ' + (next ? (next.label || (next.categories || []).map(function (x) { return cat(x).name; }).join(', ')) : 'not announced yet'))));
+        var cur = c.rotating.calendar[q];
+        ul.appendChild(h('li', null, h('b', null, c.name), h('span', null, (cur.label || (cur.categories || []).map(function (x) { return cat(x).name; }).join(', ')) + (cur.activateBy ? '. Activate by ' + E.fmtDate(cur.activateBy) + '.' : ''))));
       });
+      rs.appendChild(ul);
       root.appendChild(rs);
     }
   }
-  function valueOf(o) { return o.cashBonus ? o.cashBonus * 100 : (o.bonusValueCents || 0); }
+
+  // The sign-up offers with what each bonus is worth to this person, best first.
+  function personalOffers() {
+    var prefs = { priority: state.prefs.priority || 'cash', redeem: state.prefs.redeem || {} };
+    return ((data.bonuses && data.bonuses.offers) || []).map(function (o) {
+      var card = E.cardById(data, o.cardId); if (!card) return null;
+      // The first "75,000 points" (or "130,000 Hilton Honors points", or miles) in the bank's wording is the bonus.
+      if (/no welcome offer/i.test(o.bonus || '')) return null;
+      var m = /(\d[\d,]{2,})\s+(?:[A-Za-z]+\s+){0,3}?(points|miles)/i.exec(String(o.bonus || '')), worth, short;
+      if (o.cashBonus) { worth = o.cashBonus * 100; short = money(o.cashBonus).replace(/\.00$/, '') + ' cash'; }
+      else if (m) {
+        var pts = parseInt(m[1].replace(/,/g, ''), 10) || 0, pv = data.valuations.programs[card.program];
+        // For cash back, points count at their cash value; airline and hotel points have none.
+        var cpp = prefs.priority === 'cash' && !prefs.redeem[card.program] ? (pv ? pv.cash || 0 : 1) : E.valuation(card.program, prefs, data, state.wallet);
+        worth = pts * cpp;
+        short = (/^\s*(up to|as high as)/i.test(o.bonus) ? 'Up to ' : '') + m[1] + ' ' + m[2].toLowerCase();
+      } else { worth = o.bonusValueCents || 0; short = String(o.bonus || '').split(/[:;.(]/)[0]; }
+      var fee = o.firstYearFeeWaived ? 0 : (o.annualFee || 0) * 100;
+      return worth > 0 ? { o: o, card: card, issuer: card.issuer, worth: worth, net: worth - fee, short: short } : null;
+    }).filter(Boolean).sort(function (a, b) { return b.net - a.net; });
+  }
+  function dollarsOf(c) { var v = Math.round(c / 100); return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US'); }
+
+  // The banks, in one row that scrolls sideways. Pick one, or a few (people who keep their cards
+  // at banks that share points); none picked means all. Remembered on this phone.
+  function bankChips(issuers, onChange) {
+    var count = {};
+    issuers.forEach(function (i) { count[i] = (count[i] || 0) + 1; });
+    var banks = Object.keys(count).sort(function (a, b) { return count[b] - count[a] || a.localeCompare(b); });
+    var row = h('div', { class: 'chips bank-chips', role: 'group', 'aria-label': 'Banks' });
+    function draw() {
+      clear(row);
+      var picked = state.prefs.banks || [];
+      row.appendChild(h('button', { class: picked.length ? '' : 'on', 'aria-pressed': picked.length ? 'false' : 'true', onclick: function () { state.prefs.banks = []; saveState(); draw(); onChange(); } }, 'All banks'));
+      banks.forEach(function (b) {
+        var on = picked.indexOf(b) >= 0;
+        row.appendChild(h('button', { class: on ? 'on' : '', 'aria-pressed': on ? 'true' : 'false', onclick: function () {
+          var p = (state.prefs.banks || []).slice(), k = p.indexOf(b);
+          if (k >= 0) p.splice(k, 1); else p.push(b);
+          state.prefs.banks = p; saveState(); draw(); onChange();
+        } }, b === 'American Express' ? 'Amex' : b));
+      });
+    }
+    draw();
+    return row;
+  }
 
   // The best cards for a kind of place (from Compare) or for the store you are at (from Pay), yours
   // and the rest, ranked by what they earn there all year; one tap opens a card, and closing it
   // comes back here.
   function openBestCards(where, label) {
-    var list = E.bestCards(where, state, data, new Date(), 10);
+    var all = E.bestCards(where, state, data, new Date(), 80);
     var nodes = [h('p', { class: 'muted' }, 'Ranked by what each card earns ' + (where.merchant ? 'at ' : 'on ') + label + ' all year, the same math as the Pay screen. Nobody pays for a spot here.')];
     var ul = h('ol', { class: 'best-list' });
-    list.forEach(function (r, i) {
-      var c = r.card, sub = [c.annualFee ? '$' + c.annualFee + ' a year' : 'No annual fee'];
-      if (r.unit !== 'percent') sub.push(rateText(r.effectiveRate, r.unit) + ' ' + r.unit);
-      if (r.cap && r.cap.cap) sub.push('up to $' + Number(r.cap.cap).toLocaleString('en-US') + ' ' + ({ year: 'a year', quarter: 'a quarter', month: 'a month', cycle: 'a billing cycle' }[r.cap.period] || ''));
-      if (r.needs && r.needs.length) sub.push(r.needs.join(', ').toLowerCase());
-      if (c.eligibility) sub.push(c.eligibility);
-      ul.appendChild(h('li', { style: '--i:' + i }, h('button', { class: 'best-row' + (r.mine ? ' mine' : ''), onclick: function () { openCardDetail(c.id, function () { openBestCards(where, label); }); } },
-        h('span', { class: 'rank num', 'aria-hidden': 'true' }, String(i + 1)),
-        cardArt(c, 56),
-        h('span', { class: 't' }, h('b', null, c.name), h('span', null, sub.join(', ')), r.mine ? h('span', { class: 'badge good' }, 'In your wallet') : null),
-        h('span', { class: 'r num' }, pctText(r.effectivePercent)))));
-    });
-    if (!list.length) nodes.push(h('p', { class: 'hint' }, 'No card on file earns more than its base rate here.'));
+    // The same bank picks as Compare: only Chase, or Chase and Citi, and so on.
+    nodes.push(bankChips(all.map(function (r) { return r.card.issuer; }), draw));
+    function draw() {
+      clear(ul);
+      var banks = state.prefs.banks || [];
+      var list = all.filter(function (r) { return !banks.length || banks.indexOf(r.card.issuer) >= 0; }).slice(0, 10);
+      if (!list.length) ul.appendChild(h('li', null, h('p', { class: 'hint', style: 'padding:14px' }, 'None from ' + (banks.length > 1 ? 'those banks' : 'that bank') + ' here.')));
+      list.forEach(function (r, i) {
+        var c = r.card, sub = [c.annualFee ? '$' + c.annualFee + ' a year' : 'No annual fee'];
+        if (r.unit !== 'percent') sub.push(rateText(r.effectiveRate, r.unit) + ' ' + r.unit);
+        if (r.cap && r.cap.cap) sub.push('up to $' + Number(r.cap.cap).toLocaleString('en-US') + ' ' + ({ year: 'a year', quarter: 'a quarter', month: 'a month', cycle: 'a billing cycle' }[r.cap.period] || ''));
+        if (r.needs && r.needs.length) sub.push(r.needs.join(', ').toLowerCase());
+        if (c.eligibility) sub.push(c.eligibility);
+        ul.appendChild(h('li', { style: '--i:' + i }, h('button', { class: 'best-row' + (r.mine ? ' mine' : ''), onclick: function () { openCardDetail(c.id, function () { openBestCards(where, label); }); } },
+          h('span', { class: 'rank num', 'aria-hidden': 'true' }, String(i + 1)),
+          cardArt(c, 56),
+          h('span', { class: 't' }, h('b', null, c.name), h('span', null, sub.join(', ')), r.mine ? h('span', { class: 'badge good' }, 'In your wallet') : null),
+          h('span', { class: 'r num' }, pctText(r.effectivePercent)))));
+      });
+    }
+    draw();
     nodes.push(ul);
     nodes.push(h('p', { class: 'small muted' }, 'Year-round rates; rotating quarterly bonuses are left out. Points are counted at the value set under More.'));
     // For the place you are at on the Pay screen: what the best card you do not have would add in a year.

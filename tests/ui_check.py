@@ -128,8 +128,28 @@ with sync_playwright() as p:
     # Compare: a weak-good-great scale for every kind of place, a dot on each, no card named
     scales = page.locator('.scale')
     assert scales.count() == 12 and page.locator('.scale .dot').count() == 12, 'a scale with a dot for each kind of place'
-    assert all(t in page.inner_text('.scale >> nth=0') for t in ['Weak', 'Good', 'Great']), 'scale labels'
-    page.click('.scale-link:has-text("Best cards for groceries")')
+    assert all(t in page.inner_text('.scale-legend') for t in ['Weak', 'Good', 'Great']), 'scale labels, once above the scales'
+    # The scales are short: all twelve fit in about one screen
+    span = page.evaluate("(() => { const l = document.querySelector('.scale-list').getBoundingClientRect(); return l.height; })()")
+    assert span < 640, 'the scales take %dpx' % span
+    # Offers: ranked for the goal, cards you hold left out, and banks to pick from (more than one)
+    offers = page.locator('.offers .best-list li')
+    assert offers.count() >= 8, 'sign-up offers listed'
+    first_all = page.inner_text('.offers .best-list li >> nth=0')
+    page.click('.offers .bank-chips button:has-text("Chase")')
+    page.wait_for_timeout(200)
+    chase_only = page.inner_text('.offers .best-list')
+    assert 'Capital One' not in chase_only and 'Citi' not in chase_only and 'Chase' in chase_only, 'Chase only'
+    page.click('.offers .bank-chips button:has-text("Citi")')
+    page.wait_for_timeout(200)
+    both = page.inner_text('.offers .best-list')
+    assert 'Citi' in both and 'Capital One' not in both, 'Chase and Citi together'
+    assert sorted(page.evaluate("JSON.parse(localStorage.getItem('whichcard.state.v1')).prefs.banks")) == ['Chase', 'Citi'], 'the bank picks are remembered'
+    shot(page, os.path.join(OUT, '11a-offers-chase-citi.png'))
+    page.click('.offers .bank-chips button:has-text("All banks")')
+    page.wait_for_timeout(200)
+    assert page.inner_text('.offers .best-list li >> nth=0') == first_all, 'All banks brings everything back'
+    page.click('.scale-row[aria-label^="Groceries"]')
     page.wait_for_selector('.sheet .best-list li')
     page.wait_for_timeout(500)
     shot(page, os.path.join(OUT, '11b-best-groceries.png'))
