@@ -1332,7 +1332,8 @@
    "also": [
     "travel",
     "hotels"
-   ]
+   ],
+   "issuer": "Chase"
   },
   {
    "id": "amex-travel",
@@ -1345,7 +1346,8 @@
    "also": [
     "travel",
     "hotels"
-   ]
+   ],
+   "issuer": "American Express"
   },
   {
    "id": "capital-one-travel",
@@ -1356,7 +1358,8 @@
    "also": [
     "travel",
     "hotels"
-   ]
+   ],
+   "issuer": "Capital One"
   },
   {
    "id": "citi-travel",
@@ -1367,7 +1370,8 @@
    "also": [
     "travel",
     "hotels"
-   ]
+   ],
+   "issuer": "Citi"
   },
   {
    "id": "uber",
@@ -1573,7 +1577,8 @@
     "portal-travel",
     "travel"
    ],
-   "online": true
+   "online": true,
+   "issuer": "Chase"
   },
   {
    "id": "amex-travel-flights",
@@ -1586,7 +1591,8 @@
     "portal-travel",
     "travel"
    ],
-   "online": true
+   "online": true,
+   "issuer": "American Express"
   },
   {
    "id": "capital-one-travel-flights",
@@ -1597,7 +1603,8 @@
     "portal-travel",
     "travel"
    ],
-   "online": true
+   "online": true,
+   "issuer": "Capital One"
   },
   {
    "id": "citi-travel-flights",
@@ -1608,7 +1615,8 @@
     "portal-travel",
     "travel"
    ],
-   "online": true
+   "online": true,
+   "issuer": "Citi"
   },
   {
    "id": "capital-one-entertainment",
@@ -1772,8 +1780,7 @@
    ],
    "category": "hotels",
    "also": [
-    "travel",
-    "portal-travel"
+    "travel"
    ],
    "online": true
   },
@@ -1783,8 +1790,7 @@
    "aliases": [],
    "category": "hotels",
    "also": [
-    "travel",
-    "portal-travel"
+    "travel"
    ],
    "online": true
   },
@@ -1996,10 +2002,10 @@
    "id": "aadvantage-hotels-cars",
    "name": "AAdvantage Hotels and Cars",
    "aliases": [],
-   "category": "portal-travel",
+   "category": "hotels",
    "also": [
     "travel",
-    "hotels"
+    "rental-car"
    ],
    "online": true
   },

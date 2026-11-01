@@ -2115,16 +2115,21 @@
         var c = r.category, name = c.id === 'other' ? 'Everything else' : c.name, lower = inSentence(c);
         var word = { great: 'great', good: 'good', weak: 'weak' }[r.level];
         var until = r.rotating ? r.rotating.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        // A caveat with an asterisk: the rate holds only with the company named (Lyft, Chase Travel,
+        // Costco Gas), because a card you hold pays extra there and you can choose to go there.
+        var viaName = r.via ? shortName(r.via.merchant) : '', viaCard = r.via ? (r.via.result.entry.nickname || r.via.result.card.name) : '';
+        var said = name + ': ' + word + ', ' + pctText(r.minePct) + (r.via ? ' with your ' + viaCard + ' when you use ' + viaName + ', ' + pctText(r.anywhere ? r.anywhere.effectivePercent : 0) + ' anywhere else, ' : ' with your best card, ') + pctText(r.topPct) + ' is the best out there' + (until ? ', with a rotating bonus until ' + until : '') + (r.activateBy ? ', once you activate it' : '') + '. Best cards for ' + lower + '.';
         list.appendChild(h('li', { class: 'scale ' + r.level, style: '--p:' + r.pos.toFixed(3) + ';--i:' + i + ';--tint:' + tintFor(c.id) },
-          h('button', { class: 'scale-row', 'aria-label': name + ': ' + word + ', ' + pctText(r.minePct) + ' with your best card, ' + pctText(r.topPct) + ' is the best out there' + (until ? ', with a rotating bonus until ' + until : '') + (r.activateBy ? ', once you activate it' : '') + '. Best cards for ' + lower + '.', onclick: function () { openBestCards({ category: c.id }, lower); } },
+          h('button', { class: 'scale-row', 'aria-label': said, onclick: function () { openBestCards({ category: c.id }, lower, r.via); } },
             h('span', { class: 'qi', 'aria-hidden': 'true' }, icon(c.icon)),
-            h('span', { class: 'nm' }, name, r.activateBy ? h('small', { class: 'warn' }, r.activateBy === 'soon' ? 'activate the 5x' : 'activate by ' + new Date(r.activateBy + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) : until ? h('small', null, 'rotating, to ' + until) : null),
+            h('span', { class: 'nm' }, name, r.activateBy ? h('small', { class: 'warn' }, r.activateBy === 'soon' ? 'activate the 5x' : 'activate by ' + new Date(r.activateBy + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) : r.via ? h('small', { class: 'via' }, '* with ' + viaName + ' only') : until ? h('small', null, 'rotating, to ' + until) : null),
             h('span', { class: 'scale-bar', 'aria-hidden': 'true' }, h('span', { class: 'dot' })),
-            h('span', { class: 'scale-rate num' }, r.minePct > 0 ? pctText(r.minePct) : '0%'),
+            h('span', { class: 'scale-rate num' }, (r.minePct > 0 ? pctText(r.minePct) : '0%') + (r.via ? '*' : '')),
             icon('chev'))));
       });
       sec.appendChild(list);
-      sec.appendChild(h('p', { class: 'small muted' }, 'Each dot is your best card there, from a plain 1% card (weak) to the best card anyone can get (great). Tap a row for the best cards.'));
+      var anyVia = rows.some(function (r) { return r.via; });
+      sec.appendChild(h('p', { class: 'small muted' }, 'Each dot is your best card there, from a plain 1% card (weak) to the best card anyone can get (great).' + (anyVia ? ' An asterisk means only with the company named: go there and you get that rate; anywhere else of that kind you get less.' : '') + ' Tap a row for the best cards.'));
       root.appendChild(sec);
     }
 
@@ -2232,9 +2237,11 @@
   // The best cards for a kind of place (from Compare) or for the store you are at (from Pay), yours
   // and the rest, ranked by what they earn there all year; one tap opens a card, and closing it
   // comes back here.
-  function openBestCards(where, label) {
+  function shortName(m) { return (m.name || m.id).replace(/\s*\(.*\)\s*$/, ''); }
+  function openBestCards(where, label, via) {
     var all = E.bestCards(where, state, data, new Date(), 80);
     var nodes = [h('p', { class: 'muted' }, 'Ranked by what each card earns ' + (where.merchant ? 'at ' : 'on ') + label + ' all year, the same math as the Pay screen. Nobody pays for a spot here.')];
+    if (via) nodes.push(h('div', { class: 'note good' }, h('b', null, 'With ' + shortName(via.merchant) + ', your ' + (via.result.entry.nickname || via.result.card.name) + ' earns ' + pctText(via.result.effectivePercent) + '. '), 'That is the asterisk on Compare. This list is for all of ' + label + '.'));
     var ul = h('ol', { class: 'best-list' }), note = h('div');
     // The same bank picks as Compare: only Chase, or Chase and Citi, and so on.
     nodes.push(bankChips(all.map(function (r) { return r.card.issuer; }), draw));
@@ -2255,7 +2262,7 @@
         if (r.cap && r.cap.cap) sub.push('up to $' + Number(r.cap.cap).toLocaleString('en-US') + ' ' + ({ year: 'a year', quarter: 'a quarter', month: 'a month', cycle: 'a billing cycle' }[r.cap.period] || ''));
         if (r.needs && r.needs.length) sub.push(r.needs.join(', ').toLowerCase());
         if (c.eligibility) sub.push(c.eligibility);
-        ul.appendChild(h('li', { style: '--i:' + i }, h('button', { class: 'best-row' + (r.mine ? ' mine' : ''), onclick: function () { openCardDetail(c.id, function () { openBestCards(where, label); }); } },
+        ul.appendChild(h('li', { style: '--i:' + i }, h('button', { class: 'best-row' + (r.mine ? ' mine' : ''), onclick: function () { openCardDetail(c.id, function () { openBestCards(where, label, via); }); } },
           h('span', { class: 'rank num', 'aria-hidden': 'true' }, String(rank)),
           cardArt(c, 56),
           h('span', { class: 't' }, h('b', null, c.name), h('span', null, sub.join(', ')), r.mine ? h('span', { class: 'badge good' }, 'In your wallet') : null),

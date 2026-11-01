@@ -233,9 +233,10 @@ console.log('membership tests passed');
   ['cash', 'travel'].forEach(function (pri) {
     var st = { wallet: mark.map(function (id) { return { cardId: id, activated: { '2026-Q4': true } }; }), prefs: { priority: pri, payMethod: 'card', redeem: {} } };
     var travel = E.walletScale(st, real, when).filter(function (r) { return r.category.id === 'travel'; })[0];
-    assert.strictEqual(travel.mine.card.id, 'chase-sapphire-reserve', pri + ': the Sapphire Reserve is the best card in the wallet for travel, got ' + travel.mine.card.id);
+    assert.strictEqual(travel.anywhere.card.id, 'chase-sapphire-reserve', pri + ': the Sapphire Reserve is the best card in the wallet for travel, got ' + travel.anywhere.card.id);
     assert.strictEqual(travel.level, 'great', pri + ': a wallet with the Sapphire Reserve is great at travel, got ' + travel.level);
-    assert.strictEqual(travel.mine.reason, '4x on flights and hotels');
+    assert.strictEqual(travel.anywhere.reason, '4x on flights and hotels');
+    assert.strictEqual(travel.mine.reason, '8x on Chase Travel', 'booked through Chase Travel it is 8x, the caveat on the row');
   });
   // the Best cards for travel list has the premium travel cards in it
   var none = { wallet: [], prefs: { priority: 'travel', redeem: {} } };
@@ -262,6 +263,20 @@ console.log('membership tests passed');
   assert.strictEqual(groc.activateBy, '2026-12-14', 'groceries on Compare says to activate by Dec 14');
   // a card with no rewards says so
   assert.strictEqual(E.cardSummary(real.cards.filter(function (c) { return c.id === 'chase-slate-edge'; })[0], real), 'No rewards');
+  // Picking a company: Mark's Reserve pays 5x at Lyft, so rideshare is great with Lyft named as the caveat
+  var stm = { wallet: mark.map(function (id) { return { cardId: id, activated: { '2026-Q4': true } }; }), prefs: { priority: 'cash', payMethod: 'card', redeem: {} } };
+  var rows = E.walletScale(stm, real, when), byId = {};
+  rows.forEach(function (r) { byId[r.category.id] = r; });
+  assert.strictEqual(byId.transit.via && byId.transit.via.merchant.id, 'lyft', 'rideshare names Lyft');
+  assert.strictEqual(byId.transit.minePct, 5); assert.strictEqual(byId.transit.level, 'great');
+  assert.strictEqual(byId.transit.anywhere.card.id, 'chase-united-gateway', 'without Lyft the best is still the Gateway');
+  assert.strictEqual(byId.travel.via && byId.travel.via.merchant.id, 'chase-travel', 'travel names Chase Travel for the 8x');
+  assert(!byId.other.via, 'Everything else never gets a company caveat');
+  assert(!byId.warehouse.via && !byId.entertainment.via, 'a bonus that only spills over from another kind (gas at Costco, hotels at Caesars) is not a company caveat');
+  // a bank's travel site pays only its own cards
+  var plat = { wallet: [{ cardId: 'amex-platinum' }], prefs: { priority: 'cash', redeem: {} } };
+  assert.strictEqual(E.recommend({ merchant: 'chase-travel', amount: 100 }, plat, real, when).results[0].reason, '1x on everything', 'the Platinum earns nothing extra on Chase Travel');
+  assert.strictEqual(E.recommend({ merchant: 'amex-travel', amount: 100 }, plat, real, when).results[0].reason, '5x on Amex Travel');
   console.log('travel, Cash+ and Compare tests passed');
 })();
 

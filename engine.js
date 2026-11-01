@@ -149,14 +149,16 @@
       if (r.requires && !(entry.memberships && entry.memberships[r.requires])) return;
       if (r.unless && entry.memberships && entry.memberships[r.unless]) return;
       if (r.until && now > new Date(r.until + 'T23:59:59')) { if (r.afterRate) rate = r.afterRate; else return; }
-      if (r.merchant && cats.merchant && (cats.merchant.id === r.merchant || cats.merchant.parent === r.merchant)) { hit = true; label = cats.merchant.name; }
+      var byCompany = false;  // the bonus is for this company (or the issuer's own travel site), not the kind of place
+      if (r.merchant && cats.merchant && (cats.merchant.id === r.merchant || cats.merchant.parent === r.merchant)) { hit = true; byCompany = true; label = cats.merchant.name; }
       else if (r.category && r.category !== 'rotating' && r.category !== 'choice' && cats.all[r.category]) {
-        if (r.category === 'select-merchants') { hit = !!(r.merchants && cats.merchant && r.merchants.indexOf(cats.merchant.id) >= 0); }
+        if (r.category === 'select-merchants') { hit = !!(r.merchants && cats.merchant && r.merchants.indexOf(cats.merchant.id) >= 0); byCompany = hit; }
+        else if (r.category === 'portal-travel' && cats.merchant && cats.merchant.issuer) { hit = cats.merchant.issuer === card.issuer; byCompany = hit; }  // a travel site pays only its own bank's cards
         else hit = true;
         label = r.label || r.category;
       }
       if (!hit || excluded(r, cats)) return;
-      list.push({ rate: rate, source: 'earn', label: label, cap: r.cap || 0, capPeriod: r.capPeriod || '', pool: r.capGroup || ('earn:' + idx), activation: !!r.activation, note: r.note || '' });
+      list.push({ rate: rate, source: 'earn', label: label, cap: r.cap || 0, capPeriod: r.capPeriod || '', pool: r.capGroup || ('earn:' + idx), activation: !!r.activation, note: r.note || '', byCompany: byCompany });
     });
     if (card.largePurchase && card.largePurchase.minAmount && Number(ctx.amount) >= card.largePurchase.minAmount) {
       list.push({ rate: card.largePurchase.rate, source: 'earn', label: 'purchases of $' + card.largePurchase.minAmount.toLocaleString() + ' or more', cap: 0, capPeriod: '', pool: 'large', activation: false, note: '' });
@@ -181,7 +183,7 @@
         if (rotCat || rotMerchant) {
           var act = entry.activated && entry.activated[q];
           var rotLabel = rotMerchant ? (merchantById(data, rotMerchant) || { name: rotMerchant }).name : (categoryById(data, rotCat) || { name: rotCat }).name.toLowerCase();
-          list.push({ rate: card.rotating.rate, source: 'rotating', label: rotLabel, cap: card.rotating.cap || 0, capPeriod: card.rotating.capPeriod || 'quarter', pool: 'rotating', activation: !!card.rotating.activation, activated: !!act, quarter: q, activateBy: cal.activateBy || '' });
+          list.push({ rate: card.rotating.rate, source: 'rotating', label: rotLabel, cap: card.rotating.cap || 0, capPeriod: card.rotating.capPeriod || 'quarter', pool: 'rotating', activation: !!card.rotating.activation, activated: !!act, quarter: q, activateBy: cal.activateBy || '', byCompany: !!rotMerchant && !rotCat });
         }
       }
     }
@@ -293,7 +295,8 @@
       units: units, valueCents: valueCents, effectivePercent: effectivePercent,
       reason: reason, source: best ? best.source : 'base', warnings: warnings, cap: capInfo,
       goal: goal, protections: protections, pool: best ? best.pool : 'base',
-      activationNeeded: !!(best && best.activation && !best.activated)
+      activationNeeded: !!(best && best.activation && !best.activated),
+      byCompany: !!(best && best.byCompany)
     };
   }
 
@@ -513,18 +516,34 @@
 
   // How the wallet does in each everyday kind of place, for the Compare tab: where its best card
   // sits between 1% (weak) and the best card anyone can get there (great), as 0 to 1. The wallet
-  // counts what it earns today, this quarter's rotating 5% included (rotating says until when);
-  // the top is year-round rates, and cards for members of a group (military, a credit union) or
-  // that need a membership do not set it.
+  // counts what it earns today, this quarter's rotating 5% included (rotating says until when),
+  // and the best it can do by picking a company in that kind of place (via names it; anywhere is
+  // the best without picking); the top is year-round rates at the kind itself, and cards for
+  // members of a group (military, a credit union) or that need a membership do not set it.
   function walletScale(state, data, now) {
     now = now || new Date();
     var pay = (state.prefs || {}).payMethod || 'card';
+    function bestIn(ctx) {
+      var best = null;
+      recommend(ctx, state, data, now).results.forEach(function (r) { if (r.accepted && (!best || r.effectivePercent > best.effectivePercent + 1e-9)) best = r; });
+      return best;
+    }
     return data.categories.filter(function (c) { return c.quick; }).map(function (cat) {
       var ctx = { category: cat.id, amount: 100, payMethod: pay };
-      var mine = null;
-      recommend(ctx, state, data, now).results.forEach(function (r) { if (r.accepted && (!mine || r.effectivePercent > mine.effectivePercent + 1e-9)) mine = r; });
+      var mine = bestIn(ctx);
+      // A company inside this kind of place where a card in the wallet pays more (Lyft for rideshare,
+      // Whole Foods for groceries, Chase Travel for travel): you can choose to go there, so the wallet
+      // is judged on that too, with the company named. Not for Everything else, which is no choice.
+      var via = null;
+      if (cat.id !== 'other') data.merchants.forEach(function (m) {
+        // companies of this kind, and a bank's own travel site for travel; only a bonus for the company itself counts
+        if (m.category !== cat.id && !(m.issuer && (m.also || []).indexOf(cat.id) >= 0)) return;
+        var best = bestIn({ merchant: m.id, amount: 100, payMethod: pay });
+        if (best && best.byCompany && best.effectivePercent > (via ? via.result.effectivePercent : (mine ? mine.effectivePercent : 0)) + 0.005) via = { merchant: m, result: best };
+      });
+      var shown = via ? via.result : mine;
       ctx.steady = true;
-      var minePct = mine ? mine.effectivePercent : 0, top = 0;
+      var minePct = shown ? shown.effectivePercent : 0, top = 0;
       catalogOptions(ctx, state, data, now, { skipStoreCards: true }).forEach(function (r) {
         if (r.card.eligibility || r.needs.length) return;
         if (r.effectivePercent > top) top = r.effectivePercent;
@@ -532,10 +551,10 @@
       top = Math.max(top, minePct);
       var pos = top - 1 > .05 ? (minePct - 1) / (top - 1) : (minePct >= top ? 1 : 0);
       pos = Math.max(0, Math.min(1, pos));
-      var cal = mine && mine.source === 'rotating' && mine.card.rotating && mine.card.rotating.calendar ? mine.card.rotating.calendar[quarterOf(now)] : null;
-      return { category: cat, mine: mine, minePct: minePct, topPct: top, pos: pos, level: pos >= .75 ? 'great' : pos >= .33 ? 'good' : 'weak',
-        rotating: mine && mine.source === 'rotating' ? quarterEnd(now) : null,
-        activateBy: mine && mine.activationNeeded ? ((cal && cal.activateBy) || 'soon') : null };
+      var cal = shown && shown.source === 'rotating' && shown.card.rotating && shown.card.rotating.calendar ? shown.card.rotating.calendar[quarterOf(now)] : null;
+      return { category: cat, mine: shown, anywhere: mine, via: via, minePct: minePct, topPct: top, pos: pos, level: pos >= .75 ? 'great' : pos >= .33 ? 'good' : 'weak',
+        rotating: shown && shown.source === 'rotating' ? quarterEnd(now) : null,
+        activateBy: shown && shown.activationNeeded ? ((cal && cal.activateBy) || 'soon') : null };
     });
   }
 

@@ -247,6 +247,7 @@ main { padding-block: 6px 14px; }
 .scale-row .nm { min-width: 0; font-size: .88rem; font-weight: 680; line-height: 1.15; }
 .scale-row .nm small { display: block; margin-top: 1px; font-size: .68rem; font-weight: 600; color: var(--muted); }
 .scale-row .nm small.warn { color: var(--gold); font-weight: 720; }
+.scale-row .nm small.via { color: var(--accent); font-weight: 700; }
 .scale-row > svg { width: 14px; height: 14px; color: var(--muted); }
 .scale-rate { text-align: right; font-size: 1.15rem; font-weight: 820; font-stretch: 72%; }
 .scale-bar { position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--weak), var(--fair) 50%, var(--great)); }
