@@ -88,6 +88,12 @@
       if (m.online) set.online = true;
     }
     if (primary) set[primary] = true;
+    // A kind of place picked without a store (Travel) also counts the purchases it covers (flights
+    // and hotels booked directly), so a card that pays extra on those is not judged on its base rate.
+    if (!m && primary) {
+      var kind = categoryById(data, primary);
+      if (kind && kind.includes) kind.includes.forEach(function (c) { set[c] = true; });
+    }
     if (ctx.payMethod === 'wallet') set['wallet-pay'] = true;
     if (ctx.online) set.online = true;
     return { primary: primary || 'other', all: set, merchant: m };
@@ -258,7 +264,19 @@
     var reason;
     if (!accepted) reason = 'Not accepted here';
     else if (best) {
-      reason = best.rate + (unit === 'percent' ? '% ' : 'x ') + (best.source === 'rotating' ? 'on ' + best.label + ' this quarter' : best.source === 'choice' ? (best.auto ? 'as its top category' : 'your chosen category') : best.source === 'choice2' ? 'your second category' : 'on ' + prettyLabel(best.label, data));
+      var onWhat = prettyLabel(best.label, data);
+      if (best.source === 'earn') {
+        // Every category that ties for the top rate, minus any a broader tying one already covers
+        // ("4x on flights and hotels", but "4x on travel" when travel itself pays 4x).
+        var tied = [];
+        list.forEach(function (c) { if (c.source === 'earn' && c.rate === best.rate && c.label && tied.indexOf(c.label) < 0) tied.push(c.label); });
+        tied = tied.filter(function (l) { return !tied.some(function (o) { var oc = categoryById(data, o); return o !== l && oc && (oc.includes || []).indexOf(l) >= 0; }); });
+        var names = [];
+        tied.forEach(function (l) { var n = prettyLabel(l, data); if (names.indexOf(n) < 0) names.push(n); });
+        if (names.length > 1) onWhat = names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+        else if (names.length === 1) onWhat = names[0];
+      }
+      reason = best.rate + (unit === 'percent' ? '% ' : 'x ') + (best.source === 'rotating' ? 'on ' + best.label + ' this quarter' : best.source === 'choice' ? (best.auto ? 'as its top category' : 'your chosen category') : best.source === 'choice2' ? 'your second category' : 'on ' + onWhat);
     } else reason = base + (unit === 'percent' ? '% ' : 'x ') + 'on everything';
 
     var protections = [];
@@ -514,8 +532,10 @@
       top = Math.max(top, minePct);
       var pos = top - 1 > .05 ? (minePct - 1) / (top - 1) : (minePct >= top ? 1 : 0);
       pos = Math.max(0, Math.min(1, pos));
+      var cal = mine && mine.source === 'rotating' && mine.card.rotating && mine.card.rotating.calendar ? mine.card.rotating.calendar[quarterOf(now)] : null;
       return { category: cat, mine: mine, minePct: minePct, topPct: top, pos: pos, level: pos >= .75 ? 'great' : pos >= .33 ? 'good' : 'weak',
-        rotating: mine && mine.source === 'rotating' ? quarterEnd(now) : null };
+        rotating: mine && mine.source === 'rotating' ? quarterEnd(now) : null,
+        activateBy: mine && mine.activationNeeded ? ((cal && cal.activateBy) || 'soon') : null };
     });
   }
 
@@ -551,6 +571,7 @@
     });
     if (card.rotating) parts.unshift(card.rotating.rate + (unit === 'percent' ? '%' : 'x') + ' rotating');
     if (card.choice) parts.unshift(card.choice.rate + (unit === 'percent' ? '%' : 'x') + ' ' + (card.choice.auto ? 'top category' : 'chosen category'));
+    if (!parts.length && !Number(card.base)) return 'No rewards';
     parts.push(card.base + (unit === 'percent' ? '%' : 'x') + ' everything else');
     return parts.slice(0, 5).join(', ');
   }

@@ -574,21 +574,30 @@
     "mcd"
    ],
    "category": "dining",
-   "popular": true
+   "popular": true,
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "chipotle",
    "name": "Chipotle",
    "aliases": [],
    "category": "dining",
-   "popular": true
+   "popular": true,
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "starbucks",
    "name": "Starbucks",
    "aliases": [],
    "category": "dining",
-   "popular": true
+   "popular": true,
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "chick-fil-a",
@@ -598,7 +607,10 @@
     "chickfila"
    ],
    "category": "dining",
-   "popular": true
+   "popular": true,
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "panera",
@@ -606,7 +618,10 @@
    "aliases": [
     "panera"
    ],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "portillos",
@@ -615,7 +630,10 @@
     "portillos"
    ],
    "category": "dining",
-   "popular": true
+   "popular": true,
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "culvers",
@@ -623,7 +641,10 @@
    "aliases": [
     "culvers"
    ],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "dunkin",
@@ -632,13 +653,19 @@
     "dunkin",
     "dunkin donuts"
    ],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "taco-bell",
    "name": "Taco Bell",
    "aliases": [],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "wendys",
@@ -646,13 +673,19 @@
    "aliases": [
     "wendys"
    ],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "subway",
    "name": "Subway",
    "aliases": [],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "dominos",
@@ -660,13 +693,19 @@
    "aliases": [
     "dominos"
    ],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "pizza-hut",
    "name": "Pizza Hut",
    "aliases": [],
-   "category": "dining"
+   "category": "dining",
+   "also": [
+    "fast-food"
+   ]
   },
   {
    "id": "olive-garden",
@@ -1436,7 +1475,10 @@
     "cinemark",
     "movie theater"
    ],
-   "category": "entertainment"
+   "category": "entertainment",
+   "also": [
+    "movies"
+   ]
   },
   {
    "id": "ticketmaster",

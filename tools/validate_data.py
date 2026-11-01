@@ -38,6 +38,10 @@ def main():
         for k in ('id', 'name', 'short', 'icon', 'desc'):
             if k not in c:
                 errors.append('category %s missing %s' % (c.get('id'), k))
+    for c in cats:
+        for x in c.get('includes', []):
+            if x not in cat_ids:
+                errors.append('category %s includes unknown category %s' % (c['id'], x))
     for m in merch:
         if not slug.match(m['id']):
             errors.append('merchant id not kebab-case: %s' % m['id'])

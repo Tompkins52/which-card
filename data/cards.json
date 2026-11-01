@@ -1,5 +1,5 @@
 {
- "version": "2026-10-31",
+ "version": "2026-11-01",
  "verified": "2026-10-28",
  "notes": [
   "Issuer pages first: americanexpress.com product and benefit policy pages, delta.com, hilton.com, marriott.com, cards.barclaycardus.com, wyndhamrewardscreditcard.com and emirates.com rendered; many Barclays product pages (Earner Plus, Carnival Rewards, Old Navy, Gap, Priceline, Breeze, Hawaiian landing pages), lowes.com, usbank.com, priceline.com, flyfrontier.com, flybreeze.com, boh.com and aa.com would not render. Gaps were filled from NerdWallet, The Points Guy, Doctor of Credit, Upgraded Points, Frequent Miler, AwardWallet, Bankrate, Danny the Deal Guru, Miles to Memories, View from the Wing, Your Mileage May Vary, Platinum Flyer, The Point Calculator, CardStack, Rivo, Kudos, Nav, FinanceBuzz, HelloSafe and press releases on PR Newswire, Business Wire, Synchrony, Gap Inc., JetBlue and Amazon, each named in the card's sourceUrls.",
@@ -93,7 +93,7 @@
   "Bilt: Wells Fargo stopped issuing the Bilt Mastercard on November 5, 2025. On February 7, 2026 Wells Fargo Bilt accounts that did not move to a Bilt 2.0 card converted to the Wells Fargo Autograph Visa (Wells Fargo Rewards, no rent earning). The current Bilt Blue ($0), Obsidian ($95) and Palladium ($495) cards are issued by Column N.A. with Cardless as program manager; issuer is recorded as 'other' because the schema enum has no Column or Cardless value. Bilt Cash (4% back on non-housing spend as an optional track) is not cash back and is described in tips rather than modeled as a rate.",
   "U.S. Bank: Altitude Reserve closed to new applicants in November 2024 and had negative changes on December 15, 2025 (mobile wallet 3x capped at $5,000 per billing cycle, points worth 1 cent, $325 credit limited to Travel Center bookings, 10x portal hotels and cars, 5x portal flights, transfer partners added). Shopper Cash Rewards closed to new applicants June 22, 2026; existing holders keep it. Both are included for existing holders with confidence medium. Smartly tiers (2.5%, 3%, 4% total on the first $10,000 per billing cycle with Smartly Checking or Safe Debit balances of $10K, $50K, $100K) are recorded in tips for the merge step to model as an optional base override.",
   "Wells Fargo Attune closed to new applicants June 15, 2026 after launching in August 2025; included because the assignment asked for it, but it is not widely held.",
-  "Schema deviations, all additive: (1) 'network': 'store' is used for closed-loop store cards (Target Credit Card, Amazon Store Card, Amazon Secured Card, My Best Buy Credit Card, MyLowe's Rewards Credit Card) because the enum has no store value. (2) choice.optionLabels (Cash+) lists the issuer wording for all 12 options since four (electronics stores, sporting goods stores, furniture stores, select clothing stores) have no category id; Cash+ 'dining' maps only to fast food and 'entertainment' only to movie theaters. (3) choice.merchantOptions (Shopper Cash Rewards) holds merchant ids for the 6% retailer list. (4) secondTier.slots = 1 marks a second tier that is itself a pick-one choice (Cash+ 2% category, Shopper Cash Rewards 3% category); Shopper's second tier has its own cap fields. (5) earn[].walletPayOnly = true (Apple Card) marks merchant rates that require Apple Pay. (6) earn[].requires marks conditional rules: 'sams-club-plus-membership', 'amazon-prime'. (7) capPeriod 'month' on Altitude Reserve means per billing cycle.",
+  "Schema deviations, all additive: (1) 'network': 'store' is used for closed-loop store cards (Target Credit Card, Amazon Store Card, Amazon Secured Card, My Best Buy Credit Card, MyLowe's Rewards Credit Card) because the enum has no store value. (2) choice.optionLabels (Cash+) lists the issuer wording for all 12 options since four (electronics stores, sporting goods stores, furniture stores, select clothing stores) have no category id; Cash+ 5% fast food and movie theaters use the fast-food and movies categories. (3) choice.merchantOptions (Shopper Cash Rewards) holds merchant ids for the 6% retailer list. (4) secondTier.slots = 1 marks a second tier that is itself a pick-one choice (Cash+ 2% category, Shopper Cash Rewards 3% category); Shopper's second tier has its own cap fields. (5) earn[].walletPayOnly = true (Apple Card) marks merchant rates that require Apple Pay. (6) earn[].requires marks conditional rules: 'sams-club-plus-membership', 'amazon-prime'. (7) capPeriod 'month' on Altitude Reserve means per billing cycle.",
   "New merchant ids used (not in the schema list): duane-reade, ace-hardware, booking-com, chargepoint, exxon-mobil, hertz, nike (Apple Card 3% partners); anthropologie, bed-bath-beyond, chewy, crate-and-barrel, ikea, kohls, lululemon, macys, menards, nordstrom, pottery-barn, qvc, restoration-hardware, wayfair, williams-sonoma (Shopper Cash Rewards retailer list). Existing ids reused: apple, uber, uber-eats, walgreens, paypal, sams-club, amazon, whole-foods, best-buy, lowes, verizon, target, disney, home-depot, walmart.",
   "New program ids used: best-buy-rewards (My Best Buy points, redeemable only as Best Buy certificates, 1 point = 2 cents) and verizon-dollars (Verizon Dollars, $1 each, redeemable only with Verizon). PayPal Cashback uses the existing paypal-cashback id rather than synchrony-cashback because the schema defines it; remap if the merge step prefers one Synchrony program. Amazon Store Card, Amazon Secured, Sam's Club Mastercard and the Lowe's card use synchrony-cashback; note that the Lowe's and Target 5% are checkout discounts rather than earned rewards, and Amazon Store Card rewards are usable only at Amazon or as a statement credit.",
   "Left out on purpose: Home Depot Consumer Credit Card (financing only, no rewards or standing discount). Uber: the Barclays Uber Visa was discontinued in October 2021 and no consumer Uber credit card exists; the Uber Pro Card is a business debit Mastercard for drivers and couriers (Branch, Evolve Bank & Trust) and is not a credit card. Costco cards are handled by another agent.",
@@ -11961,12 +11961,12 @@
     "slots": 2,
     "rate": 5,
     "options": [
-     "dining",
+     "fast-food",
      "utilities",
      "streaming",
      "department-store",
      "phone",
-     "entertainment",
+     "movies",
      "transit",
      "fitness"
     ],
@@ -11982,6 +11982,10 @@
       "ev-charging"
      ],
      "sharesCap": false
+    },
+    "renamed": {
+     "dining": "fast-food",
+     "entertainment": "movies"
     }
    },
    "benefits": {},
@@ -11996,7 +12000,7 @@
    ],
    "watchOut": [
     "3% foreign transaction fee",
-    "The fast food option covers fast food merchants only, not full-service restaurants; the movie theaters option does not cover other entertainment",
+    "Fast food means places coded as fast food (most counter-service chains and coffee shops), not sit-down restaurants; movie theaters means movie theaters only",
     "Electronics stores, sporting goods, furniture stores and select clothing stores are also 5% options but have no matching category id in this dataset",
     "Rewards expire 36 months after they are earned"
    ],

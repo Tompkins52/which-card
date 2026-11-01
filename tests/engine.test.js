@@ -223,6 +223,48 @@ console.log('membership tests passed');
   console.log('best cards tests passed');
 })();
 
+// ---- Travel counts flights and hotels, and other things Mark found (against the real catalog) ----
+(function () {
+  var fs = require('fs'), path = require('path');
+  function load(n) { return JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', n + '.json'), 'utf8')); }
+  var real = { categories: load('categories').categories, merchants: load('merchants').merchants, cards: load('cards').cards, bonuses: load('bonuses'), valuations: load('valuations') };
+  var when = new Date('2026-11-01T16:40:00-05:00');
+  var mark = ['chase-united-gateway', 'chase-freedom', 'chase-slate-edge', 'chase-sapphire-reserve', 'chase-freedom-unlimited'];
+  ['cash', 'travel'].forEach(function (pri) {
+    var st = { wallet: mark.map(function (id) { return { cardId: id, activated: { '2026-Q4': true } }; }), prefs: { priority: pri, payMethod: 'card', redeem: {} } };
+    var travel = E.walletScale(st, real, when).filter(function (r) { return r.category.id === 'travel'; })[0];
+    assert.strictEqual(travel.mine.card.id, 'chase-sapphire-reserve', pri + ': the Sapphire Reserve is the best card in the wallet for travel, got ' + travel.mine.card.id);
+    assert.strictEqual(travel.level, 'great', pri + ': a wallet with the Sapphire Reserve is great at travel, got ' + travel.level);
+    assert.strictEqual(travel.mine.reason, '4x on flights and hotels');
+  });
+  // the Best cards for travel list has the premium travel cards in it
+  var none = { wallet: [], prefs: { priority: 'travel', redeem: {} } };
+  var top = E.bestCards({ category: 'travel' }, none, real, when, 10).map(function (r) { return r.card.id; });
+  ['amex-platinum', 'chase-sapphire-reserve'].forEach(function (id) { assert(top.indexOf(id) >= 0, id + ' should be among the best cards for travel: ' + top.join(', ')); });
+  // at an airline the reserve still earns its flight rate, and a broader category that ties reads as one
+  var r = E.recommend({ merchant: 'united', amount: 100 }, { wallet: [{ cardId: 'chase-sapphire-reserve' }], prefs: { priority: 'cash', redeem: {} } }, real, when).results[0];
+  assert.strictEqual(r.reason, '4x on flights');
+  var alt = E.recommend({ category: 'travel', amount: 100 }, { wallet: [{ cardId: 'us-bank-altitude-connect' }], prefs: { priority: 'cash', redeem: {} } }, real, when).results[0];
+  assert.strictEqual(alt.reason, '4x on travel', 'travel covers flights and hotels, so it is named alone');
+  // Cash+ 5% fast food is fast food, not every restaurant; movie theaters are not all entertainment
+  var cp = { wallet: [{ cardId: 'us-bank-cash-plus', choices: ['fast-food', 'movies'], choices2: ['dining'] }], prefs: { priority: 'cash', redeem: {} } };
+  function pct(ctx) { return E.recommend(Object.assign({ amount: 100 }, ctx), cp, real, when).results[0].effectivePercent; }
+  assert.strictEqual(pct({ merchant: 'mcdonalds' }), 5);
+  assert.strictEqual(pct({ merchant: 'olive-garden' }), 2);
+  assert.strictEqual(pct({ category: 'dining' }), 2);
+  assert.strictEqual(pct({ merchant: 'amc' }), 5);
+  assert.strictEqual(pct({ merchant: 'ticketmaster' }), 1);
+  var dine = E.bestCards({ category: 'dining' }, { wallet: [], prefs: { priority: 'cash', redeem: {} } }, real, when, 5);
+  assert(dine[0].card.id !== 'us-bank-cash-plus', 'Cash+ is not the best card for restaurants');
+  // a rotating bonus not activated yet says so on Compare
+  var na = { wallet: [{ cardId: 'chase-freedom' }], prefs: { priority: 'cash', redeem: {} } };
+  var groc = E.walletScale(na, real, when).filter(function (x) { return x.category.id === 'groceries'; })[0];
+  assert.strictEqual(groc.activateBy, '2026-12-14', 'groceries on Compare says to activate by Dec 14');
+  // a card with no rewards says so
+  assert.strictEqual(E.cardSummary(real.cards.filter(function (c) { return c.id === 'chase-slate-edge'; })[0], real), 'No rewards');
+  console.log('travel, Cash+ and Compare tests passed');
+})();
+
 // ---- Reading a card from the letters on it (against the real catalog) ----
 (function () {
   var real = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '..', 'data', 'cards.json'), 'utf8'));

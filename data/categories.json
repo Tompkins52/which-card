@@ -43,6 +43,31 @@
    ]
   },
   {
+   "id": "fast-food",
+   "name": "Fast food",
+   "short": "Fast food",
+   "icon": "fork",
+   "quick": false,
+   "desc": "Counter-service chains and coffee shops that card networks code as fast food. Sit-down restaurants are dining only.",
+   "examples": [
+    "McDonald's",
+    "Chick-fil-A",
+    "Starbucks"
+   ]
+  },
+  {
+   "id": "movies",
+   "name": "Movie theaters",
+   "short": "Movies",
+   "icon": "ticket",
+   "quick": false,
+   "desc": "Movie theaters. Concerts, ticket sites and theme parks are entertainment only.",
+   "examples": [
+    "AMC",
+    "Regal"
+   ]
+  },
+  {
    "id": "online",
    "name": "Online shopping",
    "short": "Online",
@@ -99,11 +124,15 @@
    "short": "Travel",
    "icon": "plane",
    "quick": true,
-   "desc": "Airfare, hotels, cruises and travel agencies booked directly.",
+   "desc": "Airfare, hotels, cruises and travel agencies booked directly. Counts cards that pay extra on flights or hotels booked with the airline or hotel.",
    "examples": [
     "United",
     "Marriott",
     "Airbnb"
+   ],
+   "includes": [
+    "flights",
+    "hotels"
    ]
   },
   {

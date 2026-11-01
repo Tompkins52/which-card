@@ -49,6 +49,20 @@
     });
     return cached ? Promise.resolve(data) : fresh;
   }
+  // A card's choice options can be renamed in the data (Cash+ dining became fast food): saved
+  // picks carry over to the new name so nobody has to pick again.
+  function migrateChoices(d) {
+    var changed = false;
+    (state.wallet || []).forEach(function (e) {
+      var card = null;
+      for (var i = 0; i < d.cards.length; i++) if (d.cards[i].id === e.cardId) { card = d.cards[i]; break; }
+      if (!card || !card.choice || !card.choice.renamed || !e.choices || !e.choices.length) return;
+      var ren = card.choice.renamed, next = [];
+      e.choices.forEach(function (c) { var to = ren[c] || c; if (next.indexOf(to) < 0) next.push(to); });
+      if (next.join() !== e.choices.join()) { e.choices = next; changed = true; }
+    });
+    if (changed) saveState();
+  }
   function fetchData() {
     if (!navigator.onLine && typeof navigator.onLine === 'boolean') return Promise.resolve(null);
     return Promise.all(DATA_FILES.map(function (name) {
@@ -65,6 +79,7 @@
     out.catalog.forEach(function (c) { if (!c.color) c.color = issuerColor(c.issuer); });
     out.valuations.programs['custom-points'] = out.valuations.programs['custom-points'] || { name: 'Points (your estimate)', unit: 'points', cash: 1, travel: 1, transfer: 1, note: 'Valued at 1 cent each unless you change it in More.' };
     out.cards = out.catalog.concat(state.customCards || []);
+    migrateChoices(out);
     return out;
   }
   function rebuildCards() { if (data) data.cards = data.catalog.concat(state.customCards || []); listOrder = null; }
@@ -2101,9 +2116,9 @@
         var word = { great: 'great', good: 'good', weak: 'weak' }[r.level];
         var until = r.rotating ? r.rotating.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
         list.appendChild(h('li', { class: 'scale ' + r.level, style: '--p:' + r.pos.toFixed(3) + ';--i:' + i + ';--tint:' + tintFor(c.id) },
-          h('button', { class: 'scale-row', 'aria-label': name + ': ' + word + ', ' + pctText(r.minePct) + ' with your best card, ' + pctText(r.topPct) + ' is the best out there' + (until ? ', with a rotating bonus until ' + until : '') + '. Best cards for ' + lower + '.', onclick: function () { openBestCards({ category: c.id }, lower); } },
+          h('button', { class: 'scale-row', 'aria-label': name + ': ' + word + ', ' + pctText(r.minePct) + ' with your best card, ' + pctText(r.topPct) + ' is the best out there' + (until ? ', with a rotating bonus until ' + until : '') + (r.activateBy ? ', once you activate it' : '') + '. Best cards for ' + lower + '.', onclick: function () { openBestCards({ category: c.id }, lower); } },
             h('span', { class: 'qi', 'aria-hidden': 'true' }, icon(c.icon)),
-            h('span', { class: 'nm' }, name, until ? h('small', null, 'rotating, to ' + until) : null),
+            h('span', { class: 'nm' }, name, r.activateBy ? h('small', { class: 'warn' }, r.activateBy === 'soon' ? 'activate the 5x' : 'activate by ' + new Date(r.activateBy + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) : until ? h('small', null, 'rotating, to ' + until) : null),
             h('span', { class: 'scale-bar', 'aria-hidden': 'true' }, h('span', { class: 'dot' })),
             h('span', { class: 'scale-rate num' }, r.minePct > 0 ? pctText(r.minePct) : '0%'),
             icon('chev'))));
