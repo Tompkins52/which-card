@@ -632,15 +632,33 @@
   }
 
   // One card in the pocket: its colors, name, why, and what it earns here.
+  // A rotating card's quarter, for its strip in the pocket: Activated (a check) or Activate by Dec 14,
+  // then "5x groceries and dining", so the card's real worth shows even where the bonus does not
+  // apply. Nothing when the bonus is what the card earns here (the reason already says it).
+  function rotatingLine(r) {
+    var card = r.card, rot = card.rotating;
+    if (!rot || !rot.calendar || r.source === 'rotating') return null;
+    var q = E.quarterOf(new Date()), cal = rot.calendar[q];
+    if (!cal) return null;
+    var names = (cal.categories || []).map(function (c) { var k = E.categoryById(data, c); return k ? k.name.toLowerCase() : c; });
+    if (!names.length) names = (cal.merchants || []).map(function (m) { return (E.merchantById(data, m) || { name: m }).name; });
+    if (!names.length) return null;
+    var what = names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0];
+    var on = !rot.activation || !!(r.entry.activated && r.entry.activated[q]);
+    return h('span', { class: 'rot' + (on ? ' on' : '') },
+      h('span', { class: 'act' }, on ? icon('check') : null, on ? 'Activated' : 'Activate' + (cal.activateBy ? ' by ' + E.fmtDate(cal.activateBy) : '')),
+      rateText(rot.rate, r.unit) + ' ' + what);
+  }
   function walletStrip(r, tag) {
-    var col = cardColors(r.card);
-    return h(tag || 'span', { class: 'strip' + (r.accepted ? '' : ' off'), style: '--c1:' + col.c1 + ';--c2:' + col.c2 + ';--c3:' + col.c3 + ';--on:' + col.ink },
+    var col = cardColors(r.card), rot = rotatingLine(r);
+    return h(tag || 'span', { class: 'strip' + (r.accepted ? '' : ' off') + (rot ? ' has-rot' : ''), style: '--c1:' + col.c1 + ';--c2:' + col.c2 + ';--c3:' + col.c3 + ';--on:' + col.ink },
       h('span', { class: 'n' }, r.entry.nickname || r.card.name,
         h('span', { class: 'why' }, r.reason),
         r.warnings.length ? h('span', { class: r.accepted ? 'warn' : 'bad' }, r.warnings[0]) : null,
         r.goal ? h('span', { class: 'why' }, r.goal.label + ': ' + money(r.goal.remaining) + ' to go') : null),
       h('span', { class: 'r' }, r.accepted ? rateText(r.effectiveRate, r.unit) : '\u00d7',
         r.accepted && r.unit !== 'percent' ? h('small', null, pctText(r.effectivePercent) + ' value') : null),
+      rot,
       h('span', { class: 'chip', 'aria-hidden': 'true', style: '--chipA:' + col.chipA + ';--chipB:' + col.chipB }),
       h('span', { class: 'net', 'aria-hidden': 'true' }, ({ 'American Express': 'AMEX', Mastercard: 'MASTERCARD', Visa: 'VISA', Discover: 'DISCOVER' })[r.entry.network || r.card.network] || ''));
   }

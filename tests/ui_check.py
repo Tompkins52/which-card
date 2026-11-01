@@ -108,6 +108,10 @@ with sync_playwright() as p:
 
     page.click('.quick button:has-text("Gas")')
     page.wait_for_timeout(200)
+    # A rotating card that does not win here still shows its quarter in the pocket, with its activation state.
+    strip = page.locator('#answer .pocket .others li:has-text("Freedom Flex") .rot')
+    assert strip.count() == 1 and 'Activate by' in strip.inner_text() and 'groceries' in strip.inner_text(), 'the Freedom Flex strip should show this quarter\'s categories and Activate by: ' + (strip.inner_text() if strip.count() else 'no line')
+
     shot(page, os.path.join(OUT, '05-gas.png'))
     assert page.locator('#amount').count() == 0, 'there is no amount to type'
     winner = page.inner_text('.winner .name')
