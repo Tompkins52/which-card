@@ -67,7 +67,7 @@
     out.cards = out.catalog.concat(state.customCards || []);
     return out;
   }
-  function rebuildCards() { if (data) data.cards = data.catalog.concat(state.customCards || []); }
+  function rebuildCards() { if (data) data.cards = data.catalog.concat(state.customCards || []); listOrder = null; }
   function issuerColor(issuer) {
     return { 'Chase': '#1B4F8A', 'American Express': '#2B6CB0', 'Capital One': '#8A1F2B', 'Citi': '#12365D', 'Discover': '#C8541D', 'Bank of America': '#9B1B30', 'Wells Fargo': '#8E1B1B', 'U.S. Bank': '#1E3A6B' }[issuer] || '#3C4A5A';
   }
@@ -1281,6 +1281,27 @@
     root.appendChild(h('p', { class: 'hint' }, 'Tap a card to see how to get the most from it.'));
   }
 
+  // The order cards are listed in when you add them: the best-known personal cards first, the rest of
+  // the personal cards after them, and business cards last (the best-known of those first). Ids, most
+  // popular first; a card not named here keeps its place in the data.
+  var POPULAR = ['chase-sapphire-preferred', 'chase-freedom-unlimited', 'chase-prime-visa', 'citi-costco-anywhere-visa', 'amex-gold',
+    'capital-one-venture-x', 'citi-double-cash', 'amex-platinum', 'chase-freedom-flex', 'capital-one-quicksilver', 'discover-it-cash-back',
+    'wells-fargo-active-cash', 'amex-blue-cash-preferred', 'apple-card', 'chase-sapphire-reserve', 'capital-one-venture',
+    'amex-blue-cash-everyday', 'capital-one-savor-cash-rewards', 'citi-custom-cash', 'bofa-customized-cash-rewards', 'chase-freedom',
+    'wells-fargo-autograph', 'target-circle-card', 'amex-delta-skymiles-gold', 'chase-united-explorer', 'chase-southwest-rapid-rewards-plus',
+    'bilt-blue', 'bofa-travel-rewards', 'us-bank-cash-plus', 'citi-strata-premier', 'capital-one-ventureone', 'discover-it-miles',
+    'amex-hilton-honors', 'chase-marriott-bonvoy-boundless', 'amazon-store-card', 'paypal-cashback-mastercard', 'sams-club-mastercard',
+    'navy-federal-cashrewards', 'usaa-preferred-cash-rewards', 'bofa-unlimited-cash-rewards'];
+  var POPULAR_BIZ = ['chase-ink-business-cash', 'chase-ink-business-unlimited', 'chase-ink-business-preferred', 'amex-business-platinum',
+    'amex-business-gold', 'amex-blue-business-plus', 'capital-one-spark-cash-plus', 'capital-one-venture-x-business', 'amex-blue-business-cash',
+    'citi-costco-anywhere-visa-business'];
+  var listOrder = null;
+  function listRank(c) {
+    if (!listOrder) { listOrder = {}; data.cards.forEach(function (x, i) { listOrder[x.id] = i; }); }
+    var biz = c.type === 'business', top = (biz ? POPULAR_BIZ : POPULAR).indexOf(c.id);
+    return (biz ? 100000 : 0) + (top >= 0 ? top : 1000 + (listOrder[c.id] != null ? listOrder[c.id] : 5000));
+  }
+
   var justAdded = null;
   function openAddCards(intro) {
     var filter = { issuer: 'All', q: '' };
@@ -1304,7 +1325,7 @@
         else if (filter.issuer !== 'All' && c.issuer !== filter.issuer) return false;
         if (q && (c.name + ' ' + c.issuer).toLowerCase().indexOf(q) < 0) return false;
         return true;
-      });
+      }).sort(function (a, b) { return listRank(a) - listRank(b); });
       if (!shown.length) list.appendChild(h('p', { class: 'hint' }, 'No card matches. Try another name.'));
       shown.forEach(function (c) {
         var inWallet = !!walletEntry(c.id);

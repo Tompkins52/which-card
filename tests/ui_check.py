@@ -73,6 +73,17 @@ with sync_playwright() as p:
     page.click('#btn-start')
     page.wait_for_selector('.sheet')
     shot(page, os.path.join(OUT, '01-onboarding.png'))
+    # The best-known cards come first, and business cards always come after every personal card.
+    first = page.locator('.sheet .card-row b').first.inner_text()
+    assert first == 'Chase Sapphire Preferred', 'the card list should open with the most popular card, not %s' % first
+    for term in ('chase', 'gold'):
+        page.fill('.sheet input[type=search]', term)
+        names = page.locator('.sheet .card-row b').all_inner_texts()
+        biz = [i for i, n in enumerate(names) if 'Business' in n or n == 'The Plum Card']
+        personal = [i for i, n in enumerate(names) if i not in biz]
+        assert biz and personal and min(biz) > max(personal), 'searching %r should list business cards last: %s' % (term, names)
+    assert page.locator('.sheet .card-row b').first.inner_text() == 'Amex Gold', 'searching gold should start with Amex Gold'
+    page.fill('.sheet input[type=search]', '')
 
     def add(term, name):
         page.fill('.sheet input[type=search]', term)
