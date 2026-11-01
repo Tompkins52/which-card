@@ -10,7 +10,7 @@
 
   var data = null;
   var state = loadState();
-  var ctx = { merchant: null, category: null, customName: '', amount: '', payMethod: state.prefs.payMethod || 'card' };
+  var ctx = { merchant: null, category: null, customName: '', payMethod: state.prefs.payMethod || 'card' };
   var nearby = [];
   var view = 'pay';
   var onboarding = false;
@@ -168,7 +168,6 @@
   function cat(id) { return E.categoryById(data, id) || { id: id, name: id, icon: 'dots' }; }
   var TINTS = { gas: '#E0801B', groceries: '#1F9D55', dining: '#D9443A', online: '#7C5CD6', warehouse: '#1C8DC9', superstore: '#D63E8C', drugstore: '#139E8C', travel: '#2F6FE0', transit: '#5A5DD6', streaming: '#E0366A', phone: '#0E9A73', 'home-improvement': '#E26A1B', other: '#5F6B7A', flights: '#2F6FE0', hotels: '#2F6FE0', 'rental-car': '#5A5DD6', entertainment: '#D63E8C', utilities: '#0E9A73', 'department-store': '#7C5CD6', fitness: '#1F9D55', 'ev-charging': '#139E8C', rent: '#5F6B7A', 'portal-travel': '#2F6FE0' };
   function tintFor(id) { return TINTS[id] || '#5F6B7A'; }
-  function parseAmount(s) { var n = parseFloat(String(s).replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; }
   function quarterLabel(q) { var m = /^(\d{4})-Q(\d)$/.exec(q); return m ? 'Q' + m[2] + ' ' + m[1] : q; }
   function programName(id) { var p = data.valuations.programs[id]; return p ? p.name : id; }
 
@@ -261,15 +260,25 @@
 
   /* ---------- views ---------- */
   function showView(name) {
+    var changing = view !== name;
     view = name;
     ['pay', 'wallet', 'offers', 'more'].forEach(function (v) {
-      document.getElementById('view-' + v).hidden = v !== name;
+      var el = document.getElementById('view-' + v);
+      el.hidden = v !== name;
+      if (v === name && changing) { el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }
     });
     document.querySelectorAll('.tabs button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === name); });
     window.scrollTo(0, 0);
     renderView(name);
   }
+  // A dot on the Wallet tab while a reminder there is waiting.
+  function markTabs() {
+    var probe = h('div'); renderReminder(probe, function () { });
+    var b = document.querySelector('.tabs button[data-view=wallet]');
+    if (b) b.classList.toggle('dot', probe.childNodes.length > 0);
+  }
   function renderView(name) {
+    markTabs();
     if (name === 'pay') renderPay();
     else if (name === 'wallet') renderWallet();
     else if (name === 'offers') renderOffers();
@@ -300,8 +309,8 @@
     }
   }
 
-  // Activation and perk reminders sit under the answer, so the card to use always comes first.
-  function renderReminder(root) {
+  // Activation and perk reminders sit at the top of the Wallet tab, which shows a dot until they are handled.
+  function renderReminder(root, redraw) {
     var q = E.quarterOf(new Date());
     state.dismissed = state.dismissed || {};
     if (!state.dismissed['activate:' + q]) {
@@ -317,8 +326,8 @@
           h('p', null, h('b', null, p.card.name + ': '), 'activate the ' + quarterLabel(q) + ' ' + rateText(p.card.rotating.rate, E.unitFor(p.card.program, data)) + ' categories' + (p.cal.activateBy ? ' by ' + E.fmtDate(p.cal.activateBy) : '') + (pending.length > 1 ? ' (and ' + (pending.length - 1) + ' more)' : '') + '.'),
           h('div', { class: 'remind-actions' },
             p.card.rotating.activationUrl ? h('a', { class: 'btn primary', href: p.card.rotating.activationUrl, target: '_blank', rel: 'noopener' }, 'Activate') : null,
-            h('button', { class: 'btn', onclick: function () { p.entry.activated = p.entry.activated || {}; p.entry.activated[q] = true; saveState(); renderPay(); toast('Marked ' + p.card.name + ' as activated'); } }, 'Done, activated'),
-            h('button', { class: 'btn ghost', onclick: function () { state.dismissed['activate:' + q] = true; saveState(); renderAnswer(); } }, 'Later'))));
+            h('button', { class: 'btn', onclick: function () { p.entry.activated = p.entry.activated || {}; p.entry.activated[q] = true; saveState(); redraw(); toast('Marked ' + p.card.name + ' as activated'); } }, 'Done, activated'),
+            h('button', { class: 'btn ghost', onclick: function () { state.dismissed['activate:' + q] = true; saveState(); redraw(); } }, 'Later'))));
         return;
       }
     }
@@ -335,7 +344,7 @@
       h('p', null, h('b', null, pk.card.name), ' has ' + pk.n + (pk.n === 1 ? ' perk' : ' perks') + ' to activate' + (perkCards.length > 1 ? ', and ' + (perkCards.length - 1) + (perkCards.length === 2 ? ' other card does too' : ' other cards do too') : '') + '.'),
       h('div', { class: 'remind-actions' },
         h('button', { class: 'btn primary', onclick: function () { openCardDetail(pk.card.id); } }, 'Review'),
-        h('button', { class: 'btn ghost', onclick: function () { state.dismissed['perks:' + q] = true; saveState(); renderAnswer(); } }, 'Later'))));
+        h('button', { class: 'btn ghost', onclick: function () { state.dismissed['perks:' + q] = true; saveState(); redraw(); } }, 'Later'))));
   }
 
   function currentWhere() {
@@ -367,11 +376,12 @@
         h('span', { class: 'change' }, 'Change')));
       var others = nearby.filter(function (n) { return !(n.merchant ? n.merchant === ctx.merchant : (!ctx.merchant && n.category === ctx.category && n.name === ctx.customName)); }).slice(0, 3);
       if (others.length) {
-        more.appendChild(h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Other stores near you' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n) {
-          return h('button', { onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge)));
+        more.appendChild(h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Other stores near you' }, [h('span', { class: 'nearby-label' }, 'Not here?')].concat(others.map(function (n, i) {
+          return h('button', { style: '--i:' + i, onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge)));
         }))));
       }
       var rn = rememberNote(w); if (rn) more.appendChild(rn);
+      fitPay();
       return;
     }
     var picker = h('div', { class: 'picker' });
@@ -390,7 +400,7 @@
     // stays short and the answer under it stays on screen. (The pin in the header looks again.)
     if (nearby.length) picker.appendChild(h('div', { class: 'near' },
       h('p', { class: 'near-label' }, icon('pin'), nearState ? 'Near you. Tap the one you\u2019re at:' : 'Near you:'),
-      h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Stores near you' }, nearby.slice(0, 4).map(function (n) { return h('button', { onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge))); }))));
+      h('div', { class: 'nearby scroll-row', role: 'group', 'aria-label': 'Stores near you' }, nearby.slice(0, 4).map(function (n, i) { return h('button', { style: '--i:' + i, onclick: function () { applyNearby(n); } }, n.name, h('small', null, feet(n.edge))); }))));
     picker.appendChild(h('div', { class: 'search' }, icon('search'), input));
     picker.appendChild(suggest);
     var quick = h('div', { class: 'quick scroll-row', role: 'group', 'aria-label': 'Kinds of place' });
@@ -498,10 +508,8 @@
     state.lastWhere = { merchant: merchantId, category: categoryId, customName: ctx.customName, located: ctx.located, at: Date.now() };
     saveState();
     renderPay();
-    var amt = document.getElementById('amount');
-    if (amt && !ctx.amount && !quiet) { try { amt.focus({ preventScroll: true }); } catch (e) { amt.focus(); } }
   }
-  // A store from the lookup. quiet: found on its own when the app opened, so the keyboard stays down.
+  // A store from the lookup. quiet: found on its own when the app opened.
   function applyNearby(n, quiet) { setWhere(n.merchant || null, n.merchant ? null : n.category, n.merchant ? '' : n.name, true, quiet); }
   // Offered under a store picked by hand while the phone knows where it is: remember this spot, so
   // next time standing here says "You're at". One line, one tap when the store already has a name.
@@ -537,23 +545,13 @@
     requestAnimationFrame(step);
   }
 
-  function setAmountNote(value, what) {
-    var note = document.getElementById('amount-note'); if (!note) return;
-    clear(note);
-    if (value == null) { note.className = 'opt-note'; note.appendChild(document.createTextNode('Amount (optional)')); return; }
-    note.className = 'opt-note val num';
-    note.appendChild(document.createTextNode(value));
-    note.appendChild(h('small', null, what));
-  }
-
   function renderAnswer() {
     var top = document.getElementById('answer-top'), mid = document.getElementById('answer-more'), root = document.getElementById('answer');
     clear(top); clear(mid); clear(root);
-    setAmountNote(null);
-    var amount = parseAmount(ctx.amount);
     var where = currentWhere();
     if (!where && locating) { top.appendChild(h('div', { class: 'answer-wait', 'aria-hidden': 'true' }, h('span'), h('span'), h('span'))); return; }
-    var rc = { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: amount, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad };
+    // No amount: which card to use does not depend on how much you spend, so the answer is the rate.
+    var rc = { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: 0, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad };
     var rec = E.recommend(rc, state, data);
     if (!rec.best) return;
     var best = rec.best, card = best.card;
@@ -565,62 +563,108 @@
     var reasonTail = String(best.reason || '').replace(/^\s*[\d.]+\s*(%|x)\s*/i, '');
     if (best.entry.multiplier && best.entry.multiplier > 1) reasonTail += ' (with your ' + Math.round((best.entry.multiplier - 1) * 100) + '% boost)';
     var rateNum = h('span', null, rateText(best.effectiveRate, unit));
-    // The card to use: its picture with the hat on it, its name and what it earns here, all on the
-    // first screen. Tapping it opens the card.
+    // The card to use: its picture with the hat on it, its name and what it earns here. Tapping it opens the card.
     var art = cardArt(card, 140, { bare: true }); art.setAttribute('aria-hidden', 'true');
     var hat = h('span', { class: 'w-hat', 'aria-hidden': 'true' }); hat.innerHTML = hatSvg();
     top.appendChild(h('button', { class: 'winner' + (changed ? ' reveal' : '') + (where ? '' : ' nowhere'), onclick: function () { openCardDetail(card.id); } },
-      h('span', { class: 'w-card' }, art, hat),
+      h('span', { class: 'w-card' }, art, hat, changed ? sparkles() : null),
       h('span', { class: 'w-text' },
         h('span', { class: 'w-label' }, where ? icon('check') : null, where ? 'Use this card' : 'For everything else'),
         h('span', { class: 'name' }, best.entry.nickname || card.name),
         h('span', { class: 'rate num' }, rateNum, h('small', null, reasonTail + (unit !== 'percent' ? ', ' + unit + ' worth ' + pctText(best.effectivePercent) : '')))),
       h('span', { class: 'w-go', 'aria-hidden': 'true' }, icon('chev'))));
     if (changed) countUp(rateNum, best.effectiveRate, unit);
-    // What this purchase earns sits beside the amount typed.
-    if (amount > 0) setAmountNote(best.valueCents >= 0 ? cents(best.valueCents) : '-' + cents(-best.valueCents), unit === 'percent' ? 'back' : 'in value');
-
-    // Under the amount: how much more than the next card, "I used it", and the card's flags.
-    if (amount > 0) {
-      var edgeText = '';
-      if (rec.results.length > 1 && rec.results[1].accepted) {
-        var edge = best.valueCents - rec.results[1].valueCents;
-        if (edge >= 1) edgeText = cents(edge) + ' more than your next card';
-        else if (edge > -1) edgeText = 'Ties with ' + (rec.results[1].entry.nickname || rec.results[1].card.name);
-      }
-      mid.appendChild(h('div', { class: 'used-row' }, h('span', { class: 'edge num' }, edgeText ? h('span', { class: 'hl' }, edgeText) : null),
-        h('button', { class: 'btn primary', onclick: function () { logPurchase(best, amount); } }, icon('check'), 'I used it')));
-    }
+    // Anything to watch with this card here, and a note about the store (Costco takes Visa only).
     var flags = h('div', { class: 'flags' });
     best.warnings.forEach(function (w) { flags.appendChild(h('span', { class: 'flag warn' }, w)); });
     if (best.goal) flags.appendChild(h('span', { class: 'flag good' }, best.goal.label + ': ' + money(best.goal.remaining) + ' to go'));
     if (best.cap && best.cap.left > 0 && best.cap.left < best.cap.cap) flags.appendChild(h('span', { class: 'flag' }, money(best.cap.left) + ' of cap left ' + best.cap.label));
-    if (amount >= (state.prefs.protectionThreshold || 300)) best.protections.forEach(function (p) { flags.appendChild(h('span', { class: 'flag' }, p)); });
     if (flags.childNodes.length) mid.appendChild(flags);
-    renderReminder(root);
+    rec.notes.forEach(function (n) { mid.appendChild(h('p', { class: 'store-note' }, n)); });
+    // The rest of the wallet, stacked in its pocket, best first.
+    if (rec.results.length > 1) root.appendChild(pocket(rec, where, changed));
+    fitPay();
+  }
 
-    if (rec.results.length > 1) {
-      var pocket = h('div', { class: 'pocket' });
-      pocket.appendChild(h('p', { class: 'pocket-label', 'aria-hidden': 'true' }, 'The rest of your wallet'));
-      var ul = h('ul', { class: 'others', 'aria-label': 'Your other cards, best first' });
-      rec.results.slice(1).forEach(function (r) {
-        var col = cardColors(r.card);
-        var li = h('li', { class: r.accepted ? '' : 'off', style: '--c1:' + col.c1 + ';--c2:' + col.c2 + ';--c3:' + col.c3 + ';--on:' + col.ink });
-        var btn = h('button', { onclick: function () { openCardDetail(r.card.id); } },
-          h('span', { class: 'n' }, r.entry.nickname || r.card.name,
-            h('span', { class: 'why' }, r.reason),
-            r.warnings.length ? h('span', { class: r.accepted ? 'warn' : 'bad' }, r.warnings[0]) : null,
-            r.goal ? h('span', { class: 'why' }, r.goal.label + ': ' + money(r.goal.remaining) + ' to go') : null),
-          h('span', { class: 'r' }, r.accepted ? rateText(r.effectiveRate, r.unit) : '×',
-            r.accepted ? h('small', null, amount > 0 ? (r.valueCents >= 0 ? cents(r.valueCents) : '-' + cents(-r.valueCents)) : (r.unit !== 'percent' ? pctText(r.effectivePercent) + ' value' : '')) : null));
-        li.appendChild(btn); ul.appendChild(li);
-      });
-      pocket.appendChild(ul);
-      root.appendChild(pocket);
+  // A few sparks off the hat when a new card comes out.
+  function sparkles() {
+    var box = h('span', { class: 'sparks', 'aria-hidden': 'true' });
+    for (var i = 0; i < 6; i++) box.appendChild(h('i', { style: '--k:' + i }));
+    return box;
+  }
+
+  // One card in the pocket: its colors, name, why, and what it earns here.
+  function walletStrip(r, tag) {
+    var col = cardColors(r.card);
+    return h(tag || 'span', { class: 'strip' + (r.accepted ? '' : ' off'), style: '--c1:' + col.c1 + ';--c2:' + col.c2 + ';--c3:' + col.c3 + ';--on:' + col.ink },
+      h('span', { class: 'n' }, r.entry.nickname || r.card.name,
+        h('span', { class: 'why' }, r.reason),
+        r.warnings.length ? h('span', { class: r.accepted ? 'warn' : 'bad' }, r.warnings[0]) : null,
+        r.goal ? h('span', { class: 'why' }, r.goal.label + ': ' + money(r.goal.remaining) + ' to go') : null),
+      h('span', { class: 'r' }, r.accepted ? rateText(r.effectiveRate, r.unit) : '\u00d7',
+        r.accepted && r.unit !== 'percent' ? h('small', null, pctText(r.effectivePercent) + ' value') : null));
+  }
+  function bestHere() {
+    var where = currentWhere();
+    if (ctx.merchant) return { where: { merchant: ctx.merchant }, label: where ? where.title : '' };
+    var c = ctx.category && ctx.category !== 'other' ? ctx.category : 'other';
+    return { where: { category: c }, label: c === 'other' ? 'everything else' : cat(c).name.toLowerCase() };
+  }
+  // The rest of the wallet in the stitched pocket, each card a strip in its own colors, best first;
+  // each opens the card. "Best cards" opens the best cards out there for this place.
+  function pocket(rec, where, changed) {
+    var box = h('div', { class: 'pocket compact' + (changed ? ' slide' : '') });
+    var bh = bestHere();
+    box.appendChild(h('div', { class: 'pocket-label' }, h('span', { 'aria-hidden': 'true' }, 'The rest of your wallet'),
+      h('button', { class: 'more', 'aria-label': 'Best cards for ' + bh.label, onclick: function () { openBestCards(bh.where, bh.label); } }, 'Best cards', icon('chev'))));
+    var ul = h('ul', { class: 'others', 'aria-label': 'Your other cards, best first' });
+    rec.results.slice(1).forEach(function (r, i) {
+      var b = walletStrip(r, 'button'); b.addEventListener('click', function () { openCardDetail(r.card.id); });
+      ul.appendChild(h('li', { style: '--i:' + i }, b));
+    });
+    box.appendChild(ul);
+    return box;
+  }
+  // The Pay screen never scrolls: each card in the pocket is one line, and when they still do not
+  // all fit under the answer, the last ones fold into "+N more", which opens the whole wallet.
+  function fitPay() {
+    if (view !== 'pay') return;
+    var box = document.querySelector('#answer .pocket'); if (!box) return;
+    var items = [].slice.call(box.querySelectorAll('.others li')), fold = box.querySelector('.fold');
+    box.hidden = false; items.forEach(function (li) { li.hidden = false; li.classList.remove('end'); });
+    if (fold) fold.parentNode.removeChild(fold);
+    function over() { return document.documentElement.scrollHeight > window.innerHeight + 1; }
+    if (!over()) return;
+    fold = h('button', { class: 'fold', onclick: openCardsHere });
+    box.appendChild(fold);
+    var shown = items.length;
+    while (shown > 0) {
+      shown--; items[shown].hidden = true;
+      items.forEach(function (li, i) { li.classList.toggle('end', i === shown - 1); });
+      var n = items.length - shown;
+      fold.textContent = shown ? '+' + n + ' more ' + (n === 1 ? 'card' : 'cards') : 'Your ' + n + ' other ' + (n === 1 ? 'card' : 'cards');
+      if (!over()) break;
     }
-    if (where && state.prefs.showAnywhere !== false) renderAnywhere(root, rc, amount);
-    rec.notes.forEach(function (n) { root.appendChild(h('div', { class: 'note' }, n)); });
-    if (!where && !locating) root.appendChild(h('p', { class: 'hint' }, 'Pick the store above to see the best card there.'));
+    // A very short screen with the location question up: the pocket waits until there is room.
+    if (over()) box.hidden = true;
+  }
+  window.addEventListener('resize', function () { fitPay(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitPay(); });
+  // The whole wallet ranked for where you are, the best card anywhere for it, and the best cards out there.
+  function openCardsHere() {
+    var where = currentWhere();
+    var rc = { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: 0, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad };
+    var rec = E.recommend(rc, state, data), label = where ? where.title : 'everything else';
+    var nodes = [h('p', { class: 'muted' }, 'Every card in your wallet ' + (where ? 'at ' : 'for ') + label + ', best first. Tap one to see how to get the most from it.')];
+    var box = h('div', { class: 'pocket' }), ul = h('ul', { class: 'others', 'aria-label': 'Your cards, best first' });
+    rec.results.forEach(function (r, i) {
+      var b = walletStrip(r, 'button'); b.addEventListener('click', function () { openCardDetail(r.card.id, openCardsHere); });
+      ul.appendChild(h('li', { style: '--i:' + i }, b));
+    });
+    box.appendChild(ul); nodes.push(box);
+    var bh = bestHere();
+    nodes.push(h('button', { class: 'btn block', onclick: function () { openBestCards(bh.where, bh.label); } }, icon('trophy'), 'Best cards for ' + bh.label));
+    openSheet(where ? 'Your cards at ' + where.title : 'Your cards', nodes);
   }
 
   /* ---------- Best card anywhere ---------- */
@@ -724,23 +768,6 @@
     draw();
   }
 
-  function logPurchase(res, amount) {
-    var entry = res.entry;
-    entry.purchases = entry.purchases || [];
-    var rec = { date: new Date().toISOString(), amount: amount, pool: res.pool, category: ctx.category, merchant: ctx.merchant };
-    entry.purchases.push(rec);
-    if (entry.purchases.length > 400) entry.purchases.splice(0, entry.purchases.length - 400);
-    (entry.goals || []).forEach(function (g) { if (!g.done) { g.progress = (Number(g.progress) || 0) + amount; if (g.progress >= g.target) g.done = true; } });
-    saveState();
-    ctx.amount = ''; var amt = document.getElementById('amount'); if (amt) amt.value = '';
-    renderAnswer();
-    toast('Logged ' + money(amount) + ' on ' + (entry.nickname || res.card.name), 'Undo', function () {
-      var i = entry.purchases.indexOf(rec); if (i >= 0) entry.purchases.splice(i, 1);
-      (entry.goals || []).forEach(function (g) { g.progress = Math.max(0, (Number(g.progress) || 0) - amount); if (g.progress < g.target) g.done = false; });
-      saveState(); renderAnswer();
-    });
-  }
-
   /* ---------- location ---------- */
   // With location on, the app looks around every time it opens and every time it comes back after
   // a minute or more away, names the store you are standing in, and answers for that store. A store
@@ -841,7 +868,6 @@
       var prev = locatePrev; locatePrev = null; nearState = false;
       var key = whereKey({ merchant: top.merchant, category: top.category, name: top.name });
       var before = prev ? whereKey(prev) : (autoKey || null);
-      if (before && before !== key) { ctx.amount = ''; var a = document.getElementById('amount'); if (a) a.value = ''; }
       autoKey = key;
       justFound = true;
       applyNearby(top, true);
@@ -1174,6 +1200,8 @@
     var root = document.getElementById('view-wallet'); clear(root);
     root.appendChild(h('div', { class: 'section-head' }, h('h2', null, 'Your cards'), h('button', { class: 'link', onclick: function () { openAddCards(); } }, '+ Add a card')));
     if (!state.wallet.length) { root.appendChild(h('div', { class: 'empty' }, h('h2', null, 'No cards yet'), h('button', { class: 'btn primary', onclick: function () { openAddCards(); } }, 'Choose my cards'))); return; }
+    var reminders = h('div', { class: 'reminders' }); renderReminder(reminders, function () { renderWallet(); markTabs(); });
+    if (reminders.childNodes.length) root.appendChild(reminders);
     var tiles = h('div', { class: 'tiles' });
     var q = E.quarterOf(new Date());
     state.wallet.forEach(function (entry) {
@@ -1721,7 +1749,7 @@
   }
 
   /* ---------- Card detail ---------- */
-  function openCardDetail(cardId) {
+  function openCardDetail(cardId, back) {
     var card = E.cardById(data, cardId); if (!card) return;
     var entry = walletEntry(cardId) || {};
     var inWallet = !!walletEntry(cardId);
@@ -1776,7 +1804,7 @@
         if (card.rotating.activation && inWallet) {
           var on = !!(entry.activated && entry.activated[q]);
           box.appendChild(h('div', { class: 'row', style: 'margin-top:10px' }, h('span', { class: 't' }, h('b', null, on ? 'Activated' : 'Not activated yet'), h('span', null, cur.activateBy ? 'Activate by ' + E.fmtDate(cur.activateBy) : 'Activate on the issuer site')),
-            h('button', { class: 'switch' + (on ? ' on' : ''), role: 'switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': 'Activated this quarter', onclick: function () { entry.activated = entry.activated || {}; entry.activated[q] = !on; saveState(); openCardDetail(cardId); } })));
+            h('button', { class: 'switch' + (on ? ' on' : ''), role: 'switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': 'Activated this quarter', onclick: function () { entry.activated = entry.activated || {}; entry.activated[q] = !on; saveState(); openCardDetail(cardId, back); } })));
           if (!on && card.rotating.activationUrl) box.appendChild(h('a', { class: 'btn primary block', style: 'margin-top:10px', href: card.rotating.activationUrl, target: '_blank', rel: 'noopener' }, 'Activate on the ' + card.issuer + ' site'));
         }
         if (inWallet && card.rotating.cap) box.appendChild(capBar(entry, 'rotating', card.rotating.cap, card.rotating.capPeriod || 'quarter'));
@@ -1792,7 +1820,7 @@
       card.memberships.forEach(function (m) {
         var on = !!entry.memberships[m.id];
         mb.appendChild(h('div', { class: 'row', style: 'margin-top:8px' }, h('span', { class: 't' }, h('b', null, m.question), h('span', null, on ? m.yes + ': the higher rates apply' : m.no + ': the lower rates apply')),
-          h('button', { class: 'switch' + (on ? ' on' : ''), role: 'switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': m.question, onclick: function () { entry.memberships[m.id] = !on; saveState(); openCardDetail(cardId); } })));
+          h('button', { class: 'switch' + (on ? ' on' : ''), role: 'switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': m.question, onclick: function () { entry.memberships[m.id] = !on; saveState(); openCardDetail(cardId, back); } })));
       });
       nodes.push(mb);
     }
@@ -1809,7 +1837,7 @@
           opts.appendChild(h('button', { class: on ? 'on' : '', 'aria-pressed': on ? 'true' : 'false', onclick: function () {
             if (on) entry.choices.splice(entry.choices.indexOf(o), 1);
             else { entry.choices.push(o); while (entry.choices.length > card.choice.slots) entry.choices.shift(); }
-            saveState(); openCardDetail(cardId);
+            saveState(); openCardDetail(cardId, back);
           } }, E.categoryById(data, o) ? cat(o).name : (E.merchantById(data, o) || { name: o }).name));
         });
         cb.appendChild(h('p', { class: 'small muted', style: 'margin-bottom:8px' }, 'Pick ' + card.choice.slots + ' for ' + rateText(card.choice.rate, unit) + '. Match what you set on the issuer site.'));
@@ -1823,7 +1851,7 @@
             opts2.appendChild(h('button', { class: on2 ? 'on' : '', 'aria-pressed': on2 ? 'true' : 'false', onclick: function () {
               if (on2) entry.choices2.splice(entry.choices2.indexOf(o), 1);
               else { entry.choices2.push(o); while (entry.choices2.length > st2.slots) entry.choices2.shift(); }
-              saveState(); openCardDetail(cardId);
+              saveState(); openCardDetail(cardId, back);
             } }, E.categoryById(data, o) ? cat(o).name : (E.merchantById(data, o) || { name: o }).name));
           });
           cb.appendChild(h('p', { class: 'small muted', style: 'margin:12px 0 8px' }, 'Pick ' + st2.slots + ' for ' + rateText(st2.rate, unit) + '.'));
@@ -1855,7 +1883,7 @@
           h('div', { class: 'prog' + (g.done ? ' full' : '') }, h('i', { style: 'width:' + pct + '%' })),
           h('div', { style: 'display:flex;gap:8px' },
             h('button', { class: 'btn', style: 'padding:6px 10px;min-height:36px', onclick: function () { editGoal(entry, g, cardId); } }, 'Edit'),
-            h('button', { class: 'btn ghost', style: 'padding:6px 10px;min-height:36px', onclick: function () { entry.goals.splice(i, 1); saveState(); openCardDetail(cardId); } }, 'Remove'))));
+            h('button', { class: 'btn ghost', style: 'padding:6px 10px;min-height:36px', onclick: function () { entry.goals.splice(i, 1); saveState(); openCardDetail(cardId, back); } }, 'Remove'))));
       });
       gb.appendChild(h('button', { class: 'btn', style: 'margin-top:10px', onclick: function () { editGoal(entry, null, cardId); } }, icon('plus'), 'Add a goal'));
       nodes.push(gb);
@@ -1925,7 +1953,7 @@
     } }, card.custom ? 'Delete this card' : 'Remove from wallet'));
     else nodes.push(h('button', { class: 'btn primary block', onclick: function () { toggleCard(card); closeSheet(); renderAll(); toast('Added ' + card.name); } }, 'Add to wallet'));
     openSheet(entry.nickname || card.name, nodes, { quietHead: true });
-    sheetOnClose = function () { renderAll(); };
+    sheetOnClose = back || function () { renderAll(); };
   }
 
   function capBar(entry, pool, cap, period) {
@@ -1960,17 +1988,30 @@
   /* ---------- Offers ---------- */
   function renderOffers() {
     var root = document.getElementById('view-offers'); clear(root);
-    var gaps = E.gaps(state, data);
+    // The wallet, kind of place by kind of place: a red to green scale with a dot where its best
+    // card sits between a plain 1% card (weak) and the best card anyone can get there (great).
+    // No card is named here; each scale links to the best cards for that kind of place.
     if (state.wallet.length) {
-      var gs = h('div', { class: 'section' }, h('div', { class: 'section-head' }, h('h2', null, 'Where your wallet is weak'), null),
-        h('p', { class: 'small muted' }, 'Categories where a card you do not hold would out-earn your best. Nothing here is sponsored or linked for a referral; it is the same arithmetic the Pay screen uses.'));
-      if (!gaps.length) gs.appendChild(h('div', { class: 'note good' }, 'Your cards already cover every everyday category well.'));
-      else gaps.slice(0, 5).forEach(function (g) {
-        gs.appendChild(h('button', { class: 'gap', onclick: function () { openCardDetail(g.card.id); } },
-          h('span', null, h('b', null, g.category.name), h('span', null, g.card.name + (g.card.annualFee ? ' ($' + g.card.annualFee + '/yr)' : '') + ' pays ' + g.reason + '. Your best today: ' + pctText(g.minePct) + '.')),
-          h('span', { class: 'pct num' }, pctText(g.pct))));
+      var rows = E.walletScale(state, data), count = { great: 0, good: 0, weak: 0 };
+      rows.forEach(function (r) { count[r.level]++; });
+      var sec = h('div', { class: 'section scales' },
+        h('h2', null, 'How your wallet does'),
+        h('p', { class: 'small muted' }, 'Great in ' + count.great + ', good in ' + count.good + ', weak in ' + count.weak + '. Each dot is your best card there, between a plain 1% card and the best card anyone can get.'));
+      var list = h('ul', { class: 'scale-list' });
+      rows.forEach(function (r, i) {
+        var c = r.category, name = c.id === 'other' ? 'Everything else' : c.name, lower = c.id === 'other' ? 'everything else' : c.name.toLowerCase();
+        var word = { great: 'Great', good: 'Good', weak: 'Weak' }[r.level];
+        var until = r.rotating ? r.rotating.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        list.appendChild(h('li', { class: 'scale ' + r.level, style: '--p:' + r.pos.toFixed(3) + ';--i:' + i + ';--tint:' + tintFor(c.id) },
+          h('div', { class: 'scale-head' }, h('span', { class: 'qi', 'aria-hidden': 'true' }, icon(c.icon)), h('b', null, name),
+            h('span', { class: 'scale-rate num' }, r.minePct > 0 ? pctText(r.minePct) : 'none')),
+          h('div', { class: 'scale-bar', role: 'img', 'aria-label': name + ': ' + word.toLowerCase() + ', ' + pctText(r.minePct) + ' with your best card; ' + pctText(r.topPct) + ' is the best out there' }, h('span', { class: 'dot' })),
+          h('div', { class: 'scale-ticks', 'aria-hidden': 'true' }, ['weak', 'good', 'great'].map(function (l) { return h('span', { class: l === r.level ? 'on' : '' }, { great: 'Great', good: 'Good', weak: 'Weak' }[l]); })),
+          r.rotating ? h('p', { class: 'scale-note' }, 'Includes a rotating bonus that ends ' + until + '.') : null,
+          h('button', { class: 'scale-link', onclick: function () { openBestCards({ category: c.id }, lower); } }, 'Best cards for ' + lower, icon('chev'))));
       });
-      root.appendChild(gs);
+      sec.appendChild(list);
+      root.appendChild(sec);
     }
 
     var offers = (data.bonuses && data.bonuses.offers) || [];
@@ -2005,6 +2046,38 @@
     }
   }
   function valueOf(o) { return o.cashBonus ? o.cashBonus * 100 : (o.bonusValueCents || 0); }
+
+  // The best cards for a kind of place (from Compare) or for the store you are at (from Pay), yours
+  // and the rest, ranked by what they earn there all year; one tap opens a card, and closing it
+  // comes back here.
+  function openBestCards(where, label) {
+    var list = E.bestCards(where, state, data, new Date(), 10);
+    var nodes = [h('p', { class: 'muted' }, 'Ranked by what each card earns ' + (where.merchant ? 'at ' : 'on ') + label + ' all year, the same math as the Pay screen. Nobody pays for a spot here.')];
+    var ul = h('ol', { class: 'best-list' });
+    list.forEach(function (r, i) {
+      var c = r.card, sub = [c.annualFee ? '$' + c.annualFee + ' a year' : 'No annual fee'];
+      if (r.unit !== 'percent') sub.push(rateText(r.effectiveRate, r.unit) + ' ' + r.unit);
+      if (r.cap && r.cap.cap) sub.push('up to $' + Number(r.cap.cap).toLocaleString('en-US') + ' ' + ({ year: 'a year', quarter: 'a quarter', month: 'a month', cycle: 'a billing cycle' }[r.cap.period] || ''));
+      if (r.needs && r.needs.length) sub.push(r.needs.join(', ').toLowerCase());
+      if (c.eligibility) sub.push(c.eligibility);
+      ul.appendChild(h('li', { style: '--i:' + i }, h('button', { class: 'best-row' + (r.mine ? ' mine' : ''), onclick: function () { openCardDetail(c.id, function () { openBestCards(where, label); }); } },
+        h('span', { class: 'rank num', 'aria-hidden': 'true' }, String(i + 1)),
+        cardArt(c, 56),
+        h('span', { class: 't' }, h('b', null, c.name), h('span', null, sub.join(', ')), r.mine ? h('span', { class: 'badge good' }, 'In your wallet') : null),
+        h('span', { class: 'r num' }, pctText(r.effectivePercent)))));
+    });
+    if (!list.length) nodes.push(h('p', { class: 'hint' }, 'No card on file earns more than its base rate here.'));
+    nodes.push(ul);
+    nodes.push(h('p', { class: 'small muted' }, 'Year-round rates; rotating quarterly bonuses are left out. Points are counted at the value set under More.'));
+    // For the place you are at on the Pay screen: what the best card you do not have would add in a year.
+    var here = ctx.merchant ? where.merchant === ctx.merchant : (!where.merchant && where.category === (ctx.category || 'other'));
+    if (here && view === 'pay' && state.prefs.showAnywhere !== false) {
+      var box = h('div');
+      renderAnywhere(box, { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: 0, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad }, 0);
+      nodes.push(box);
+    }
+    openSheet('Best cards for ' + label, nodes);
+  }
 
   /* ---------- More ---------- */
   function renderMore() {
@@ -2056,7 +2129,7 @@
       mp.appendChild(ul); ps.appendChild(mp);
     }
     if (!PREVIEW) ps.appendChild(h('button', { class: 'btn block', onclick: openLocationTest }, 'Test location on this phone'));
-    ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show the best card I don\u2019t have'), h('span', null, 'Under each answer, the best card anywhere for that store and what it would add in a year after its fee.')),
+    ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'Show what a new card would add'), h('span', null, 'In Best cards for the place you are at: what the best card you don\u2019t have would add in a year, after its fee.')),
       h('button', { class: 'switch' + (state.prefs.showAnywhere !== false ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.showAnywhere !== false ? 'true' : 'false', 'aria-label': 'Show the best card I do not have', onclick: function () { state.prefs.showAnywhere = state.prefs.showAnywhere === false; saveState(); renderMore(); } })));
     ps.appendChild(h('div', { class: 'row' }, h('span', { class: 't' }, h('b', null, 'I am outside the US'), h('span', null, 'Counts foreign transaction fees against each card.')),
       h('button', { class: 'switch' + (state.prefs.abroad ? ' on' : ''), role: 'switch', 'aria-checked': state.prefs.abroad ? 'true' : 'false', 'aria-label': 'Outside the US', onclick: function () { state.prefs.abroad = !state.prefs.abroad; saveState(); renderMore(); } })));
@@ -2117,7 +2190,6 @@
     var p = new URLSearchParams(location.search);
     if (p.get('m')) { ctx.merchant = p.get('m'); ctx.category = null; }
     else if (p.get('cat')) { ctx.category = p.get('cat'); ctx.merchant = null; }
-    if (p.get('amt')) ctx.amount = p.get('amt');
     if (p.get('m') || p.get('cat') || p.get('amt')) { try { history.replaceState(null, '', location.pathname); } catch (e) { } return true; }
     return false;
   }
@@ -2126,12 +2198,6 @@
     document.querySelectorAll('.tabs button').forEach(function (b) { b.addEventListener('click', function () { showView(b.getAttribute('data-view')); }); });
     document.getElementById('btn-start').addEventListener('click', function () { openAddCards(true); });
     document.getElementById('btn-locate').addEventListener('click', function () { showView('pay'); relocate(); });
-    var amt = document.getElementById('amount');
-    amt.addEventListener('input', function () {
-      var v = amt.value.replace(/[^0-9.]/g, ''); var parts = v.split('.'); if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join(''); if (parts[1] && parts[1].length > 2) v = parts[0] + '.' + parts[1].slice(0, 2);
-      if (v !== amt.value) amt.value = v; ctx.amount = v; renderAnswer();
-    });
-    amt.addEventListener('keydown', function (e) { if (e.key === 'Enter') amt.blur(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) { hiddenAt = Date.now(); return; }
@@ -2157,7 +2223,6 @@
       ctx.merchant = lw.merchant; ctx.category = lw.category; ctx.customName = lw.customName || ''; ctx.located = !!lw.located;
       if (lookFirst) { locatePrev = { merchant: ctx.merchant, category: ctx.category, customName: ctx.customName, located: ctx.located }; ctx.merchant = null; ctx.category = null; ctx.customName = ''; ctx.located = false; }
     }
-    document.getElementById('amount').value = ctx.amount || '';
     showView('pay');
     if (!state.wallet.length && !state.onboarded) { onboarding = true; }
     if (!state.disclaimed) openDisclaimer();

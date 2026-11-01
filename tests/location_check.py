@@ -121,18 +121,22 @@ with sync_playwright() as p:
         return el.inner_text() if el.count() else ''
 
     def answer_first(what):
-        # The card to use, its name and its reward are on the first screen, above the tab bar, with
-        # no scrolling: on this phone and on a small one (an iPhone SE opened from the home screen).
-        ok = True
-        for w, hgt in [(390, 844), (375, 647)]:
+        # The Pay screen fits on one screen: no scrolling at all, and the card to use, its name and
+        # its reward above the tab bar, on this phone, on an iPhone 15 opened from the home screen,
+        # and on an iPhone SE opened from the home screen.
+        bad = []
+        for w, hgt in [(390, 844), (393, 759), (375, 647)]:
             page.set_viewport_size({'width': w, 'height': hgt})
             page.evaluate('window.scrollTo(0, 0)')
-            page.wait_for_timeout(100)
-            ok = ok and page.evaluate("""() => { const tabs = document.querySelector('.tabs').getBoundingClientRect().top;
+            page.wait_for_timeout(150)
+            r = page.evaluate("""() => { const tabs = document.querySelector('.tabs').getBoundingClientRect().top;
               const name = document.querySelector('.winner .name'), rate = document.querySelector('.winner .rate');
-              return !!name && !!rate && name.getBoundingClientRect().bottom <= tabs && rate.getBoundingClientRect().bottom <= tabs; }""")
+              return { seen: !!name && !!rate && name.getBoundingClientRect().bottom <= tabs && rate.getBoundingClientRect().bottom <= tabs,
+                       over: document.documentElement.scrollHeight - innerHeight }; }""")
+            if not r['seen'] or r['over'] > 1:
+                bad.append('%dx%d %s' % (w, hgt, 'scrolls %dpx' % r['over'] if r['over'] > 1 else 'answer cut off'))
         page.set_viewport_size({'width': 390, 'height': 844})
-        check(ok, what)
+        check(not bad, what + (': ' + ', '.join(bad) if bad else ''))
 
     def release_held():
         # Routes the page has already moved on from are gone; aborting them is a no-op.
@@ -156,14 +160,9 @@ with sync_playwright() as p:
     check(winner() == 'Costco Anywhere Visa', 'it answers for Shell before any amount is typed')
     check(page.locator('.nearby button:has-text("Jewel-Osco")').count() == 1, 'the store next door is one tap away')
     check(not page.locator('#banner .note.ask').count(), 'the question goes away once answered')
-    answer_first('at a store, the card to use and its reward are on the first screen, even on a small phone')
-    page.fill('#amount', '45')
-    page.wait_for_timeout(200)
-    check('$1.80' in page.inner_text('#amount-note') and page.locator('.used-row button:has-text("I used it")').count() == 1,
-          'typing an amount shows what it earns beside the amount, with "I used it" under it')
-    answer_first('with an amount typed, the answer is still on the first screen')
-    page.fill('#amount', '')
-    page.wait_for_timeout(200)
+    answer_first('at a store the Pay screen fits on one screen with no scrolling, even on a small phone')
+    check(page.locator('#amount').count() == 0 and page.locator('#answer .pocket .others li').count() == 2,
+          'no amount to type; the rest of the wallet is stacked under the answer, every card')
     page.screenshot(path=os.path.join(OUT, 'loc-2-found.png'))
     page.click('.nearby button:has-text("Jewel-Osco")')
     page.wait_for_timeout(300)
@@ -180,7 +179,7 @@ with sync_playwright() as p:
     page.wait_for_selector('.where-chip.here', timeout=8000)
     page.wait_for_timeout(300)
     check('Shell' in where_text(), 'on open it looks again and finds Shell instead of the store from ten minutes ago')
-    check(page.evaluate('document.getElementById("amount") !== document.activeElement'), 'the keyboard stays down when the store is found on its own')
+    check(page.evaluate('document.activeElement === document.body || !document.activeElement'), 'nothing grabs the keyboard when the store is found on its own')
 
     # 3. A place you have been before answers from this phone, with no map lookup.
     del asked[:]
@@ -197,11 +196,9 @@ with sync_playwright() as p:
     page.wait_for_timeout(800)
     check('Walmart' in where_text() and "You’re at" not in where_text(), 'a store picked by hand a minute ago stays put')
 
-    # 5. Coming back to the app a few minutes later somewhere else looks again, and the old amount is cleared.
+    # 5. Coming back to the app a few minutes later somewhere else looks again.
     open_with(state(True))
     page.wait_for_selector('.where-chip.here', timeout=8000)
-    page.fill('#amount', '45')
-    page.wait_for_timeout(200)
     ctx.set_geolocation(THERE)
     page.evaluate("""() => {
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
@@ -211,7 +208,6 @@ with sync_playwright() as p:
       document.dispatchEvent(new Event('visibilitychange'));
     }""")
     page.wait_for_function('(document.querySelector(".where-chip.here b") || {}).textContent === "Jewel-Osco"', timeout=8000)
-    check(page.input_value('#amount') == '', 'the amount from the last store is cleared at the new one')
     check(winner() == 'Amex Blue Cash Preferred', 'it answers for the new store')
     ctx.set_geolocation(HERE)
 

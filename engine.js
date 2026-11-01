@@ -472,6 +472,48 @@
     };
   }
 
+  // The best cards for a store or a kind of place, yours and the rest, on their everyday rates (no
+  // rotating or time-window bonuses), best first; ties go to the lower fee. Store-only cards count
+  // only at their own store. mine marks the cards in the wallet.
+  function bestCards(ctx, state, data, now, limit) {
+    now = now || new Date();
+    var c = Object.assign({ amount: 100 }, ctx, { steady: true });
+    var out = catalogOptions(c, state, data, now, { skipStoreCards: !c.merchant });
+    recommend(c, state, data, now).results.forEach(function (r) {
+      if (!r.accepted || r.effectiveRate <= 0) return;
+      r.mine = true; r.needs = r.needs || []; out.push(r);
+    });
+    out.sort(byRate);
+    var seen = {};
+    return out.filter(function (r) { if (seen[r.card.id]) return false; seen[r.card.id] = true; return true; }).slice(0, limit || 10);
+  }
+
+  // How the wallet does in each everyday kind of place, for the Compare tab: where its best card
+  // sits between 1% (weak) and the best card anyone can get there (great), as 0 to 1. The wallet
+  // counts what it earns today, this quarter's rotating 5% included (rotating says until when);
+  // the top is year-round rates, and cards for members of a group (military, a credit union) or
+  // that need a membership do not set it.
+  function walletScale(state, data, now) {
+    now = now || new Date();
+    var pay = (state.prefs || {}).payMethod || 'card';
+    return data.categories.filter(function (c) { return c.quick; }).map(function (cat) {
+      var ctx = { category: cat.id, amount: 100, payMethod: pay };
+      var mine = null;
+      recommend(ctx, state, data, now).results.forEach(function (r) { if (r.accepted && (!mine || r.effectivePercent > mine.effectivePercent + 1e-9)) mine = r; });
+      ctx.steady = true;
+      var minePct = mine ? mine.effectivePercent : 0, top = 0;
+      catalogOptions(ctx, state, data, now, { skipStoreCards: true }).forEach(function (r) {
+        if (r.card.eligibility || r.needs.length) return;
+        if (r.effectivePercent > top) top = r.effectivePercent;
+      });
+      top = Math.max(top, minePct);
+      var pos = top - 1 > .05 ? (minePct - 1) / (top - 1) : (minePct >= top ? 1 : 0);
+      pos = Math.max(0, Math.min(1, pos));
+      return { category: cat, mine: mine, minePct: minePct, topPct: top, pos: pos, level: pos >= .75 ? 'great' : pos >= .33 ? 'good' : 'weak',
+        rotating: mine && mine.source === 'rotating' ? quarterEnd(now) : null };
+    });
+  }
+
   // Where the catalog beats the wallet, for the Compare tab.
   function gaps(state, data, now) {
     now = now || new Date();
@@ -571,6 +613,7 @@
     valuation: valuation, unitFor: unitFor, merchantById: merchantById, cardById: cardById, categoryById: categoryById,
     contextCategories: contextCategories, evaluateCard: evaluateCard, recommend: recommend, gaps: gaps,
     bestAnywhere: bestAnywhere, yearlyValue: yearlyValue, catalogOptions: catalogOptions, yearlyCost: yearlyCost, knownMemberships: knownMemberships,
-    cardSummary: cardSummary, spendInPool: spendInPool, fmtMoney: fmtMoney, fmtDate: fmtDate, matchCardText: matchCardText
+    cardSummary: cardSummary, spendInPool: spendInPool, fmtMoney: fmtMoney, fmtDate: fmtDate, matchCardText: matchCardText,
+    bestCards: bestCards, walletScale: walletScale
   };
 }));

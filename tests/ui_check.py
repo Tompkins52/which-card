@@ -77,28 +77,33 @@ with sync_playwright() as p:
     shot(page, os.path.join(OUT, '04-pay-empty.png'))
 
     page.click('.quick button:has-text("Gas")')
-    page.fill('#amount', '40')
     page.wait_for_timeout(200)
-    shot(page, os.path.join(OUT, '05-gas-40.png'))
+    shot(page, os.path.join(OUT, '05-gas.png'))
+    assert page.locator('#amount').count() == 0, 'there is no amount to type'
     winner = page.inner_text('.winner .name')
     print('gas winner:', winner)
 
     page.click('.where-chip')
     page.fill('#store-search', 'costco')
     page.click('.suggest button:has-text("Costco")')
-    page.fill('#amount', '120')
     page.wait_for_timeout(200)
-    shot(page, os.path.join(OUT, '06-costco-120.png'))
+    shot(page, os.path.join(OUT, '06-costco.png'))
     print('costco winner:', page.inner_text('.winner .name'))
-    print('others:', page.inner_text('.others'))
+    print('others:', page.inner_text('.others').replace('\n', ' / '))
+    over = page.evaluate('document.documentElement.scrollHeight - innerHeight')
+    assert over <= 1, 'the Pay screen scrolls by %dpx' % over
+    assert page.locator('#answer .pocket .others li').count() == 4, 'every other card is in the pocket'
 
-    page.click('.used-row button:has-text("I used it")')
-    page.wait_for_timeout(300)
-    shot(page, os.path.join(OUT, '07-logged.png'))
+    # The rest of the wallet opens the whole ranking; Best cards opens the best cards for the store
+    page.click('#answer .pocket .more')
+    page.wait_for_selector('.sheet .best-list li')
+    shot(page, os.path.join(OUT, '07-best-costco.png'))
+    assert 'Best cards for Costco' in page.inner_text('.sheet h2'), 'best cards sheet title'
+    page.click('.sheet .close')
+    page.wait_for_timeout(200)
 
     page.click('.where-chip')
     page.click('.quick button:has-text("Groceries")')
-    page.fill('#amount', '85.50')
     page.wait_for_timeout(200)
     shot(page, os.path.join(OUT, '08-groceries.png'))
     print('groceries winner:', page.inner_text('.winner .name'))
@@ -118,8 +123,23 @@ with sync_playwright() as p:
     page.click('.sheet .close')
 
     page.click('.tabs button[data-view=offers]')
-    page.wait_for_timeout(200)
+    page.wait_for_timeout(1300)
     shot(page, os.path.join(OUT, '11-offers.png'))
+    # Compare: a weak-good-great scale for every kind of place, a dot on each, no card named
+    scales = page.locator('.scale')
+    assert scales.count() == 12 and page.locator('.scale .dot').count() == 12, 'a scale with a dot for each kind of place'
+    assert all(t in page.inner_text('.scale >> nth=0') for t in ['Weak', 'Good', 'Great']), 'scale labels'
+    page.click('.scale-link:has-text("Best cards for groceries")')
+    page.wait_for_selector('.sheet .best-list li')
+    page.wait_for_timeout(500)
+    shot(page, os.path.join(OUT, '11b-best-groceries.png'))
+    assert page.locator('.sheet .best-list li').count() >= 5, 'best cards for groceries listed'
+    page.click('.sheet .best-row >> nth=0')
+    page.wait_for_selector('.sheet .detail-hero')
+    page.click('.sheet .close')
+    page.wait_for_selector('.sheet .best-list', timeout=3000)
+    page.click('.sheet .close')
+    page.wait_for_timeout(200)
 
     page.click('.tabs button[data-view=more]')
     page.wait_for_timeout(200)
@@ -130,7 +150,7 @@ with sync_playwright() as p:
     page.wait_for_timeout(200)
     shot(page, os.path.join(OUT, '13-dark-pay.png'))
 
-    # Shortcut URL
+    # Shortcut URL (an old amount in it is ignored)
     page.goto('http://127.0.0.1:%d/?cat=dining&amt=32' % PORT)
     page.wait_for_selector('.winner')
     shot(page, os.path.join(OUT, '14-shortcut-dining.png'))
@@ -163,7 +183,6 @@ with sync_playwright() as p:
     page.click('.tabs button[data-view=pay]')
     page.click('.where-chip')
     page.click('.quick button:has-text("Gas")')
-    page.fill('#amount', '50')
     page.wait_for_timeout(200)
     print('gas winner with BofA on gas:', page.inner_text('.winner .name'))
     shot(page, os.path.join(OUT, '16-gas-bofa.png'))
@@ -176,12 +195,13 @@ with sync_playwright() as p:
     assert 'Customized Cash' in page.inner_text('.winner .name'), 'goal card should lead in bonus mode'
     assert 'to go' in page.inner_text('#answer-more'), 'goal flag missing'
 
-    # Best card anywhere
+    # Best card anywhere, in Best cards for the store you are at
     page.click('.tabs button[data-view=pay]')
     page.click('.where-chip')
     page.fill('#store-search', 'whole foods')
     page.click('.suggest button:has-text("Whole Foods")')
-    page.fill('#amount', '85')
+    page.wait_for_timeout(200)
+    page.click('#answer .pocket .more')
     page.wait_for_selector('.anywhere')
     page.wait_for_timeout(300)
     page.evaluate("document.querySelector('.anywhere').scrollIntoView({block:'center'})")
@@ -194,6 +214,8 @@ with sync_playwright() as p:
     page.wait_for_timeout(300)
     print('anywhere at 150 trips:', page.inner_text('.anywhere').replace('\n', ' / ')[:400])
     shot(page, os.path.join(OUT, '20-anywhere-150.png'))
+    page.click('.sheet .close')
+    page.wait_for_timeout(200)
 
     # Custom card
     page.click('.tabs button[data-view=wallet]')
@@ -212,7 +234,7 @@ with sync_playwright() as p:
     page.click('.where-chip')
     page.click('.quick button:has-text("Gas")')
     page.wait_for_timeout(300)
-    assert 'Elgin Credit Union' in page.inner_text('#answer'), 'custom card not ranked'
+    assert 'Elgin Credit Union' in page.text_content('#answer'), 'custom card not ranked'
     shot(page, os.path.join(OUT, '18-custom-card.png'))
 
     # Setup code round trip

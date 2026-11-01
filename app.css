@@ -39,6 +39,7 @@
   --lift: 0 22px 36px -14px rgba(42, 22, 64, .55), 0 4px 10px rgba(42, 22, 64, .16);
   --card-drop: drop-shadow(0 18px 16px rgba(42, 22, 64, .30)) drop-shadow(0 3px 4px rgba(42, 22, 64, .20));
   --card-drop-sm: drop-shadow(0 8px 8px rgba(42, 22, 64, .26)) drop-shadow(0 2px 2px rgba(42, 22, 64, .18));
+  --weak: #D64545; --fair: #EFAA2A; --great: #2E9E5B;
   --toast-bg: #1E1328; --toast-fg: #F5F2F8; --toast-act: #F6A623;
   --knob-on: #FFFFFF;
   --font: "Archivo WC", "Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
@@ -55,6 +56,7 @@
     --lift: 0 22px 36px -14px rgba(0, 0, 0, .8), 0 4px 10px rgba(0, 0, 0, .4); color-scheme: dark;
     --card-drop: drop-shadow(0 18px 16px rgba(0, 0, 0, .55)) drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
     --card-drop-sm: drop-shadow(0 8px 8px rgba(0, 0, 0, .5)) drop-shadow(0 2px 2px rgba(0, 0, 0, .35));
+    --weak: #E25A5A; --fair: #F2B640; --great: #3DB56C;
     --toast-bg: #2B2A30; --toast-fg: #F3F1F6; --toast-act: #FFC04D; --knob-on: #1E1328;
   }
 }
@@ -66,6 +68,7 @@
   --lift: 0 22px 36px -14px rgba(0, 0, 0, .8), 0 4px 10px rgba(0, 0, 0, .4); color-scheme: dark;
   --card-drop: drop-shadow(0 18px 16px rgba(0, 0, 0, .55)) drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
   --card-drop-sm: drop-shadow(0 8px 8px rgba(0, 0, 0, .5)) drop-shadow(0 2px 2px rgba(0, 0, 0, .35));
+  --weak: #E25A5A; --fair: #F2B640; --great: #3DB56C;
   --toast-bg: #2B2A30; --toast-fg: #F3F1F6; --toast-act: #FFC04D; --knob-on: #1E1328;
 }
 
@@ -108,7 +111,7 @@ b, strong { font-weight: 680; }
 .icon-btn.busy svg { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-main { padding-block: 6px 28px; }
+main { padding-block: 6px 14px; }
 .view { display: flex; flex-direction: column; gap: 18px; }
 #pay-body { gap: 14px; }
 
@@ -118,7 +121,7 @@ main { padding-block: 6px 28px; }
 .where-chip .ic svg { width: 24px; height: 24px; }
 .where-chip .t { min-width: 0; display: flex; flex-direction: column; }
 .where-chip .t b { display: block; font-size: 1.55rem; font-weight: 790; font-stretch: 104%; line-height: 1.1; letter-spacing: -.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.where-chip .t > span:last-child { color: var(--muted); font-size: .9rem; }
+.where-chip .t > span:last-child { color: var(--muted); font-size: .9rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .where-chip .t .here-label { display: flex; align-items: center; gap: 4px; color: var(--accent); font-size: .85rem; font-weight: 640; margin-bottom: 1px; }
 .where-chip .t .here-label svg { width: 13px; height: 13px; }
 .where-chip .change { color: var(--accent); font-weight: 650; font-size: .92rem; padding: 10px 2px; }
@@ -172,17 +175,6 @@ main { padding-block: 6px 28px; }
 .quick button svg { width: 17px; height: 17px; }
 .quick button:active { transform: scale(.96); }
 
-/* ---------- Amount ---------- */
-.amount { display: block; }
-.amount-field { display: flex; align-items: baseline; gap: 4px; padding: 0 2px 2px; border-bottom: 2px solid var(--line); transition: border-color .15s; }
-.amount-field:focus-within { border-bottom-color: var(--accent); }
-.amount-field .cur { font-size: 1.5rem; font-weight: 720; font-stretch: 75%; color: var(--muted); }
-.amount-field input { flex: 1; min-width: 0; border: 0; background: none; padding: 0; font-size: 2.3rem; font-weight: 820; font-stretch: 72%; line-height: 1.15; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
-.amount-field input::placeholder { color: color-mix(in srgb, var(--muted) 45%, transparent); }
-.amount-field input:focus-visible { outline: none; }
-.amount-field .opt-note { color: var(--muted); font-size: .85rem; white-space: nowrap; }
-.amount-field .opt-note.val { color: var(--fg); font-size: 1.75rem; font-weight: 820; font-stretch: 72%; line-height: 1; }
-.amount-field .opt-note.val small { margin-left: 5px; font-size: .85rem; font-weight: 600; font-stretch: 100%; color: var(--muted); }
 .seg { display: inline-flex; background: var(--surface-2); border-radius: 14px; padding: 3px; flex: none; }
 .seg button { padding: 9px 12px; border-radius: 11px; font-size: .85rem; font-weight: 620; color: var(--muted); display: flex; align-items: center; gap: 4px; }
 .seg button svg { width: 16px; height: 16px; }
@@ -202,6 +194,13 @@ main { padding-block: 6px 28px; }
 @keyframes pullout { from { opacity: 0; transform: translateY(26px) rotate(5deg) scale(.94); } to { opacity: 1; transform: none; } }
 .winner.reveal .w-hat { animation: hatdrop .5s .3s cubic-bezier(.2, .9, .3, 1.25) both; }
 @keyframes hatdrop { from { opacity: 0; transform: translate(-10%, -150%) rotate(-12deg); } to { opacity: 1; transform: translate(0, -58%) rotate(16deg); } }
+/* A few sparks fly off the hat as it lands on a new card. */
+.winner .sparks { position: absolute; right: 9%; top: -4%; width: 0; height: 0; pointer-events: none; }
+.winner .sparks i { position: absolute; left: 0; top: 0; width: 9px; height: 9px; margin: -4.5px; background: var(--gold); opacity: 0;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: spark .75s calc(.72s + var(--k, 0) * 35ms) cubic-bezier(.2, .7, .3, 1) both; }
+.winner .sparks i:nth-child(even) { width: 7px; height: 7px; margin: -3.5px; background: var(--accent); }
+@keyframes spark { 0% { opacity: 0; transform: rotate(calc(var(--k, 0) * 60deg - 30deg)) translateY(-4px) scale(.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: rotate(calc(var(--k, 0) * 60deg - 30deg)) translateY(-38px) scale(1); } }
 .winner .w-text { display: flex; flex-direction: column; min-width: 0; }
 .winner .w-label { display: flex; align-items: center; gap: 5px; color: var(--accent); font-weight: 650; font-size: .85rem; }
 .winner .w-label svg { width: 14px; height: 14px; flex: none; }
@@ -214,15 +213,43 @@ main { padding-block: 6px 28px; }
 .winner:focus-visible { outline-offset: 4px; }
 #answer-top:empty, #answer-more:empty, #where-more:empty { display: none; }
 #answer-more, #where-more { display: grid; gap: 10px; }
-.used-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.used-row .edge { font-weight: 650; font-size: .9rem; line-height: 1.35; }
-.used-row .hl { padding: 0 2px; background: linear-gradient(transparent 58%, var(--gold-wash) 58%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-.used-row .btn { flex: none; min-height: 42px; padding: 9px 16px; }
 .flags { display: flex; flex-wrap: wrap; gap: 6px; }
 .flag { font-size: .8rem; font-weight: 620; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--fg); }
 .flag.warn { background: var(--warn-bg); color: var(--warn); }
 .flag.bad { background: var(--bad-bg); color: var(--bad); }
 .flag.good { background: var(--good-bg); color: var(--good); }
+
+/* ---------- Compare: the wallet on a scale ---------- */
+/* One scale per kind of place, red (weak) to green (great), with a black dot where the wallet's
+   best card sits. The dots slide into place when the tab opens. */
+.scale-list { display: flex; flex-direction: column; gap: 24px; margin-top: 8px; }
+.scale { display: grid; gap: 8px; }
+.scale-head { display: flex; align-items: center; gap: 10px; }
+.scale-head .qi { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--tint, var(--accent)) 15%, var(--surface)); color: var(--tint, var(--accent)); }
+.scale-head .qi svg { width: 17px; height: 17px; }
+.scale-head b { flex: 1; min-width: 0; font-size: 1.02rem; font-weight: 720; }
+.scale-rate { font-size: 1.35rem; font-weight: 820; font-stretch: 72%; line-height: 1; }
+.scale-bar { position: relative; height: 14px; margin: 4px 0; border-radius: 999px; background: linear-gradient(90deg, var(--weak), var(--fair) 50%, var(--great)); }
+.scale-bar .dot { position: absolute; top: 50%; left: calc(11px + (100% - 22px) * var(--p, 0)); width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #5A5560, #141217 62%); box-shadow: 0 0 0 3px #fff, 0 3px 8px rgba(20, 12, 28, .4);
+  animation: dotin .9s calc(.12s + var(--i, 0) * 55ms) cubic-bezier(.2, .9, .25, 1.12) both; }
+@keyframes dotin { from { left: 11px; transform: scale(.3); opacity: 0; } 25% { opacity: 1; transform: none; } }
+.scale-ticks { display: flex; justify-content: space-between; font-size: .76rem; font-weight: 600; color: var(--muted); }
+.scale-ticks .on { color: var(--fg); font-weight: 780; }
+.scale-note { font-size: .82rem; color: var(--muted); }
+.scale-link { justify-self: start; display: inline-flex; align-items: center; gap: 2px; padding: 4px 0; color: var(--accent); font-weight: 650; font-size: .9rem; }
+.scale-link svg { width: 16px; height: 16px; }
+.best-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.best-list li { animation: rowin .4s calc(var(--i, 0) * 40ms) cubic-bezier(.2, .8, .2, 1) both; }
+.best-list li + li { border-top: 1px solid var(--line); }
+@keyframes rowin { from { opacity: 0; transform: translateY(10px); } }
+.best-row { display: grid; grid-template-columns: 18px 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; padding: 11px 14px; text-align: left; }
+.best-row .rank { color: var(--muted); font-weight: 700; font-size: .85rem; text-align: center; }
+.best-row .t { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.best-row .t b { font-size: .96rem; font-weight: 700; }
+.best-row .t > span:not(.badge) { color: var(--muted); font-size: .82rem; line-height: 1.3; }
+.best-row .badge { margin-top: 3px; }
+.best-row .r { font-size: 1.45rem; font-weight: 820; font-stretch: 72%; }
+.best-row.mine { background: color-mix(in srgb, var(--good) 7%, var(--surface)); }
 
 /* ---------- Buttons ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 14px; font-weight: 700; font-size: .95rem; background: var(--surface); color: var(--fg); border: 1px solid var(--line); min-height: 46px; text-decoration: none; }
@@ -235,23 +262,40 @@ main { padding-block: 6px 28px; }
 a.btn { text-decoration: none; }
 
 /* ---------- The pocket: the rest of your cards ---------- */
-.pocket { position: relative; padding: 14px 10px 12px; border-radius: 26px; background: var(--pocket); color: var(--pocket-ink); box-shadow: inset 0 2px 0 rgba(255, 255, 255, .06), inset 0 -10px 24px rgba(0, 0, 0, .25); }
-.pocket::before { content: ""; position: absolute; inset: 6px; border-radius: 21px; border: 1.5px dashed rgba(246, 166, 35, .42); pointer-events: none; }
-.pocket-label { position: relative; margin: 2px 10px 12px; font-size: .88rem; font-weight: 600; color: color-mix(in srgb, var(--pocket-ink) 78%, transparent); }
+/* The rest of the wallet, stacked best first. When it would not fit under the answer, the cards
+   drop their "why" line and the last ones fold into "+N more", so Pay never scrolls. */
+.pocket { position: relative; display: block; width: 100%; padding: 12px 10px 10px; border-radius: 24px; text-align: left; background: var(--pocket); color: var(--pocket-ink); box-shadow: inset 0 2px 0 rgba(255, 255, 255, .06), inset 0 -10px 24px rgba(0, 0, 0, .25); }
+.pocket::before { content: ""; position: absolute; inset: 6px; border-radius: 19px; border: 1.5px dashed rgba(246, 166, 35, .42); pointer-events: none; }
+.pocket-label { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 2px 10px 9px; font-size: .86rem; font-weight: 600; color: color-mix(in srgb, var(--pocket-ink) 78%, transparent); }
+.pocket-label .more { display: inline-flex; align-items: center; gap: 1px; min-height: 32px; margin: -6px -4px -6px 0; padding: 0 4px; color: var(--gold); font-weight: 700; font-size: .84rem; text-align: right; }
+.pocket-label svg { width: 16px; height: 16px; flex: none; }
+.pocket.slide .others li { animation: tuck .5s calc(.12s + var(--i, 0) * 60ms) cubic-bezier(.2, .9, .3, 1.12) both; }
+@keyframes tuck { from { opacity: 0; transform: translateY(22px); } }
+.strip:active { transform: translateY(2px); }
+/* On Pay each card is one line: name, then its rate (points also show what they are worth). */
+.pocket.compact .strip { align-items: center; padding: 8px 15px 9px; }
+.pocket.compact .others li:not(:last-child) .strip { padding-bottom: 20px; }
+.pocket.compact .others li.end .strip { padding-bottom: 9px; }
+.pocket.compact .strip .n { font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pocket.compact .strip .n .why, .pocket.compact .strip .n .warn, .pocket.compact .strip .n .bad { display: none; }
+.pocket.compact .strip .r { display: flex; align-items: baseline; gap: 6px; font-size: 1.3rem; }
+.pocket.compact .strip .r small { order: -1; margin: 0; font-size: .74rem; }
+.fold { position: relative; display: block; width: 100%; margin-top: 8px; padding: 6px 4px 2px; color: var(--gold); font-weight: 700; font-size: .86rem; text-align: center; }
 .others { position: relative; display: flex; flex-direction: column; }
-.others li { position: relative; border-radius: 14px; color: var(--on, #fff); background: linear-gradient(135deg, var(--c1, #6B5F7D), var(--c2, #4A3F5C) 55%, var(--c3, #2D2538)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 -6px 14px rgba(0, 0, 0, .28); }
+.others li { position: relative; animation: rowin .4s calc(var(--i, 0) * 45ms) cubic-bezier(.2, .8, .2, 1) both; }
 .others li + li { margin-top: -12px; }
-.others li button { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; width: 100%; padding: 12px 15px 24px; }
-.others li:last-child button { padding-bottom: 14px; }
-.others li button:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; border-radius: 14px; }
-.others .n { font-weight: 700; font-size: .98rem; min-width: 0; line-height: 1.25; }
-.others .n .why { display: block; font-weight: 500; font-size: .82rem; opacity: .85; margin-top: 1px; }
-.others .n .warn, .others .n .bad { display: inline-block; margin-top: 5px; padding: 2px 8px; border-radius: 999px; font-size: .76rem; font-weight: 700; background: rgba(255, 255, 255, .92); color: #7A4B00; }
-.others .n .bad { color: #B42318; }
-.others .r { text-align: right; font-weight: 820; font-stretch: 74%; font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.others .r small { display: block; margin-top: 3px; font-weight: 620; font-stretch: 100%; font-size: .8rem; opacity: .9; }
-.others li.off { filter: saturate(.2); opacity: .78; }
-.others .bar { display: none; }
+.strip { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; width: 100%; padding: 11px 15px 12px; border-radius: 14px; text-align: left; color: var(--on, #fff); background: linear-gradient(135deg, var(--c1, #6B5F7D), var(--c2, #4A3F5C) 55%, var(--c3, #2D2538)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 -6px 14px rgba(0, 0, 0, .28); transition: transform .12s; }
+.others li:not(:last-child) .strip { padding-bottom: 24px; }
+button.strip:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
+.strip .n { font-weight: 700; font-size: .98rem; min-width: 0; line-height: 1.25; }
+.strip .n .why { display: block; font-weight: 500; font-size: .82rem; opacity: .85; margin-top: 1px; }
+.strip .n .warn, .strip .n .bad { display: inline-block; margin-top: 5px; padding: 2px 8px; border-radius: 999px; font-size: .76rem; font-weight: 700; background: rgba(255, 255, 255, .92); color: #7A4B00; }
+.strip .n .bad { color: #B42318; }
+.strip .r { text-align: right; font-weight: 820; font-stretch: 74%; font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.strip .r small { display: block; margin-top: 3px; font-weight: 620; font-stretch: 100%; font-size: .8rem; opacity: .9; }
+.strip.off { filter: saturate(.2); opacity: .78; }
+.store-note { font-size: .84rem; line-height: 1.35; color: var(--muted); }
+.reminders { display: grid; gap: 10px; }
 
 /* ---------- Notes and empty states ---------- */
 .note { padding: 13px 15px; border-radius: 16px; background: var(--surface-2); font-size: .92rem; color: var(--muted); }
@@ -406,7 +450,8 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 /* ---------- Tabs ---------- */
 .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: color-mix(in srgb, var(--surface) 94%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 .tabs .in { max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); height: var(--tabs-h); }
-.tabs button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--muted); font-size: .72rem; font-weight: 650; }
+.tabs button { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--muted); font-size: .72rem; font-weight: 650; }
+.tabs button.dot::after { content: ""; position: absolute; top: 9px; left: calc(50% + 11px); width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px var(--surface); }
 .tabs button svg { width: 22px; height: 22px; padding: 4px 16px; box-sizing: content-box; border-radius: 999px; transition: background .2s; }
 .tabs button.on { color: var(--accent); }
 .tabs button.on svg { background: color-mix(in srgb, var(--accent) 15%, transparent); }
@@ -491,6 +536,41 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 .answer-wait span:nth-child(2) { width: 85%; height: 22px; align-self: end; }
 .answer-wait span:last-child { width: 45%; height: 46px; align-self: start; }
 @keyframes wait { to { background-position: -200% 0; } }
+
+/* ---------- Motion ---------- */
+/* Each tab eases in when you switch to it, and its icon gives a small hop. */
+.view.enter { animation: viewin .28s cubic-bezier(.2, .8, .2, 1); }
+@keyframes viewin { from { opacity: 0; transform: translateY(10px); } }
+.tabs button.on svg { animation: hop .4s cubic-bezier(.2, .9, .3, 1.5); }
+@keyframes hop { 40% { transform: translateY(-4px) scale(1.08); } }
+/* Stores near you pop in one after another. */
+.near .nearby button, #where-more .nearby button { animation: chipin .35s calc(var(--i, 0) * 55ms) cubic-bezier(.2, .9, .3, 1.3) both; }
+@keyframes chipin { from { opacity: 0; transform: scale(.85) translateY(6px); } }
+/* The scanner frame breathes while it looks. */
+.cam-frame { animation: breathe 1.8s ease-in-out infinite; }
+@keyframes breathe { 50% { border-color: var(--gold); box-shadow: 0 0 0 999px rgba(14, 13, 17, .42), 0 0 18px rgba(246, 166, 35, .55); } }
+/* Buttons and pills give a little under the thumb. */
+.btn, .quick button, .nearby button, .scale-link, .best-row, .tile { transition: transform .12s ease; }
+.btn:active, .quick button:active, .nearby button:active, .best-row:active, .tile:active { transform: scale(.97); }
+
+/* Short screens (an iPhone SE from the home screen): a little tighter, so Pay still fits with no scrolling. */
+@media (max-height: 700px) {
+  main { padding-block: 4px 12px; }
+  #pay-body { gap: 10px; }
+  .where-chip { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; }
+  .where-chip .ic { width: 40px; height: 40px; border-radius: 12px; }
+  .where-chip .t b { font-size: 1.3rem; }
+  .winner .w-card { width: clamp(96px, 29vw, 118px); margin-top: 9px; }
+  .winner .name { font-size: 1.1rem; }
+  .winner .rate { margin-top: 6px; font-size: 2.9rem; }
+  .pocket-label { margin-bottom: 6px; }
+  .quick button, .nearby button { min-height: 38px; }
+  .near { gap: 6px; }
+  .picker { gap: 10px; }
+  .note.ask { gap: 6px; padding: 14px 15px 12px; }
+  .note.ask b { font-size: 1.05rem; }
+  .note.ask .btn { min-height: 40px; padding: 8px 14px; }
+}
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media print { .tabs, .top, .toast { display: none; } }
