@@ -512,7 +512,7 @@
   // The scanner reads letters only (never digits), so a card is matched on the words of its name and
   // issuer: distinctive words count most, generic ones little, and an issuer or network that
   // contradicts the text counts against a card. Returns the best matches, best first.
-  var GENERIC = { card: 1, credit: 1, the: 1, from: 1, by: 1, visa: 1, mastercard: 1, amex: 1, american: 1, express: 1, signature: 1, world: 1, elite: 1, infinite: 1, member: 1, since: 1, valid: 1, thru: 1, good: 1, debit: 1 };
+  var GENERIC = { card: 1, credit: 1, the: 1, of: 1, and: 1, for: 1, from: 1, by: 1, visa: 1, mastercard: 1, amex: 1, american: 1, express: 1, signature: 1, world: 1, elite: 1, infinite: 1, member: 1, since: 1, valid: 1, thru: 1, good: 1, debit: 1 };
   var WEAK = { rewards: 1, cash: 1, business: 1, plus: 1, one: 1, bank: 1, premier: 1, preferred: 0, platinum: 0, gold: 0, blue: 0 };
   var ISSUER_WORDS = { chase: 'Chase', citi: 'Citi', 'capital one': 'Capital One', 'american express': 'American Express', amex: 'American Express', barclays: 'Barclays', synchrony: 'Synchrony', 'us bank': 'U.S. Bank', 'bank of america': 'Bank of America', 'wells fargo': 'Wells Fargo', 'bread financial': 'Bread Financial', comenity: 'Bread Financial', 'navy federal': 'Navy Federal', usaa: 'USAA', discover: 'Discover', 'pnc': 'PNC', 'td bank': 'TD Bank', 'fifth third': 'Fifth Third', 'goldman sachs': 'Goldman Sachs', 'apple': 'Goldman Sachs' };
   var NETWORK_WORDS = { visa: 'Visa', mastercard: 'Mastercard', discover: 'Discover', 'american express': 'American Express', amex: 'American Express' };
@@ -540,18 +540,21 @@
     Object.keys(NETWORK_WORDS).forEach(function (w) { if (phrase(w) && (!saidNetwork || w.length > saidNetwork.length)) saidNetwork = w; });
     var out = [];
     cards.forEach(function (card) {
-      if (card.closed || card.custom) return;
+      if (card.custom) return;  // cards closed to new applicants are still in people's wallets
       var words = normText(card.name).split(' ').filter(function (w) { return w.length >= 2 && !GENERIC[w]; });
       var issuerWords = normText(card.issuer).split(' ').filter(function (w) { return !GENERIC[w] || w === 'american' || w === 'express'; });
-      var score = 0, hits = 0, strong = 0;
+      var score = 0, hits = 0, strong = 0, strongShort = 0;
       words.forEach(function (w) {
         if (issuerWords.indexOf(w) >= 0) return;  // the issuer in the name is scored once, below
         var p = present(w); if (!p) return;
         var weight = (w in WEAK) ? (WEAK[w] || 1.5) : 3;
-        score += weight * p; hits++; if (weight >= 1.5) strong += p;
+        score += weight * p; hits++;
+        if (weight >= 1.5) { if (w.length >= 4) strong += p; else strongShort += p; }
       });
-      if (!hits || strong < .7) return;
       var issuerSaid = saidIssuer && ISSUER_WORDS[saidIssuer] === card.issuer;
+      // A short word ("it", "ink", "co") turns up in the noise of a busy background, so a card read
+      // only by short words also needs its bank's name, or its whole name in a row.
+      if (!hits || (strong < .7 && !(strongShort >= 1 && (issuerSaid || phrase(words.join(' ')))))) return;
       if (issuerSaid) score += 2; else if (saidIssuer && saidIssuer !== 'discover') score -= 2;
       if (saidNetwork) { if (NETWORK_WORDS[saidNetwork] === card.network) score += .5; else if (saidNetwork !== 'amex' || card.issuer !== 'American Express') score -= 1.5; }
       // A card whose whole name was read beats one that only shares a word
@@ -560,7 +563,7 @@
       out.push({ card: card, score: score });
     });
     out.sort(function (a, b) { return b.score - a.score || (b.card.popular ? 1 : 0) - (a.card.popular ? 1 : 0) || a.card.name.length - b.card.name.length; });
-    return out.filter(function (o) { return o.score >= 2.5; }).slice(0, 5);
+    return out.filter(function (o) { return o.score >= 2.5; }).slice(0, 8);
   }
 
   return {

@@ -221,7 +221,11 @@ console.log('membership tests passed');
     'CAPITAL ONE Venture X VISA': 'capital-one-venture-x',
     'WELLS FARGO A Active Cash VISA': 'wells-fargo-active-cash',
     'DISCOVER it CASH BACK': 'discover-it-cash-back',
-    'citi DOUBLE CASH MASTERCARD': 'citi-double-cash'
+    'citi DOUBLE CASH MASTERCARD': 'citi-double-cash',
+    'UNITED Gateway MileagePlus': 'chase-united-gateway',
+    // Cards closed to new applicants are still in wallets, so they are read too
+    'freedom VISA Signature': 'chase-freedom',
+    'AMERICAN EXPRESS EveryDay': 'amex-everyday'
   };
   Object.keys(reads).forEach(function (text) {
     var m = E.matchCardText(text, catalog);
@@ -229,6 +233,14 @@ console.log('membership tests passed');
   });
   assert(E.matchCardText('MEMBER SINCE VALID THRU 4000 1234', catalog).length === 0, 'card boilerplate alone matches nothing');
   assert(E.matchCardText('', catalog).length === 0, 'empty text matches nothing');
+  // Noise from a stone counter is full of short words; they alone never make a card
+  assert(E.matchCardText('a oo co op ee it we ink on ay go my oe', catalog).length === 0, 'short noise words alone match nothing');
+  var disc = E.matchCardText('DISCOVER it', catalog);
+  assert(disc.length && /^discover-it/.test(disc[0].card.id), 'a short word with the bank name still reads (Discover it)');
+  var ihg = E.matchCardText('IHG ONE REWARDS', catalog);
+  assert(ihg.length && ihg[0].card.id.indexOf('ihg') >= 0, 'a name made of short words reads when it is all there in a row (IHG One Rewards): ' + (ihg[0] && ihg[0].card.id));
+  var unitedOnly = E.matchCardText('UNITED', catalog);
+  assert(unitedOnly.length >= 6 && unitedOnly.some(function (m) { return m.card.id === 'chase-united-gateway'; }), 'when only UNITED is read, every United card is offered, the Gateway included');
   var flex = E.matchCardText('CHASE FREEDOM FLEX', catalog);
   assert(flex[0].card.id === 'chase-freedom-flex' && flex[1].score < flex[0].score, 'the whole name beats a shared word');
   console.log('card scan matching tests passed');

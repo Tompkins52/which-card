@@ -184,6 +184,7 @@
   /* ---------- sheet ---------- */
   function openSheet(title, bodyNodes, opts) {
     opts = opts || {};
+    stopCamera();
     var root = document.getElementById('sheet-root'); clear(root);
     var body = h('div', { class: 'sheet-body' }, h('div', { class: 'wrap stack' }, bodyNodes));
     var sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
@@ -196,7 +197,7 @@
     document.body.style.overflow = 'hidden';
     return { sheet: sheet, body: body };
   }
-  function closeSheet() { clear(document.getElementById('sheet-root')); document.body.style.overflow = ''; if (typeof sheetOnClose === 'function') { var f = sheetOnClose; sheetOnClose = null; f(); } }
+  function closeSheet() { stopCamera(); clear(document.getElementById('sheet-root')); document.body.style.overflow = ''; if (typeof sheetOnClose === 'function') { var f = sheetOnClose; sheetOnClose = null; f(); } }
   var sheetOnClose = null;
 
   /* ---------- first-run disclaimer ---------- */
@@ -1480,9 +1481,19 @@
   }
 
   /* ---------- Scan a card ---------- */
-  // Point the camera at a card: the photo is read on this phone (tesseract.js, loaded from the
-  // app's own folder the first time), letters only, never digits; the words are matched to the
-  // card list and the photo and the words are dropped. Nothing is sent anywhere.
+  // Point the camera at a card and it reads the name, on this phone: the reader (tesseract.js) is
+  // part of the app, reads letters only, never digits, and every frame and photo is dropped once
+  // read. Nothing is sent anywhere.
+  //
+  // How it reads a real card on a real counter:
+  // 1. Only the card-shaped frame in the middle of the camera view is read, so a busy stone counter
+  //    or a patterned table around the card does not matter. (A photo is read whole.)
+  // 2. Each picture goes gray, is softened a little against the fine lines pressed into many cards,
+  //    then every pixel is compared with the area around it, so light letters on a silver card stand
+  //    out as well as white letters on navy, and glare and shading wash out. Then black and white.
+  // 3. Pictures alternate between light letters and dark letters (and now and then a card held
+  //    upright). Only words the reader is sure of count first; it keeps going until one card
+  //    clearly stands out, and after a few seconds it offers the closest ones to pick from.
   var ocrWorker = null, ocrLoading = null;
   function loadOcr(onProgress) {
     if (ocrWorker) return Promise.resolve(ocrWorker);
@@ -1502,64 +1513,211 @@
     }, function (e) { ocrLoading = null; throw e; });
     return ocrLoading;
   }
-  // A photo, shrunk and turned to high-contrast gray, which reads better and is quicker.
-  function cardCanvas(file) {
-    return new Promise(function (resolve, reject) {
-      var url = URL.createObjectURL(file), img = new Image();
-      img.onload = function () {
-        URL.revokeObjectURL(url);
-        var k = Math.min(1, 1400 / Math.max(img.naturalWidth, img.naturalHeight));
-        var c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
-        var g = c.getContext('2d'); g.drawImage(img, 0, 0, c.width, c.height);
-        var d = g.getImageData(0, 0, c.width, c.height), px = d.data, lo = 255, hi = 0, i, v;
-        for (i = 0; i < px.length; i += 4) { v = (px[i] * 299 + px[i + 1] * 587 + px[i + 2] * 114) / 1000; px[i] = v; if (v < lo) lo = v; if (v > hi) hi = v; }
-        var span = Math.max(1, hi - lo);
-        for (i = 0; i < px.length; i += 4) { v = Math.round((px[i] - lo) * 255 / span); px[i] = px[i + 1] = px[i + 2] = v; }
-        g.putImageData(d, 0, 0);
-        resolve(c);
-      };
-      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('photo')); };
-      img.src = url;
+  var SCAN_GUIDE = 0.84, CARD_RATIO = 1.586, camStop = null;
+  function stopCamera() { if (camStop) { var f = camStop; camStop = null; f(); } }
+
+  // The picture the reader gets: a piece of src (a video frame or a photo), at most max pixels
+  // wide, black letters on white. light: the letters are lighter than the card around them.
+  // turn: 90 or -90, for a card held upright.
+  function readyToRead(src, sx, sy, sw, sh, o) {
+    var k = Math.min(1, (o.max || 900) / Math.max(sw, sh));
+    var w = Math.max(1, Math.round(sw * k)), hh = Math.max(1, Math.round(sh * k)), turn = o.turn || 0;
+    var c = document.createElement('canvas'); c.width = turn ? hh : w; c.height = turn ? w : hh;
+    var g = c.getContext('2d', { willReadFrequently: true });
+    if (turn) { g.translate(c.width / 2, c.height / 2); g.rotate(turn * Math.PI / 180); g.drawImage(src, sx, sy, sw, sh, -w / 2, -hh / 2, w, hh); g.setTransform(1, 0, 0, 1, 0, 0); }
+    else g.drawImage(src, sx, sy, sw, sh, 0, 0, w, hh);
+    var W = c.width, H = c.height, img = g.getImageData(0, 0, W, H), px = img.data, n = W * H, a = new Float32Array(n), i, x, y;
+    for (i = 0; i < n; i++) a[i] = px[i * 4] * .299 + px[i * 4 + 1] * .587 + px[i * 4 + 2] * .114;
+    // Soften: a small blur, twice, across and down
+    var b = new Float32Array(n);
+    for (var pass = 0; pass < 2; pass++) {
+      for (y = 0; y < H; y++) for (x = 0; x < W; x++) { i = y * W + x; b[i] = (a[x > 0 ? i - 1 : i] + 2 * a[i] + a[x < W - 1 ? i + 1 : i]) / 4; }
+      for (y = 0; y < H; y++) for (x = 0; x < W; x++) { i = y * W + x; a[i] = (b[y > 0 ? i - W : i] + 2 * b[i] + b[y < H - 1 ? i + W : i]) / 4; }
+    }
+    // Each pixel against the area around it (a box 1/30 of the picture across), from running sums
+    var r = Math.max(6, Math.round(Math.max(W, H) / 60)), W1 = W + 1, S = new Float64Array(W1 * (H + 1)), S2 = new Float64Array(W1 * (H + 1));
+    for (y = 0; y < H; y++) { var rs = 0, rs2 = 0; for (x = 0; x < W; x++) { var v = a[y * W + x]; rs += v; rs2 += v * v; S[(y + 1) * W1 + x + 1] = S[y * W1 + x + 1] + rs; S2[(y + 1) * W1 + x + 1] = S2[y * W1 + x + 1] + rs2; } }
+    for (y = 0; y < H; y++) {
+      var y0 = Math.max(0, y - r), y1 = Math.min(H, y + r + 1);
+      for (x = 0; x < W; x++) {
+        var x0 = Math.max(0, x - r), x1 = Math.min(W, x + r + 1), cnt = (x1 - x0) * (y1 - y0);
+        var sum = S[y1 * W1 + x1] - S[y0 * W1 + x1] - S[y1 * W1 + x0] + S[y0 * W1 + x0];
+        var sum2 = S2[y1 * W1 + x1] - S2[y0 * W1 + x1] - S2[y1 * W1 + x0] + S2[y0 * W1 + x0];
+        var m = sum / cnt, sd = Math.sqrt(Math.max(0, sum2 / cnt - m * m)), z = (a[y * W + x] - m) / (sd + 8);
+        i = (y * W + x) * 4;
+        px[i] = px[i + 1] = px[i + 2] = (o.light ? z > .96 : z < -.96) ? 0 : 255; px[i + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    return c;
+  }
+  // The words read, and the ones the reader is sure of (short words need to be very sure).
+  function readWords(res) {
+    var all = [], sure = [];
+    ((res && res.data && res.data.blocks) || []).forEach(function (bl) { (bl.paragraphs || []).forEach(function (p) { (p.lines || []).forEach(function (l) { (l.words || []).forEach(function (wd) {
+      var t = String(wd.text || '').trim(); if (!t) return;
+      all.push(t);
+      if (wd.confidence >= (t.replace(/[^A-Za-z]/g, '').length >= 4 ? 60 : 85)) sure.push(t);
+    }); }); }); });
+    return { all: all.join(' '), sure: sure.join(' ') };
+  }
+  function readPicture(w, canvas) {
+    return w.recognize(canvas, {}, { text: true, blocks: true }).then(function (res) {
+      var words = readWords(res); res = null;
+      var m = E.matchCardText(words.sure, data.cards);
+      return m.length ? { list: m, sure: true } : { list: E.matchCardText(words.all, data.cards), sure: false };
     });
   }
+  // A clear answer: one card ahead of the next by a point and a half, from words it was sure of.
+  function clearWinner(r) { return r.list.length && r.sure && r.list[0].score - (r.list[1] ? r.list[1].score : 0) >= 1.5; }
+
   function scanCard(box, afterAdd) {
+    if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') scanLive(box, afterAdd);
+    else scanPhoto(box, afterAdd);
+  }
+
+  function scanLive(box, afterAdd) {
+    stopCamera(); clear(box);
+    var video = h('video', { muted: '', playsinline: '', autoplay: '', 'aria-label': 'Camera view' });
+    video.muted = true; video.setAttribute('playsinline', '');
+    var view = h('div', { class: 'cam' }, video, h('div', { class: 'cam-frame', 'aria-hidden': 'true' }));
+    var status = h('p', { class: 'scan-status', role: 'status' }, 'Hold the card flat inside the frame.');
+    box.appendChild(view);
+    box.appendChild(status);
+    box.appendChild(h('div', { class: 'cam-actions' },
+      h('button', { class: 'btn', onclick: function () { stopCamera(); clear(box); } }, 'Stop'),
+      h('button', { class: 'link', onclick: function () { stopCamera(); scanPhoto(box, afterAdd); } }, 'Take a photo instead')));
+    var stream = null, worker = null, alive = true, tries = 0, started = 0, seen = {}, hinted = false;
+    var PASSES = [{ light: true }, { light: false }, { light: true }, { light: false }, { light: true, turn: 90 }, { light: true, turn: -90 }];
+    camStop = function () {
+      alive = false;
+      if (stream) stream.getTracks().forEach(function (t) { try { t.stop(); } catch (e) { } });
+      stream = null;
+      try { video.srcObject = null; } catch (e) { }
+      document.removeEventListener('visibilitychange', onHide);
+    };
+    function onHide() { if (document.hidden) { stopCamera(); clear(box); } }
+    document.addEventListener('visibilitychange', onHide);
+    var firstTime = !ocrWorker;
+    if (firstTime) status.textContent = 'Getting the reader ready, first time only (about 6 MB)\u2026';
+    loadOcr().then(function (w) { worker = w; if (alive) { status.textContent = 'Hold the card flat inside the frame.'; next(); } }, function () { if (alive) fail('reader'); });
+    navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } }).then(function (s) {
+      if (!alive) { s.getTracks().forEach(function (t) { t.stop(); }); return; }
+      stream = s; video.srcObject = s;
+      var track = s.getVideoTracks()[0];
+      try { if (track && track.getCapabilities && (track.getCapabilities().focusMode || []).indexOf('continuous') >= 0) track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function () { }); } catch (e) { }
+      var p = video.play(); if (p && p.catch) p.catch(function () { });
+      next();
+    }, function (e) { if (alive) fail(e && e.name === 'NotAllowedError' ? 'blocked' : 'camera'); });
+
+    function fail(why) {
+      stopCamera(); clear(box);
+      var msg = why === 'reader' ? ['Could not load the card reader. ', 'It downloads once, about 6 MB; check the connection and try again.']
+        : why === 'blocked' ? ['The camera is turned off for this app. ', 'Allow it in the browser\u2019s settings for this site, or take a photo of the card instead.']
+        : ['Could not open the camera. ', 'Take a photo of the card instead, or search for it by name below.'];
+      box.appendChild(h('div', { class: 'note' }, h('b', null, msg[0]), msg[1]));
+      box.appendChild(h('button', { class: 'btn block', onclick: function () { if (why === 'reader') scanLive(box, afterAdd); else scanPhoto(box, afterAdd); } }, icon('camera'), why === 'reader' ? 'Try again' : 'Take a photo instead'));
+    }
+    // The part of the video inside the frame on screen, with a little room around it.
+    function frameCrop() {
+      var vw = video.videoWidth, vh = video.videoHeight, bw = view.clientWidth, bh = view.clientHeight;
+      var s = Math.max(bw / vw, bh / vh), ox = (bw - vw * s) / 2, oy = (bh - vh * s) / 2;
+      var gw = bw * SCAN_GUIDE, gh = gw / CARD_RATIO, room = gw * .06;
+      var x = Math.max(0, ((bw - gw) / 2 - room - ox) / s), y = Math.max(0, ((bh - gh) / 2 - room - oy) / s);
+      return [x, y, Math.min(vw - x, (gw + 2 * room) / s), Math.min(vh - y, (gh + 2 * room) / s)];
+    }
+    function next() {
+      if (!alive || !worker || !stream) return;
+      if (video.readyState < 2 || !video.videoWidth) { setTimeout(next, 150); return; }
+      if (!started) started = Date.now();
+      var pass = PASSES[tries++ % PASSES.length], cut = frameCrop();
+      var canvas = readyToRead(video, cut[0], cut[1], cut[2], cut[3], { light: pass.light, turn: pass.turn, max: 900 });
+      readPicture(worker, canvas).then(function (r) {
+        canvas.width = canvas.height = 0; canvas = null;
+        if (!alive) return;
+        if (clearWinner(r)) { done(r.list); return; }
+        r.list.forEach(function (m, i) {
+          var e = seen[m.card.id] || (seen[m.card.id] = { card: m.card, score: 0, wins: 0 });
+          if (m.score > e.score) e.score = m.score;
+          if (i === 0 && m.score - (r.list[1] ? r.list[1].score : 0) >= 1) e.wins += r.sure ? 2 : 1;
+        });
+        var ranked = rankSeen();
+        if (ranked.length && ranked[0].wins >= 3) { done(ranked); return; }
+        var t = Date.now() - started;
+        if (t > 9000 && ranked.length) { done(ranked); return; }
+        if (t > 6000 && !hinted) { hinted = true; status.textContent = 'Still looking. More light helps, or tilt the card a little to get rid of glare.'; }
+        if (t > 45000) { stopCamera(); clear(box); box.appendChild(h('div', { class: 'note' }, h('b', null, 'Could not read a card name. '), 'Try again in good light, or take a photo, or search for it by name below.')); box.appendChild(h('button', { class: 'btn block', onclick: function () { scanLive(box, afterAdd); } }, icon('camera'), 'Try again')); return; }
+        setTimeout(next, 60);
+      }, function () { if (alive) setTimeout(next, 300); });
+    }
+    function rankSeen() {
+      return Object.keys(seen).map(function (k) { return seen[k]; }).sort(function (a, b) { return b.wins - a.wins || b.score - a.score; });
+    }
+    function done(list) {
+      stopCamera();
+      if (navigator.vibrate) { try { navigator.vibrate(15); } catch (e) { } }
+      showScanResult(box, list, afterAdd, 'Not it? ', 'Scan again', function () { scanLive(box, afterAdd); }, 'The camera is off and nothing was saved.');
+    }
+  }
+
+  // The fallback: a photo from the camera app, read whole (light letters, then dark ones).
+  function scanPhoto(box, afterAdd) {
     var input = h('input', { type: 'file', accept: 'image/*', capture: 'environment', style: 'display:none' });
     input.addEventListener('change', function () {
       var file = input.files && input.files[0]; if (!file) return;
       clear(box);
-      var status = h('p', { class: 'muted scan-status' }, 'Reading the card…');
+      var status = h('p', { class: 'muted scan-status', role: 'status' }, 'Reading the card\u2026');
       box.appendChild(status);
-      var firstTime = !ocrWorker;
+      var firstTime = !ocrWorker, url = URL.createObjectURL(file), img = new Image(), worker = null;
       loadOcr(function (m) {
-        if (firstTime && m && /loading/.test(m.status || '')) status.textContent = 'Getting the reader ready, first time only (about 6 MB)…';
-        else if (m && m.status === 'recognizing text') status.textContent = 'Reading the card… ' + Math.round((m.progress || 0) * 100) + '%';
+        if (firstTime && m && /loading/.test(m.status || '')) status.textContent = 'Getting the reader ready, first time only (about 6 MB)\u2026';
+        else if (m && m.status === 'recognizing text') status.textContent = 'Reading the card\u2026 ' + Math.round((m.progress || 0) * 100) + '%';
       }).then(function (w) {
-        return cardCanvas(file).then(function (canvas) { return w.recognize(canvas); });
-      }).then(function (res) {
-        var text = res && res.data ? res.data.text : '';
-        var matches = E.matchCardText(text, data.cards);
-        text = null;
-        clear(box);
-        if (!matches.length) {
+        worker = w;
+        return new Promise(function (res, rej) { img.onload = res; img.onerror = function () { rej(new Error('photo')); }; img.src = url; });
+      }).then(function () {
+        var W = img.naturalWidth, H = img.naturalHeight;
+        return readPicture(worker, readyToRead(img, 0, 0, W, H, { light: true, max: 1400 })).then(function (r1) {
+          if (clearWinner(r1)) return r1;
+          return readPicture(worker, readyToRead(img, 0, 0, W, H, { light: false, max: 1400 })).then(function (r2) {
+            if (clearWinner(r2)) return r2;
+            var pick = [r1, r2].filter(function (r) { return r.list.length; }).sort(function (a, b) { return (b.sure ? 1 : 0) - (a.sure ? 1 : 0) || b.list[0].score - a.list[0].score; })[0];
+            return pick || { list: [] };
+          });
+        });
+      }).then(function (r) {
+        URL.revokeObjectURL(url); img = null;
+        if (!r.list.length) {
+          clear(box);
           box.appendChild(h('div', { class: 'note' }, h('b', null, 'Could not read a card name. '), 'Try again with the card flat, in good light, filling the picture. Or search for it by name below.'));
           box.appendChild(h('button', { class: 'btn block', onclick: function () { scanCard(box, afterAdd); } }, icon('camera'), 'Try again'));
           return;
         }
-        box.appendChild(h('p', { class: 'scan-label' }, matches.length === 1 ? 'Looks like this card:' : 'Looks like one of these:'));
-        var ul = h('div', { class: 'card-list' });
-        matches.slice(0, 3).forEach(function (m) {
-          var c = m.card, inWallet = !!walletEntry(c.id);
-          ul.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : ''), style: '--card:' + c.color, onclick: function () { if (!walletEntry(c.id)) { toggleCard(c); toast('Added ' + c.name); } clear(box); if (afterAdd) afterAdd(); } },
-            cardArt(c, 56), h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ', $' + c.annualFee + ' a year' : ', no annual fee'))), h('span', { class: 'add' }, inWallet ? 'Added' : 'Add')));
-        });
-        box.appendChild(ul);
-        box.appendChild(h('p', { class: 'small muted' }, 'Not it? ', h('button', { class: 'link', onclick: function () { scanCard(box, afterAdd); } }, 'Scan again'), ' or search by name below. The photo stayed on this phone and is gone now.'));
+        showScanResult(box, r.list, afterAdd, 'Not it? ', 'Scan again', function () { scanCard(box, afterAdd); }, 'The photo stayed on this phone and is gone now.');
       }).catch(function (e) {
+        URL.revokeObjectURL(url);
         clear(box);
         box.appendChild(h('div', { class: 'note' }, h('b', null, e && e.message === 'reader' ? 'Could not load the card reader. ' : 'Could not read that photo. '), e && e.message === 'reader' ? 'It downloads once, about 6 MB; check the connection and try again.' : 'Try again, or search for the card by name below.'));
       });
     });
     document.body.appendChild(input); input.click(); setTimeout(function () { if (input.parentNode) input.parentNode.removeChild(input); }, 60000);
+  }
+
+  // What it read: the card, or the few it could be (every card tied with the best, up to six).
+  function showScanResult(box, list, afterAdd, notIt, againLabel, again, privacy) {
+    clear(box);
+    // One card well ahead: just that one. A tie (only UNITED read): all of them, up to six.
+    var top = list[0].score, lead = top - (list[1] ? list[1].score : 0), close = list.filter(function (m) { return top - m.score < .5; });
+    var shown = lead >= 1.5 ? [list[0]] : close.length > 1 ? close.slice(0, 6) : list.slice(0, 3);
+    box.appendChild(h('p', { class: 'scan-label' }, shown.length === 1 ? 'Looks like this card:' : 'Looks like one of these:'));
+    var ul = h('div', { class: 'card-list' });
+    shown.forEach(function (m) {
+      var c = m.card, inWallet = !!walletEntry(c.id);
+      ul.appendChild(h('button', { class: 'card-row' + (inWallet ? ' in' : ''), style: '--card:' + c.color, onclick: function () { if (!walletEntry(c.id)) { toggleCard(c); toast('Added ' + c.name); } clear(box); if (afterAdd) afterAdd(); } },
+        cardArt(c, 56), h('span', null, h('b', null, c.name), h('span', null, c.issuer + (c.annualFee ? ', $' + c.annualFee + ' a year' : ', no annual fee') + (c.closed ? ', no longer offered' : ''))), h('span', { class: 'add' }, inWallet ? 'Added' : 'Add')));
+    });
+    box.appendChild(ul);
+    box.appendChild(h('p', { class: 'small muted' }, notIt, h('button', { class: 'link', onclick: again }, againLabel), ' or search by name below. ' + privacy));
   }
 
   /* ---------- Card detail ---------- */

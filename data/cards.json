@@ -1,5 +1,5 @@
 {
- "version": "2026-10-28",
+ "version": "2026-10-31",
  "verified": "2026-10-28",
  "notes": [
   "Issuer pages first: americanexpress.com product and benefit policy pages, delta.com, hilton.com, marriott.com, cards.barclaycardus.com, wyndhamrewardscreditcard.com and emirates.com rendered; many Barclays product pages (Earner Plus, Carnival Rewards, Old Navy, Gap, Priceline, Breeze, Hawaiian landing pages), lowes.com, usbank.com, priceline.com, flyfrontier.com, flybreeze.com, boh.com and aa.com would not render. Gaps were filled from NerdWallet, The Points Guy, Doctor of Credit, Upgraded Points, Frequent Miler, AwardWallet, Bankrate, Danny the Deal Guru, Miles to Memories, View from the Wing, Your Mileage May Vary, Platinum Flyer, The Point Calculator, CardStack, Rivo, Kudos, Nav, FinanceBuzz, HelloSafe and press releases on PR Newswire, Business Wire, Synchrony, Gap Inc., JetBlue and Amazon, each named in the card's sourceUrls.",
@@ -1205,6 +1205,73 @@
     "Program id british-airways-avios is new (estimated value 1.5 cents per Avios)"
    ],
    "color": "#1A4374"
+  },
+  {
+   "id": "chase-freedom",
+   "name": "Chase Freedom",
+   "issuer": "Chase",
+   "network": "Visa",
+   "type": "personal",
+   "program": "chase-ur",
+   "annualFee": 0,
+   "fxFee": 3,
+   "base": 1,
+   "earn": [],
+   "rotating": {
+    "cap": 1500,
+    "capPeriod": "quarter",
+    "activation": true,
+    "rate": 5,
+    "calendar": {
+     "2026-Q4": {
+      "categories": [
+       "groceries",
+       "dining"
+      ],
+      "merchants": [
+       "american-red-cross"
+      ],
+      "activateBy": "2026-12-14",
+      "label": "Grocery Stores (excluding Walmart and Target), Dining, American Red Cross"
+     },
+     "2027-Q1": {
+      "categories": [
+       "groceries",
+       "streaming"
+      ],
+      "merchants": [],
+      "label": "Grocery Stores (excluding Walmart and Target), Top Streaming Services"
+     }
+    },
+    "activationUrl": "https://www.chasebonus.com/"
+   },
+   "bestFor": "Existing cardholders: 5% on rotating quarterly categories with no annual fee",
+   "tips": [
+    "Activate the 5% categories each quarter at chase.com or in the Chase app; purchases made earlier in the quarter count once you activate",
+    "The 5% applies to the first $1,500 in combined bonus category purchases per quarter, then 1%",
+    "The quarterly categories are the same as the Freedom Flex; grocery bonuses exclude Walmart and Target",
+    "Rewards are Ultimate Rewards points worth 1 cent each as cash back; pairing with a Sapphire card unlocks transfers to travel partners"
+   ],
+   "watchOut": [
+    "Closed to new applicants since September 2020; existing cardholders keep the card",
+    "Outside the quarter's categories everything earns 1%; unlike the Freedom Flex there is no year-round dining or drugstore bonus",
+    "3% foreign transaction fee"
+   ],
+   "sourceUrl": "https://www.nerdwallet.com/credit-cards/reviews/chase-freedom",
+   "sourceUrls": [
+    "https://www.doctorofcredit.com/chase-freedom-5-categories-for-q4-2026-grocery-dining-red-cross/",
+    "https://www.doctorofcredit.com/chase-freedom-q1-2027-categories-grocery-streaming/",
+    "https://media.chase.com/news/chase-freedom-2026-q4-categories"
+   ],
+   "verified": "2026-10-31",
+   "confidence": "medium",
+   "unsure": [
+    "Chase no longer has a product page for the original Freedom, so the terms come from NerdWallet (September 2026) and the quarterly category announcements, which name both Freedom cards",
+    "Purchase protection and extended warranty are left off until confirmed for this card",
+    "Q1 2027 categories follow the Freedom Flex calendar, since Chase announces the same categories for both cards"
+   ],
+   "closed": true,
+   "color": "#1497DA"
   },
   {
    "id": "chase-freedom-flex",
@@ -3690,7 +3757,8 @@
    "verified": "2026-10-28",
    "confidence": "high",
    "unsure": [],
-   "color": "#223363"
+   "color": "#A9AEB4",
+   "finish": "silver"
   },
   {
    "id": "chase-united-quest",
