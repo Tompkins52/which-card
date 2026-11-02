@@ -691,35 +691,37 @@
   // screen. A card with room shows its why, then its chip and network. When even one line each
   // does not fit, the last cards fold into "+N more", which opens the whole wallet. Measured from
   // layout, so it is right even while the cards are still sliding in.
-  var CARD_MIN = 34, FOLD_H = 34;
+  // The pocket fills the screen to the tab bar. When every card fits with its why line, the best
+  // cards get the most room. When they do not, the pocket keeps the cards at a hand-sized height and
+  // scrolls inside itself, like thumbing through a real wallet: the screen never scrolls, and the
+  // last card peeking out at the bottom says there are more.
+  var CARD_MIN = 56, CARD_SCROLL = 64;
   function fitPay() {
     if (view !== 'pay') return;
     var box = document.querySelector('#answer .pocket.fill'), tabs = document.querySelector('.tabs');
     if (!box || !tabs) return;
-    var ul = box.querySelector('.others'), items = [].slice.call(ul.children), fold = box.querySelector('.fold');
-    box.hidden = false;
+    var ul = box.querySelector('.others'), items = [].slice.call(ul.children);
+    box.hidden = false; ul.classList.remove('scroll'); ul.style.removeProperty('height');
     items.forEach(function (li) { li.hidden = false; li.classList.remove('end'); li.style.removeProperty('--h'); });
-    if (fold) fold.parentNode.removeChild(fold);
     var avail = Math.floor(tabs.getBoundingClientRect().top - (layoutTop(ul) - (window.scrollY || 0)) - 26);
-    var n = items.length, fits = n;
-    while (fits > 0 && fits * CARD_MIN > avail - (fits < n ? FOLD_H : 0)) fits--;
-    if (fits < n) {
-      avail -= FOLD_H;
-      for (var i = fits; i < n; i++) items[i].hidden = true;
-      var k = n - fits;
-      box.appendChild(h('button', { class: 'fold', onclick: openCardsHere }, fits ? '+' + k + ' more ' + (k === 1 ? 'card' : 'cards') : 'Your ' + k + ' other ' + (k === 1 ? 'card' : 'cards')));
-      if (!fits && avail < 0) { box.hidden = true; return; }
+    var n = items.length;
+    if (!n) return;
+    if (n * CARD_MIN > avail) {
+      if (avail < CARD_SCROLL) { box.hidden = true; return; }
+      ul.classList.add('scroll'); ul.style.height = avail + 'px';
+      items.forEach(function (li) { li.style.setProperty('--h', CARD_SCROLL + 'px'); li.setAttribute('data-room', 'why'); });
+      items[n - 1].classList.add('end');
+      return;
     }
-    if (!fits) return;
-    var whole = Math.round(ul.clientWidth / 1.586), extra = avail - fits * CARD_MIN, shares = fits * (fits + 1) / 2, spill = 0;
-    items.slice(0, fits).forEach(function (li, i) {
-      var hgt = CARD_MIN + extra * (fits - i) / shares + spill; spill = 0;
+    var whole = Math.round(ul.clientWidth / 1.586), extra = avail - n * CARD_MIN, shares = n * (n + 1) / 2, spill = 0;
+    items.forEach(function (li, i) {
+      var hgt = CARD_MIN + extra * (n - i) / shares + spill; spill = 0;
       if (hgt > whole) { spill = hgt - whole; hgt = whole; }
       hgt = Math.floor(hgt);
       li.style.setProperty('--h', hgt + 'px');
-      li.setAttribute('data-room', hgt >= 100 ? 'card' : hgt >= 56 ? 'why' : 'line');
+      li.setAttribute('data-room', hgt >= 100 ? 'card' : 'why');
     });
-    items[fits - 1].classList.add('end');
+    items[n - 1].classList.add('end');
   }
   // The empty-wallet intro fits one screen: the picture takes whatever room the words and the
   // button leave above the tab bar, and steps aside on a phone too short for it.
@@ -741,22 +743,6 @@
   }
   window.addEventListener('resize', function () { fitPay(); fitIntro(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitPay(); fitIntro(); });
-  // The whole wallet ranked for where you are, the best card anywhere for it, and the best cards out there.
-  function openCardsHere() {
-    var where = currentWhere();
-    var rc = { merchant: ctx.merchant, category: ctx.category || (ctx.merchant ? null : 'other'), amount: 0, payMethod: ctx.payMethod, abroad: !!state.prefs.abroad };
-    var rec = E.recommend(rc, state, data), label = where ? where.title : 'everything else';
-    var nodes = [h('p', { class: 'muted' }, 'Every card in your wallet ' + (where ? 'at ' : 'for ') + label + ', best first. Tap one to see how to get the most from it.')];
-    var box = h('div', { class: 'pocket' }), ul = h('ul', { class: 'others', 'aria-label': 'Your cards, best first' });
-    rec.results.forEach(function (r, i) {
-      var b = walletStrip(r, 'button'); b.addEventListener('click', function () { openCardDetail(r.card.id, openCardsHere); });
-      ul.appendChild(h('li', { style: '--i:' + i }, b));
-    });
-    box.appendChild(ul); nodes.push(box);
-    var bh = bestHere();
-    nodes.push(h('button', { class: 'btn block', onclick: function () { openBestCards(bh.where, bh.label); } }, icon('trophy'), 'Best cards for ' + bh.label));
-    openSheet(where ? 'Your cards at ' + where.title : 'Your cards', nodes);
-  }
 
   /* ---------- Best card anywhere ---------- */
   // Typical spend per trip and trips per year, used until the person has logged a few purchases here.

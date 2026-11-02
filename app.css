@@ -311,8 +311,12 @@ a.btn { text-decoration: none; }
 .pocket.fill .strip .net { position: absolute; right: 15px; bottom: 22px; font-size: .8rem; font-weight: 820; font-style: italic; letter-spacing: .04em; opacity: .92; }
 .pocket.fill .others li.end .strip .net { bottom: 10px; }
 .pocket.fill li[data-room="card"] .strip .chip, .pocket.fill li[data-room="card"] .strip .net { display: block; }
-.fold { position: relative; display: block; width: 100%; margin-top: 8px; padding: 6px 4px 2px; color: var(--gold); font-weight: 700; font-size: .86rem; text-align: center; }
 .others { position: relative; display: flex; flex-direction: column; }
+/* More cards than fit: the pocket scrolls inside itself, the screen stays put. */
+.pocket.fill .others.scroll { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: 14px; -webkit-mask-image: linear-gradient(#000 calc(100% - 22px), transparent); mask-image: linear-gradient(#000 calc(100% - 22px), transparent); }
+.pocket.fill .others.scroll::-webkit-scrollbar { display: none; }
+.pocket.fill .others.scroll li { flex: none; }
+.pocket.fill .others.scroll li.end { margin-bottom: 12px; }
 .others li { position: relative; animation: rowin .4s calc(var(--i, 0) * 45ms) cubic-bezier(.2, .8, .2, 1) both; }
 .others li + li { margin-top: -12px; }
 .strip { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; width: 100%; padding: 11px 15px 12px; border-radius: 14px; text-align: left; color: var(--on, #fff); background: linear-gradient(135deg, var(--c1, #6B5F7D), var(--c2, #4A3F5C) 55%, var(--c3, #2D2538)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 -6px 14px rgba(0, 0, 0, .28); transition: transform .12s; }
@@ -649,7 +653,6 @@ label.lbl { display: block; font-size: .85rem; font-weight: 620; color: var(--mu
 .pocket.slide .others li { animation: deal .5s calc(.15s + var(--i, 0) * 70ms) cubic-bezier(.2, .9, .3, 1.15) both; }
 .pocket.slide .others li:nth-child(even) { --tilt: 1.6deg; }
 @keyframes deal { from { opacity: 0; transform: translateY(-18px) rotate(var(--tilt, -1.6deg)); } }
-.pocket .fold { animation: fade .4s .5s both; }
 
 /* Stores near you pop in one after another. */
 .nearby button { animation: chipin .38s calc(var(--i, 0) * 60ms) cubic-bezier(.2, .9, .3, 1.35) both; }
