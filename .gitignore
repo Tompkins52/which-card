@@ -18,5 +18,5 @@ native/smoke/out/
 *.jks
 *.aab
 *.apk
-store/
+store/*
 !store/listing.md
