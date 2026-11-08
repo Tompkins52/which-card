@@ -24,7 +24,13 @@ launch() {
   return 1
 }
 screen() { adb exec-out screencap -p > "$OUT/$1.png"; }
-ui_text() { adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true; adb shell cat /sdcard/ui.xml 2>/dev/null || true; }
+# The page text, read through the WebView's remote debugging (uiautomator cannot see inside a WebView).
+ui_text() {
+  local t
+  if t="$(node "$HERE/pagetext.mjs" "$PKG" 2>/dev/null)" && [ -n "$t" ]; then echo "$t"; return; fi
+  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+  adb shell cat /sdcard/ui.xml 2>/dev/null || true
+}
 crashed() { adb logcat -d | grep -E "FATAL EXCEPTION" | grep -q . ; }
 
 adb wait-for-device
@@ -40,7 +46,7 @@ screen 01-fresh
 crashed && fail "the app crashed on a fresh start"
 ok "fresh start, no crash"
 UI="$(ui_text)"; echo "$UI" > "$OUT/01-text.txt"
-echo "$UI" | grep -qi "witch card\|math\|pay in full\|Let" || fail "the first screen does not show the welcome note (WebView did not render?)"
+echo "$UI" | grep -qi "witch card\|math\|Let" || fail "the first screen does not show the welcome note (WebView did not render?)"
 ok "the first screen renders"
 
 # 2. The state file alone brings the wallet back (a restored phone has the file, not the WebView storage).
