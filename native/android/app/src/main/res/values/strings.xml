@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Witch Card</string>
+    <string name="title_activity_main">Witch Card</string>
+    <string name="package_name">com.tompkinssoftwaresystems.witchcard</string>
+    <string name="custom_url_scheme">com.tompkinssoftwaresystems.witchcard</string>
+</resources>

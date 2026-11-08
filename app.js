@@ -3,6 +3,8 @@
   'use strict';
   var E = window.WhichCardEngine;
   var PREVIEW = !!window.__PREVIEW;
+  // The Android app (native/): a state file Android backs up, the back button, the system bars, the splash.
+  var NATIVE = window.WCNative || null;
   var STATE_KEY = 'whichcard.state.v1';
   var DATA_KEY = 'whichcard.data.v1';
   var DATA_FILES = ['categories', 'merchants', 'cards', 'bonuses', 'valuations'];
@@ -29,7 +31,30 @@
     s.myPlaces = s.myPlaces || [];
     return s;
   }
-  function saveState() { try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { /* storage may be unavailable */ } }
+  var fileSave = null;
+  function saveState() {
+    state.savedAt = Date.now();
+    var text = JSON.stringify(state);
+    try { localStorage.setItem(STATE_KEY, text); } catch (e) { /* storage may be unavailable */ }
+    if (NATIVE) {  // the copy Android backs up and carries to a new phone; a short wait folds quick successive saves into one write
+      clearTimeout(fileSave);
+      fileSave = setTimeout(function () { NATIVE.saveState(text).catch(function () { }); }, 300);
+    }
+  }
+  // On a restored or new phone the state file is there and the WebView's storage is not; the newer of the two wins.
+  function loadNativeState() {
+    if (!NATIVE) return Promise.resolve();
+    return NATIVE.loadState().then(function (text) {
+      if (!text) return;
+      var fromFile = null;
+      try { fromFile = JSON.parse(text); } catch (e) { return; }
+      if (!fromFile || typeof fromFile !== 'object') return;
+      if ((fromFile.savedAt || 0) < (state.savedAt || 0) && (state.wallet || []).length) return;
+      try { localStorage.setItem(STATE_KEY, text); } catch (e) { }
+      state = loadState();
+      ctx.payMethod = state.prefs.payMethod || 'card';
+    }).catch(function () { });
+  }
   function walletEntry(cardId) { for (var i = 0; i < state.wallet.length; i++) if (state.wallet[i].cardId === cardId) return state.wallet[i]; return null; }
 
   /* ---------- data ---------- */
@@ -1566,7 +1591,7 @@
     function say(text) { out.push(text); lines.appendChild(h('p', null, text)); }
     var copyBtn = h('button', { class: 'btn block', onclick: function () { copyText(out.join('\n')).then(function () { toast('Copied'); }, function () { toast('Could not copy'); }); } }, 'Copy the results');
     openSheet('Location test', [h('p', { class: 'muted' }, 'Each step runs on this phone and shows what came back. Send a screenshot of this if the store does not show up.'), lines, copyBtn]);
-    say(buildLine() + ' ' + (navigator.standalone || matchMedia('(display-mode: standalone)').matches ? 'Opened from the home screen.' : 'Opened in the browser.'));
+    say(buildLine() + ' ' + (NATIVE ? 'The ' + (NATIVE.platform === 'ios' ? 'iPhone' : 'Android') + ' app.' : navigator.standalone || matchMedia('(display-mode: standalone)').matches ? 'Opened from the home screen.' : 'Opened in the browser.'));
     say('Location setting in the app: ' + (state.prefs.location ? 'on' : 'off') + '.');
     var t0 = Date.now();
     function secs() { return ((Date.now() - t0) / 1000).toFixed(1) + ' s'; }
@@ -2418,6 +2443,7 @@
     var t = state.prefs.theme || 'system';
     if (t === 'system') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t);
+    if (NATIVE) NATIVE.setDark(t === 'dark' || (t === 'system' && !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)));
   }
 
   // The background: fine curvy lines, like the wavy line work printed on a card, drifting slowly
@@ -2465,7 +2491,17 @@
     if (!state.wallet.length && !state.onboarded) { onboarding = true; }
     if (!state.disclaimed) openDisclaimer();
     else if (lookFirst && state.wallet.length && !ctx.merchant && !ctx.category) locate();
-    if (!PREVIEW && 'serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    if (NATIVE) {
+      // The phone's back button: close what is open, go back to Pay, then leave the app.
+      NATIVE.onBack(function () {
+        if (document.querySelector('#sheet-root .sheet')) closeSheet();
+        else if (view !== 'pay') showView('pay');
+        else NATIVE.minimize();
+      });
+      if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+      requestAnimationFrame(function () { requestAnimationFrame(NATIVE.ready); });
+    }
+    if (!PREVIEW && !NATIVE && 'serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
       navigator.serviceWorker.register('sw.js').then(function (reg) {
         reg.addEventListener('updatefound', function () {
           var nw = reg.installing; if (!nw) return;
@@ -2475,8 +2511,8 @@
     }
   }
 
-  loadData().then(function () {
-    if (!data) { document.getElementById('view-pay').innerHTML = '<div class="empty"><h2>Could not load card data</h2><p class="muted">Check your connection and reload.</p></div>'; return; }
+  Promise.all([loadData(), loadNativeState()]).then(function () {
+    if (!data) { document.getElementById('view-pay').innerHTML = '<div class="empty"><h2>Could not load card data</h2><p class="muted">Check your connection and reload.</p></div>'; if (NATIVE) NATIVE.ready(); return; }
     start();
   });
 })();

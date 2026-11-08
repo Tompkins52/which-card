@@ -1,0 +1,27 @@
+{
+  "appId": "com.tompkinssoftwaresystems.witchcard",
+  "appName": "Witch Card",
+  "webDir": "www",
+  "backgroundColor": "#F5F2F8",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "launchFadeOutDuration": 0,
+      "backgroundColor": "#22113D",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_INSIDE",
+      "splashFullScreen": false,
+      "splashImmersive": false
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover",
+      "style": "DEFAULT",
+      "hidden": false
+    }
+  }
+}

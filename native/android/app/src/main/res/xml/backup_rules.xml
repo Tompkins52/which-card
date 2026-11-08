@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 6 to 11: what Auto Backup copies to the user's Google account. The state file is the whole of a
+     person's wallet and settings; the WebView's own storage is rebuilt from it on restore. -->
+<full-backup-content>
+    <include domain="file" path="witchcard/" />
+</full-backup-content>

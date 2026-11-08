@@ -46,6 +46,7 @@ The idea is pulling the right card out of your wallet. Behind everything runs a 
 | `tools/check_sources.py` | The daily review job (see below). |
 | `tools/make_preview.py` | Builds a single-file preview with the data inlined. |
 | `tools/make_icons.py` | Draws the icons (the main icon is an SVG rendered with Playwright). |
+| `native/`, `tools/assemble_native.py`, `tests/native_check.py` | The Android app: the same web app in a Capacitor shell with a state file Android backs up, the back button, the system bars and the splash (see `native/README.md`). `.github/workflows/android.yml` builds the Play bundle and runs it on an emulator. |
 
 ## Keeping the card data current
 

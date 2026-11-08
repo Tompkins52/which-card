@@ -1,0 +1,24 @@
+{
+  "name": "witch-card-native",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Android (and later iOS) shell around the Witch Card web app.",
+  "scripts": {
+    "bundle": "esbuild src/native.js --bundle --format=iife --target=es2017 --minify --outfile=www/native.js",
+    "assemble": "python3 ../tools/assemble_native.py",
+    "sync": "npm run assemble && npx cap sync android",
+    "aab": "npm run sync && cd android && ./gradlew bundleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/splash-screen": "8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "4.0.0",
+    "@capacitor/cli": "8.6.0",
+    "esbuild": "0.25.10"
+  }
+}
