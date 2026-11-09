@@ -1678,20 +1678,41 @@
   // 3. Pictures alternate between light letters and dark letters (and now and then a card held
   //    upright). Only words the reader is sure of count first; it keeps going until one card
   //    clearly stands out, and after a few seconds it offers the closest ones to pick from.
-  var ocrWorker = null, ocrLoading = null;
+  // The English model ships as eng.traineddata.gz. The Android build unpacks .gz files it packages and
+  // drops the suffix, so inside the app the same file is eng.traineddata; the reader is told which name
+  // to ask for, and if that name is wrong it tries the other once. A reader that breaks while loading
+  // reports it instead of leaving "Getting the reader ready" on screen for good.
+  var ocrWorker = null, ocrLoading = null, ocrGz = !NATIVE;
+  var OCR_LOAD_LIMIT = 120000;
   function loadOcr(onProgress) {
     if (ocrWorker) return Promise.resolve(ocrWorker);
     if (ocrLoading) return ocrLoading;
     var base = new URL('vendor/tesseract/', location.href).toString();
+    function makeWorker(gz, retried) {
+      return new Promise(function (resolve, reject) {
+        var settled = false, w = null;
+        var timer = setTimeout(function () { finish(new Error('reader')); }, OCR_LOAD_LIMIT);
+        function finish(err, worker) {
+          if (settled) return; settled = true; clearTimeout(timer);
+          if (err) { if (w) { try { w.terminate(); } catch (e) { } } reject(err); } else resolve(worker);
+        }
+        window.Tesseract.createWorker('eng', 1, {
+          workerPath: base + 'worker.min.js', corePath: base, langPath: base.replace(/\/$/, ''), gzip: gz, workerBlobURL: false,
+          logger: function (m) { if (onProgress) onProgress(m); },
+          errorHandler: function (err) { finish(err || new Error('reader')); }
+        }).then(function (worker) { w = worker; finish(null, worker); }, finish);
+      }).catch(function (err) {
+        var msg = String(err && err.message || err || '');
+        if (!retried && /traineddata/i.test(msg)) { ocrGz = !gz; return makeWorker(ocrGz, true); }
+        throw err;
+      });
+    }
     ocrLoading = new Promise(function (resolve, reject) {
       if (window.Tesseract) return resolve();
       var sc = document.createElement('script'); sc.src = base + 'tesseract.min.js'; sc.onload = function () { resolve(); }; sc.onerror = function () { reject(new Error('reader')); };
       document.head.appendChild(sc);
     }).then(function () {
-      return window.Tesseract.createWorker('eng', 1, {
-        workerPath: base + 'worker.min.js', corePath: base, langPath: base.replace(/\/$/, ''), gzip: true, workerBlobURL: false,
-        logger: function (m) { if (onProgress) onProgress(m); }
-      });
+      return makeWorker(ocrGz, false);
     }).then(function (w) {
       return w.setParameters({ tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz&' ", tessedit_pageseg_mode: '11' }).then(function () { ocrWorker = w; ocrLoading = null; return w; });
     }, function (e) { ocrLoading = null; throw e; });

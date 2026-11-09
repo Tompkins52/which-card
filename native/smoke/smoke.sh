@@ -209,6 +209,8 @@ echo "      scan: $SCAN"
 echo "$SCAN" | grep -q '"sheet":true' || fail "the Add a card sheet closed by itself during the scan"
 echo "$SCAN" | grep -qi "Could not load the card reader" && fail "the card reader (tesseract.js worker) did not load in the WebView"
 echo "$SCAN" | grep -q '"reader":true' || fail "the card reader script did not load"
+echo "$SCAN" | grep -qi "Getting the reader ready" && fail "the card reader was still loading after 20 s (its language file or worker did not load)"
+ok "the card reader loaded inside the WebView"
 if echo "$SCAN" | grep -q '"stream":true' && [ "$(num "$SCAN" .video.w)" != "0" ] && [ -n "$(num "$SCAN" .video.w)" ]; then
   ok "the camera streams into the scanner ($(num "$SCAN" .video.w)x$(num "$SCAN" .video.h), permission: $GRANTED) and the reader is loaded"
 elif echo "$SCAN" | grep -qi "turned off for this app"; then
