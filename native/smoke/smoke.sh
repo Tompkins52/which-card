@@ -184,9 +184,10 @@ wv "document.querySelector('.sheet .scan-btn') ? 'yes' : 'no'" | grep -q yes || 
 # Can this WebView run the reader at all? Three small workers, made in the page: one from the reader's own
 # script file, one made from a blob that imports a script of the app, one that fetches a file of the app.
 PROBE="$(wv "(function(){
-  function timed(mk){ return new Promise(function(res){ var t=setTimeout(function(){res('no answer in 8 s')},8000); try { var w=mk(); w.onerror=function(e){clearTimeout(t); res('error: '+(e.message||e.type)); w.terminate();}; w.onmessage=function(e){clearTimeout(t); res(String(e.data)); w.terminate();}; } catch(e){ clearTimeout(t); res('threw: '+e.message); } }); }
+  function timed(mk, quiet){ return new Promise(function(res){ var w; var t=setTimeout(function(){ res(quiet||'no answer in 8 s'); if(w) w.terminate(); }, quiet?4000:8000); try { w=mk(); w.onerror=function(e){clearTimeout(t); res('error: '+(e.message||e.type)); w.terminate();}; w.onmessage=function(e){clearTimeout(t); res(String(e.data)); w.terminate();}; } catch(e){ clearTimeout(t); res('threw: '+e.message); } }); }
   var origin=location.origin;
-  var fromFile=timed(function(){ var w=new Worker('vendor/tesseract/worker.min.js'); setTimeout(function(){ try{ w.postMessage({}); }catch(e){} },500); return w; });
+  // The reader's worker says nothing until it is asked for work; loading without an error event is the answer.
+  var fromFile=timed(function(){ return new Worker('vendor/tesseract/worker.min.js'); }, 'loaded, no error in 4 s');
   var blobImport=timed(function(){ return new Worker(URL.createObjectURL(new Blob([\"try{importScripts('\"+origin+\"/vendor/tesseract/tesseract.min.js');postMessage('import ok')}catch(e){postMessage('import failed: '+e.message)}\"],{type:'text/javascript'}))); });
   var blobFetch=timed(function(){ return new Worker(URL.createObjectURL(new Blob([\"fetch('\"+origin+\"/vendor/tesseract/README.txt').then(function(r){postMessage('fetch '+r.status)},function(e){postMessage('fetch failed: '+e.message)})\"],{type:'text/javascript'}))); });
   return Promise.all([fromFile,blobImport,blobFetch]).then(function(r){ return JSON.stringify({origin:origin, workerFromFile:r[0], blobWorkerImportScripts:r[1], blobWorkerFetch:r[2]}); });
