@@ -68,7 +68,9 @@ tap_el() {
   wb="$(webview_bounds)" || return 1
   read -r x1 y1 _ _ <<< "$wb"
   dpr="$(num "$r" .dpr)"; cx="$(num "$r" .x)"; cy="$(num "$r" .y)"
-  adb shell input tap "$(node -e "console.log(Math.round($x1 + $cx * $dpr))")" "$(node -e "console.log(Math.round($y1 + $cy * $dpr))")"
+  local tx ty; tx="$(node -e "console.log(Math.round($x1 + $cx * $dpr))")"; ty="$(node -e "console.log(Math.round($y1 + $cy * $dpr))")"
+  echo "      tap $1 at screen ($tx, $ty): WebView starts at ($x1, $y1), element at page (${cx%.*}, ${cy%.*}) css px, scale $dpr"
+  adb shell input tap "$tx" "$ty"
 }
 # The page's layout numbers: window, visual viewport, scroll, safe-area insets (env() and Capacitor's variables),
 # where the header and the first thing in the open view are.
@@ -158,7 +160,7 @@ ok "the header sits under the status bar and covers nothing (Pay, Wallet; Add a 
 wv_click '.tabs button[data-view="pay"]' > /dev/null; sleep 1
 BEFORE="$(metrics)"
 if tap_el '#store-search'; then
-  sleep 2; adb shell input text Shell; sleep 2
+  sleep 2; echo "      focus is on: $(wv "document.activeElement ? (document.activeElement.id || document.activeElement.tagName) : 'nothing'")"; adb shell input text Shell; sleep 2
   screen 05-keyboard
   KB="$(metrics)"; echo "$KB" > "$OUT/05-keyboard.json"
   echo "      keyboard open: window $(num "$KB" '.inner[0]')x$(num "$KB" '.inner[1]'), visible $(num "$KB" '.vv[1]') from $(num "$KB" '.vv[2]'), scrolled $(num "$KB" .scrollY), safe-area bottom $(num "$KB" '.env[2]')px"
@@ -179,7 +181,18 @@ fi
 wv_click '.tabs button[data-view="wallet"]' > /dev/null; sleep 1
 wv_click '#view-wallet .section-head button.link' > /dev/null; sleep 2
 wv "document.querySelector('.sheet .scan-btn') ? 'yes' : 'no'" | grep -q yes || fail "the Add a card sheet has no scan button"
-tap_el '.sheet .scan-btn' || wv_click '.sheet .scan-btn' > /dev/null
+# Can this WebView run the reader at all? Three small workers, made in the page: one from the reader's own
+# script file, one made from a blob that imports a script of the app, one that fetches a file of the app.
+PROBE="$(wv "(function(){
+  function timed(mk){ return new Promise(function(res){ var t=setTimeout(function(){res('no answer in 8 s')},8000); try { var w=mk(); w.onerror=function(e){clearTimeout(t); res('error: '+(e.message||e.type)); w.terminate();}; w.onmessage=function(e){clearTimeout(t); res(String(e.data)); w.terminate();}; } catch(e){ clearTimeout(t); res('threw: '+e.message); } }); }
+  var origin=location.origin;
+  var fromFile=timed(function(){ var w=new Worker('vendor/tesseract/worker.min.js'); setTimeout(function(){ try{ w.postMessage({}); }catch(e){} },500); return w; });
+  var blobImport=timed(function(){ return new Worker(URL.createObjectURL(new Blob([\"try{importScripts('\"+origin+\"/vendor/tesseract/tesseract.min.js');postMessage('import ok')}catch(e){postMessage('import failed: '+e.message)}\"],{type:'text/javascript'}))); });
+  var blobFetch=timed(function(){ return new Worker(URL.createObjectURL(new Blob([\"fetch('\"+origin+\"/vendor/tesseract/README.txt').then(function(r){postMessage('fetch '+r.status)},function(e){postMessage('fetch failed: '+e.message)})\"],{type:'text/javascript'}))); });
+  return Promise.all([fromFile,blobImport,blobFetch]).then(function(r){ return JSON.stringify({origin:origin, workerFromFile:r[0], blobWorkerImportScripts:r[1], blobWorkerFetch:r[2]}); });
+})()")"
+echo "      worker probe: $PROBE"; echo "$PROBE" > "$OUT/06-worker-probe.json"
+wv_click '.sheet .scan-btn' > /dev/null
 GRANTED=""
 for n in 1 2 3 4 5 6 7 8; do
   sleep 1.5
@@ -187,8 +200,9 @@ for n in 1 2 3 4 5 6 7 8; do
   adb shell dumpsys package "$PKG" 2>/dev/null | grep -q "android.permission.CAMERA: granted=true" && { GRANTED="already"; break; }
 done
 [ -n "$GRANTED" ] || { warn "no camera permission prompt appeared; granting it by hand"; adb shell pm grant "$PKG" android.permission.CAMERA || true; GRANTED="adb"; }
-sleep 15
+sleep 20
 screen 06-scan
+echo "      page console during the scan:"; adb logcat -d | grep -aiE "Capacitor/Console|chromium.*CONSOLE" | grep -aiE "worker|tesseract|wasm|Uncaught|rror|getUserMedia|camera" | tail -15 | sed 's/^/        /' || true
 SCAN="$(wv "(function(){var v=document.querySelector('.scan .cam video'); var n=document.querySelector('.scan .note'); var s=document.querySelector('.scan .scan-status'); return JSON.stringify({sheet:!!document.querySelector('.sheet'), cam:!!document.querySelector('.scan .cam'), video:v?{w:v.videoWidth,h:v.videoHeight,ready:v.readyState,stream:!!v.srcObject}:null, status:s?s.textContent:null, note:n?n.textContent:null, reader:!!window.Tesseract});})()")"
 echo "$SCAN" > "$OUT/06-scan.json"
 echo "      scan: $SCAN"

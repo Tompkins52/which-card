@@ -241,7 +241,9 @@
     var sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
       h('div', { class: 'grab' }),
       // quietHead: the body carries its own big title (card detail), so the head is just the close button.
-      h('div', { class: 'wrap sheet-head' + (opts.quietHead ? ' quiet' : '') }, opts.quietHead ? null : h('h2', null, title), opts.noClose ? null : h('button', { class: 'close', 'aria-label': 'Close', onclick: closeSheet }, icon('x'))),
+      // headAction: a labelled button (Done) up top in place of the close cross, for a long sheet the person works through.
+      h('div', { class: 'wrap sheet-head' + (opts.quietHead ? ' quiet' : '') }, opts.quietHead ? null : h('h2', null, title),
+        opts.headAction ? h('button', { class: 'btn primary head-action', onclick: opts.headAction.onclick }, opts.headAction.label) : opts.noClose ? null : h('button', { class: 'close', 'aria-label': 'Close', onclick: closeSheet }, icon('x'))),
       body);
     var back = h('div', { class: 'sheet-backdrop', onclick: function () { if (!opts.noClose) closeSheet(); } });
     if (swap) { sheet.classList.add('swap'); back.classList.add('swap'); }
@@ -899,7 +901,10 @@
   var PICK_HOLD = 3 * 60 * 1000, AWAY = 60 * 1000;
   var AROUND = 120, REUSE = 60, MOVED = 40, ROUGH_REACH = 150, PLACES_KEY = 'whichcard.places.v2', LOOKUP_KEY = 'whichcard.lookup.v1';
   var PLACES_DAYS = 30, PLACES_FRESH_DAYS = 3, PLACES_MAX = 40;
-  var MAP_FIRST = 3, MAP_NEXT = 2000, MAP_SLOW = 8000, MAP_LIMIT = 60000;
+  var MAP_FIRST = 3, MAP_NEXT = 2000, MAP_SLOW = 5000, MAP_LIMIT = 10000;
+  // The whole lookup, position and map together, gets ten seconds. Away from any store the map servers
+  // can sit on a request for most of a minute; after ten seconds the person is better off picking.
+  var LOCATE_LIMIT = 10000;
   var DAY = 24 * 60 * 60 * 1000;
   // Version 1 of the saved stores could hold a busy server's empty answer as "no stores here". Drop it.
   try { localStorage.removeItem('whichcard.places.v1'); } catch (e) { }
@@ -916,7 +921,7 @@
   function locate() {
     if (!canLocate()) { toast('Location is not available here'); return; }
     if (locating) return;
-    var seq = ++locateSeq, answered = false, center = null, raw = null, autoKey = null, stopFix = null, last = null, slowTimer = null;
+    var seq = ++locateSeq, answered = false, center = null, raw = null, autoKey = null, stopFix = null, last = null, slowTimer = null, giveUpTimer = null;
     nearState = false;
     var t0 = Date.now(), trace = { at: t0, fixMs: null, acc: null, source: null, servers: [], found: null, top: null, outcome: null };
     locating = true; locateStage = 'fix';
@@ -925,7 +930,7 @@
     if (view === 'pay') { renderWhere(); renderAnswer(); }
     function live() { return seq === locateSeq; }
     function stage(name) { locateStage = name; if (view === 'pay' && locating && !ctx.merchant && !ctx.category) renderWhere(); }
-    function settle() { if (!live()) return false; locating = false; clearTimeout(slowTimer); btn.classList.remove('busy'); return true; }
+    function settle() { if (!live()) return false; locating = false; clearTimeout(slowTimer); clearTimeout(giveUpTimer); btn.classList.remove('busy'); return true; }
     function putBack() {
       var prev = locatePrev; locatePrev = null;
       if (prev && !ctx.merchant && !ctx.category) { ctx.merchant = prev.merchant; ctx.category = prev.category; ctx.customName = prev.customName; ctx.located = prev.located; }
@@ -1010,6 +1015,14 @@
         fail('The map did not answer. Pick the store above.');
       });
     }
+    giveUpTimer = setTimeout(function () {
+      if (!live() || !locating || answered) return;
+      if (stopFix) stopFix();
+      settle();
+      trace.outcome = 'gave up after ' + Math.round(LOCATE_LIMIT / 1000) + ' s'; saveLookup(trace);
+      locateSeq++;  // whatever the map says after this is ignored
+      putBack(); toast('Could not find your store in ' + Math.round(LOCATE_LIMIT / 1000) + ' seconds. Pick it above.'); renderPay();
+    }, LOCATE_LIMIT);
     stopFix = watchFix(function (lat, lon, acc) {
       if (!live()) { stopFix && stopFix(); return; }
       if (trace.fixMs === null) trace.fixMs = Date.now() - t0;
@@ -1390,7 +1403,9 @@
       h('div', { class: 'note buddy' }, h('b', null, 'Why do the cards look like that? '), 'Yeah, those are not the real card pictures. Is it because we are cheap asses? Partially. Mostly it is because every one of those designs is trademarked, and the banks would keep our asses in court until the sun burns out. That should tell you something, though: the sites with the real pictures have a deal with the bank and get paid every time you click. We get squat. Nobody pays for a spot here, nobody buys your info, and the only thing we want from you is 99 cents and a good pump story.'),
       h('button', { class: 'btn block', onclick: function () { openCustomCard(null, intro); } }, icon('plus'), 'My card isn\u2019t here'),
       h('button', { class: 'btn primary block', onclick: function () { closeSheet(); } }, 'Done'));
-    openSheet(intro ? 'Your cards' : 'Add a card', nodes, { noClose: !!intro });
+    // Done sits up top as well as at the end: after scanning or tapping a few cards nobody should have to
+    // scroll past two hundred more to leave.
+    openSheet(intro ? 'Your cards' : 'Add a card', nodes, { noClose: !!intro, headAction: { label: 'Done', onclick: function () { closeSheet(); } } });
     sheetOnClose = function () {
       askMemberships(function () {
         if (intro && state.wallet.length) { openPriority(true); }
