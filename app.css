@@ -82,6 +82,9 @@ body {
   margin: 0; min-height: 100%; background: var(--bg); color: var(--fg);
   font-family: var(--font); font-size: 16px; font-weight: 430; line-height: 1.45;
   -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
+  /* Room for the status bar when the page runs under it (the Android app, a phone with a notch): the sticky
+     header then starts below the bar instead of being pushed down over the first lines of the page. */
+  padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom, 0px));
 }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }

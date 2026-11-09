@@ -1585,6 +1585,22 @@
     if (!parts[0] || parts[0] === 'dev') return 'Development build.';
     return 'Build ' + parts[0].replace(/^wc-/, '') + (when && !isNaN(when) ? ', ' + when.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '') + '.';
   }
+  // What this phone gives the page: the WebView version and the window and safe-area sizes, for reading
+  // layout trouble off a screenshot of a tester's phone. Shown in the app's About box only.
+  function phoneLine() {
+    try {
+      var m = /Chrome\/(\d+)/.exec(navigator.userAgent), vv = window.visualViewport;
+      var p = document.createElement('div');
+      p.style.cssText = 'position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
+      document.body.appendChild(p);
+      var cs = getComputedStyle(p), ins = [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].map(function (v) { return Math.round(parseFloat(v) || 0); });
+      p.remove();
+      return 'This phone: ' + (NATIVE && NATIVE.platform === 'ios' ? 'iPhone' : 'Android WebView' + (m ? ' ' + m[1] : '')) + '. Window ' + window.innerWidth + ' by ' + window.innerHeight +
+        (vv ? ', showing ' + Math.round(vv.height) + (vv.offsetTop ? ' from ' + Math.round(vv.offsetTop) : '') : '') +
+        ', safe area ' + ins[0] + ' top, ' + ins[2] + ' bottom' + (ins[1] || ins[3] ? ', ' + ins[3] + ' left, ' + ins[1] + ' right' : '') +
+        ', page ' + document.documentElement.scrollHeight + ' tall, scrolled ' + Math.round(window.scrollY) + '.';
+    } catch (e) { return ''; }
+  }
   function openLocationTest() {
     var lines = h('div', { class: 'box small test-lines' });
     var out = [];
@@ -2396,7 +2412,8 @@
         h('p', { style: 'margin-top:8px' }, h('b', null, 'About the card pictures. '), 'Drawn, not real. Partly because we are cheap asses, mostly because the real designs are trademarked and we are not spending eternity in court over a picture. The sites with the real pictures have a deal with the bank and get paid when you click. We get squat, on purpose.'),
         h('p', { style: 'margin-top:8px' }, 'Independent of every bank and card network. No bank pays for placement, no referral links, no sponsored cards; the ranking is arithmetic on your own cards. Rates and terms change; the issuer’s agreement wins. Point values are estimates.'),
         h('p', { style: 'margin-top:8px' }, 'Questions or a wrong number: ', h('a', { href: 'mailto:' + CONTACT }, CONTACT)),
-        h('p', { style: 'margin-top:8px', class: 'muted' }, buildLine())));
+        h('p', { style: 'margin-top:8px', class: 'muted' }, buildLine()),
+        NATIVE ? h('p', { style: 'margin-top:8px', class: 'muted phone-line' }, phoneLine()) : null));
     as.appendChild(h('button', { class: 'btn block', onclick: openDisclaimer }, 'See the welcome note again'));
     as.appendChild(h('button', { class: 'btn danger block', onclick: function () { confirmReset(); } }, 'Erase everything on this phone'));
     root.appendChild(as);

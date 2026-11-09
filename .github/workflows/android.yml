@@ -107,7 +107,14 @@ jobs:
   emulator:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        # 34 is the Android the shell was first checked on; 36 is current Android, where the app runs under the
+        # system bars and the WebView is newer, which is what testers' phones have.
+        api: [34, 36]
+    name: emulator (Android API ${{ matrix.api }})
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -129,17 +136,17 @@ jobs:
       - name: Run the app on an emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: ${{ matrix.api }}
           arch: x86_64
           target: google_apis
           profile: pixel_6
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back emulated -camera-front none
           script: bash native/smoke/smoke.sh apk/app-debug.apk
       - name: Keep the screenshots and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: emulator-run-${{ github.run_number }}
+          name: emulator-run-${{ github.run_number }}-api${{ matrix.api }}
           path: native/smoke/out
           if-no-files-found: ignore
